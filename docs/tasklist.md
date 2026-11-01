@@ -28,7 +28,7 @@
 - RF-B5: medir a confiança da extração e pedir novo envio se baixa.
 - RF-B6: pseudonimizar: nada que identifique o paciente sai do pipeline.
 - RF-B7: validar a resposta do modelo (aviso, especialidade confere com a base, sem diagnóstico/prescrição/veredito); reprovou → regenerar; esgotou → mensagem padrão.
-- RF-B8: expor as rotas e orquestrar pipeline → IA → segurança.
+- RF-B8: expor as rotas e orquestrar: envio do laudo → pipeline (sem IA); clique em "Explicar com IA" e chat → IA → segurança, com o laço de regeneração no orquestrador.
 
 **Requisitos não funcionais**
 - RNF-B1: o modelo nunca decide classificação nem alerta.
@@ -46,7 +46,7 @@
 - [ ] **BWL-06 (P0)** Confiança da extração e erro "envie novamente".
 - [ ] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai.
 - [ ] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos.
-- [ ] **BWL-09 (P0)** Orquestrador e rotas do contrato.
+- [ ] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração.
 - [ ] **BWL-10 (P1)** OCR com Tesseract.js. Se apertar, é o primeiro corte — mas o artigo descreve OCR, então avise o grupo cedo.
 - [ ] **BWL-11 (P2)** Lembrete de medicação.
 
@@ -57,8 +57,8 @@
 **Requisitos funcionais**
 - RF-I1: gerar a explicação sempre nas 5 partes e na ordem: (1) o que o exame avalia; (2) valor e posição na faixa; (3) significado sem afirmar doença; (4) especialidade; (5) aviso.
 - RF-I2: buscar a ficha do exame na base e injetá-la no prompt (RAG); em divergência, a base prevalece.
-- RF-I3: responder no chat apenas sobre o exame da sessão, sem memória entre sessões.
-- RF-I4: aceitar a reprovação da segurança e regenerar.
+- RF-I3: responder no chat apenas sobre aquele exame (a explicação é a 1ª mensagem do chat), sem memória entre sessões.
+- RF-I4: aceitar o motivo da reprovação da segurança numa nova tentativa (quem decide tentar de novo é o orquestrador).
 
 **Requisitos não funcionais**
 - RNF-I1: nunca diagnosticar, indicar/ajustar medicamento nem dar veredito de tranquilidade ou preocupação. Linguagem de "merece atenção"; sem a palavra "preocupante".
@@ -71,8 +71,8 @@
 - [ ] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
 - [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt.
 - [ ] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
-- [ ] **ISA-05 (P1)** Chat sobre o exame da sessão.
-- [ ] **ISA-06 (P1)** Fluxo de regeneração quando a segurança reprova.
+- [ ] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
+- [ ] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.
 - [ ] **ISA-07 (P2)** Redação do tom do lembrete (horários e doses nunca vêm do modelo).
 
 ---
@@ -83,10 +83,10 @@
 
 **Requisitos funcionais**
 - RF-A1: tela de envio de laudo (PDF/foto).
-- RF-A2: cartão do resultado: analito, valor, faixa, status verde/amarelo/vermelho, explicação em 5 partes, especialidade e aviso.
+- RF-A2: tela de exames: um cartão por exame com valor, faixa, status verde/amarelo/vermelho e botão "Explicar com IA" (quando `explicacao_disponivel`).
 - RF-A3: estado "não consegui ler, envie de novo".
 - RF-A4: destaque visual para alerta de atendimento prioritário.
-- RF-A5: chat sobre o exame.
+- RF-A5: chat do exame: abre com a explicação em 5 partes (especialidade e aviso) e permite digitar dúvidas.
 
 **Requisitos não funcionais**
 - RNF-A1: linguagem simples.
@@ -95,10 +95,10 @@
 - RNF-A4: funcionar com os JSONs de `samples/` antes de o back existir.
 
 **Tarefas — front**
-- [ ] **MAG-01 (P0)** Telas de envio e cartão, usando os JSONs de `samples/`.
+- [ ] **MAG-01 (P0)** Telas de envio, de exames e do chat mostrando a explicação (1ª mensagem), usando os JSONs de `samples/respostas-api/`.
 - [ ] **MAG-02 (P0)** Estados de erro (um por código do contrato) e alerta crítico.
 - [ ] **MAG-03 (P1)** Ligar ao back real (sujeito à decisão em aberto).
-- [ ] **MAG-04 (P1)** Chat.
+- [ ] **MAG-04 (P1)** Campo para digitar dúvidas no chat e exibir as respostas.
 
 **Tarefas — base de conhecimento**
 - [ ] **MAG-05 (P0)** Com o grupo, confirmar a lista de exames e os nomes como aparecem nos laudos de `samples/laudos/`.

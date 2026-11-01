@@ -1,0 +1,7 @@
+{
+  "status": "erro",
+  "erro": {
+    "codigo": "ARQUIVO_ILEGIVEL",
+    "mensagem_usuario": "Não conseguimos ler o seu exame. Tente enviar de novo, com uma foto mais nítida ou o PDF original do laboratório."
+  }
+}
