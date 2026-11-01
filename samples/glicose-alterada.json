@@ -1,0 +1,17 @@
+{
+  "id_laudo": "sintetico-glicose-alterada",
+  "origem": "pdf_digital",
+  "confianca_extracao": 0.97,
+  "analitos": [
+    {
+      "id_canonico": "glicose",
+      "nome_no_laudo": "Glicose em jejum",
+      "valor": 118,
+      "unidade": "mg/dL",
+      "faixa_referencia": { "minimo": 70, "maximo": 99, "texto_original": "70 a 99 mg/dL" },
+      "classificacao": "acima",
+      "alerta_critico": false,
+      "confianca": 0.96
+    }
+  ]
+}

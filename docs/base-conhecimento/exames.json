@@ -1,0 +1,38 @@
+{
+  "versao": 1,
+  "observacao": "Cada ficha tem UM exame. Só fichas com status 'pronto' são usadas pelo sistema. Veja o README desta pasta.",
+  "exames": [
+    {
+      "id_canonico": "glicose",
+      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum"],
+      "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer.",
+      "especialidade": "Endocrinologia",
+      "fonte": "[PREENCHER pela Aguiar: onde você conferiu este texto e a especialidade]",
+      "status": "pendente"
+    },
+    {
+      "id_canonico": "colesterol_total",
+      "nomes_alternativos": ["Colesterol total", "Colesterol Total", "Colesterol"],
+      "o_que_avalia": "[PREENCHER]",
+      "especialidade": "[PREENCHER]",
+      "fonte": "[PREENCHER]",
+      "status": "pendente"
+    },
+    {
+      "id_canonico": "creatinina",
+      "nomes_alternativos": ["Creatinina", "Creatinina sérica", "Creatinina sanguínea"],
+      "o_que_avalia": "[PREENCHER]",
+      "especialidade": "[PREENCHER]",
+      "fonte": "[PREENCHER]",
+      "status": "pendente"
+    },
+    {
+      "id_canonico": "tsh",
+      "nomes_alternativos": ["TSH", "TSH ultrassensível", "Hormônio tireoestimulante"],
+      "o_que_avalia": "[PREENCHER]",
+      "especialidade": "[PREENCHER]",
+      "fonte": "[PREENCHER]",
+      "status": "pendente"
+    }
+  ]
+}

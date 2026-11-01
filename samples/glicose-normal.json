@@ -1,0 +1,17 @@
+{
+  "id_laudo": "sintetico-glicose-normal",
+  "origem": "pdf_digital",
+  "confianca_extracao": 0.97,
+  "analitos": [
+    {
+      "id_canonico": "glicose",
+      "nome_no_laudo": "Glicose em jejum",
+      "valor": 88,
+      "unidade": "mg/dL",
+      "faixa_referencia": { "minimo": 70, "maximo": 99, "texto_original": "70 a 99 mg/dL" },
+      "classificacao": "dentro",
+      "alerta_critico": false,
+      "confianca": 0.98
+    }
+  ]
+}
