@@ -1,0 +1,33 @@
+# CODEOWNERS — Lumie
+# Cada linha liga um caminho aos donos que devem revisar/aprovar PRs que mexam nele.
+# Regra do GitHub: vale a ÚLTIMA linha que bater com o arquivo, então
+# as regras gerais ficam no topo e as específicas embaixo.
+#
+# Siglas: BWL = Bruno · ISA = Isadora · MAG = Aguiar
+
+# --- Padrão: qualquer arquivo sem dono específico precisa de um dos três ---
+*                                      @brunowl-dev @isaaholiveira @Agu14r
+
+# --- Backend: Bruno e Isadora (arquivos comuns do backend, ex.: package.json, Dockerfile do back) ---
+/backend/                              @brunowl-dev @isaaholiveira
+
+# --- Backend por módulo (um dono por pasta) ---
+/backend/src/pipeline/                 @brunowl-dev
+/backend/src/seguranca/                @brunowl-dev
+/backend/src/api/                      @brunowl-dev
+/backend/src/ia/                       @isaaholiveira
+
+# --- Frontend e base de conhecimento: Aguiar ---
+/frontend/                             @Agu14r
+/docs/base-conhecimento/               @Agu14r
+
+# --- Arquivos compartilhados: mudança afeta os três, qualquer um dos outros dois pode aprovar ---
+/docs/contrato.md                      @brunowl-dev @isaaholiveira @Agu14r
+/docs/tasklist.md                      @brunowl-dev @isaaholiveira @Agu14r
+/docs/artigo-vs-prototipo.md           @brunowl-dev @isaaholiveira @Agu14r
+/docs/docker.md                        @brunowl-dev @isaaholiveira @Agu14r
+/samples/                              @brunowl-dev @isaaholiveira @Agu14r
+/CLAUDE.md                             @brunowl-dev @isaaholiveira @Agu14r
+/docker-compose.yml                    @brunowl-dev @isaaholiveira @Agu14r
+/.env.example                          @brunowl-dev @isaaholiveira @Agu14r
+/.github/                              @brunowl-dev @isaaholiveira @Agu14r
