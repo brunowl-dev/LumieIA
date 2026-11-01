@@ -1,16 +1,20 @@
 # CLAUDE.md — frontend (Aguiar — MAG)
 
-Leia antes: `../CLAUDE.md` e `../docs/contrato.md` (seções "Segurança → Front", "Portas HTTP" e "Erros").
+Leia antes: `../CLAUDE.md` e `../docs/contrato.md` (seções "Visão do fluxo", "Orquestrador → Front", "Portas HTTP" e "Erros").
 
 ## Escopo desta pasta
-- React. Telas: envio de laudo (PDF/foto), cartão de resultado, estados de erro, alerta de atendimento prioritário, chat sobre o exame.
-- O cartão mostra: analito, valor, faixa de referência, status com cor, a explicação nas 5 partes (na ordem), a especialidade e o aviso.
+React. O fluxo das telas:
+1. **Envio do laudo** (PDF/foto) → `POST /api/laudos`.
+2. **Tela de exames:** um cartão por exame com nome, valor, faixa de referência, status com cor e alerta de atendimento prioritário (quando houver). Cada exame com `explicacao_disponivel: true` tem um botão **"Explicar com IA"**; os demais mostram "ainda não temos explicação para este exame".
+3. **Chat do exame** (abre ao clicar no botão): mostra "carregando" enquanto chama `POST /api/explicacoes`; a 1ª mensagem é a explicação nas 5 partes (na ordem), com a especialidade e o aviso. Depois o paciente digita dúvidas → `POST /api/chat`. Cada chat é de um exame só.
+- Estados de erro (um por código do contrato) em cada uma das três telas.
 
 ## Regras
-- Consumir SOMENTE o formato do contrato. Enquanto o back não existir, trabalhe com os JSONs de `../samples/`.
+- Consumir SOMENTE o formato do contrato. Enquanto o back não existir, trabalhe com os JSONs de `../samples/respostas-api/`.
 - Cores: verde = dentro da faixa; amarelo = fora da faixa (acima/abaixo); vermelho = alerta crítico. (Decisão a confirmar no contrato.)
+- O alerta prioritário aparece já na tela de exames; ele não depende de o paciente abrir o chat.
 - **Não depender só de cor:** sempre acompanhar com texto e/ícone (acessibilidade, daltonismo).
-- O aviso "não substitui avaliação médica" deve estar sempre visível no cartão.
+- O aviso "não substitui avaliação médica" deve estar sempre visível na tela de exames e no chat.
 - Linguagem simples. Para cada código de erro do contrato, mostrar a mensagem de `mensagem_usuario` e a ação (ex.: "enviar novamente").
 - Nenhuma lógica de classificação no front: o status vem pronto.
 - Chame a API sempre por caminho relativo (`fetch('/api/laudos')`), nunca com `http://localhost:3001`. No Docker, o nginx repassa `/api/` ao backend (sem CORS); no `npm run dev`, o `vite.config.js` faz o mesmo. Veja `../docs/docker.md`.
