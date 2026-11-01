@@ -1,0 +1,14 @@
+{
+  "name": "lumie-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lumie — backend do módulo de IA (esqueleto mínimo para o Docker)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

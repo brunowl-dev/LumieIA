@@ -1,0 +1,58 @@
+# docker-compose do Lumie: sobe front e back com um comando só.
+#   docker compose up --build
+# Os valores ${...} vêm do arquivo .env na raiz (copie de .env.example).
+# Não há serviço do Ollama: o modelo roda na nuvem (OLLAMA_BASE_URL).
+
+name: lumie
+
+services:
+  backend:
+    build: ./backend
+    # Todas as variáveis do .env entram no backend (inclusive a chave da API,
+    # que só existe em tempo de execução — nunca dentro da imagem).
+    env_file: .env
+    ports:
+      # Publicado só para teste/depuração (curl). O navegador usa o proxy do front.
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    volumes:
+      # Base de conhecimento, somente leitura (:ro), no caminho de KNOWLEDGE_BASE_PATH.
+      - ./docs/base-conhecimento:/app/knowledge:ro
+    tmpfs:
+      # Uploads temporários em memória RAM: nada é gravado em disco e tudo some
+      # quando o container para. uid/gid 1000 = usuário "node"; 0700 = só ele acessa.
+      - /app/uploads:size=50m,uid=1000,gid=1000,mode=0700
+    # Processo "init" leve como PID 1: repassa o sinal de parada ao Node,
+    # para o container parar na hora com Ctrl+C / docker compose down.
+    init: true
+    healthcheck:
+      # Usa o próprio Node (já está na imagem) para chamar a rota de saúde.
+      test: ["CMD", "node", "-e", "fetch('http://localhost:'+process.env.BACKEND_PORT+'/api/saude').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s      # testa a cada 10 s
+      timeout: 3s        # resposta mais lenta que isso conta como falha
+      retries: 5         # 5 falhas seguidas = "unhealthy"
+      start_period: 10s  # tempo de tolerância enquanto o app inicia
+    restart: unless-stopped
+    networks:
+      - lumie
+
+  frontend:
+    build: ./frontend
+    # O front NÃO recebe o .env inteiro: só precisa saber a porta do backend
+    # para montar o proxy do nginx. Assim a chave da API nunca chega a ele.
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT:-3001}
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      backend:
+        # Só inicia o front depois que o healthcheck do backend passar.
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - lumie
+
+# Rede interna: dentro dela os containers se acham pelo nome do serviço
+# (o nginx fala com "backend"). O compose criaria uma rede padrão igual;
+# declaramos explicitamente para deixar claro.
+networks:
+  lumie:

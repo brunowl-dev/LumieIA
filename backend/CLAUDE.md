@@ -14,6 +14,8 @@ Leia antes: `../CLAUDE.md` (raiz) e `../docs/contrato.md`.
 - Cada módulo deve poder ser testado SOZINHO, usando os JSONs de `samples/`.
 - Configuração só por variáveis de ambiente (`.env.example`). Nada de chave ou URL fixa no código.
 - O backend roda em Docker. Escute em `0.0.0.0` dentro do container e use a porta de `BACKEND_PORT`.
-- Rota de saúde (`GET /api/saude`) para o healthcheck do Docker.
+- Rota de saúde (`GET /api/saude`) para o healthcheck do Docker. Ponto de entrada: `src/server.js`.
+- Dependências com `npm install` e `package-lock.json` commitado (o Docker usa `npm ci --omit=dev`).
+- Idiomas do OCR já vêm na imagem em `TESSDATA_PATH`; uploads temporários em `UPLOAD_DIR` (tmpfs). Detalhes em `../docs/docker.md`.
 - Sem banco de dados no protótipo: o laudo estruturado da sessão fica em memória, com expiração (`SESSION_TTL_MINUTES`).
 - Nunca registrar (log) texto bruto de laudo nem dados que identifiquem o paciente.

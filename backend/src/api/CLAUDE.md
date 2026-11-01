@@ -11,7 +11,7 @@ Leia antes: `../../../CLAUDE.md`, `../../CLAUDE.md` e `../../../docs/contrato.md
 - Validar o upload: tipo (PDF/imagem), tamanho (`UPLOAD_MAX_MB`). Não guardar o arquivo em disco além do necessário; apagar após o processamento.
 - Sessão em memória: guardar o laudo estruturado por `id_laudo`, com expiração (`SESSION_TTL_MINUTES`), para o chat. Sem banco.
 - Erros sempre no formato do contrato, com mensagem em linguagem simples para o paciente.
-- CORS liberado só para `CORS_ORIGIN`.
+- Sem CORS: o front chega à API pelo proxy do nginx (mesma origem). Não habilitar CORS (`docs/docker.md`).
 - Se o modelo estiver indisponível/lento (`OLLAMA_TIMEOUT_MS`), devolver `MODELO_INDISPONIVEL` — ou a mensagem padrão, se o grupo decidir assim (decisão em aberto no contrato).
 
 ## Modo de trabalho (Bruno)

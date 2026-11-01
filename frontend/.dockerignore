@@ -1,0 +1,15 @@
+# O que NÃO vai para o contexto de build da imagem do frontend.
+# dependências e build da máquina (o estágio 1 gera os seus próprios)
+node_modules
+dist
+npm-debug.log*
+# segredos: o front não precisa de nenhuma chave
+.env
+.env.*
+# histórico do git e arquivos de editor
+.git
+.vscode
+# documentação para o Claude Code (não é código)
+CLAUDE.md
+Dockerfile
+.dockerignore

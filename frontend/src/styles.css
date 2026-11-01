@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f6f8fa;
+  color: #1f2328;
+}
+
+main {
+  max-width: 40rem;
+  margin: 4rem auto;
+  padding: 0 1rem;
+}
+
+.status {
+  font-weight: 600;
+}

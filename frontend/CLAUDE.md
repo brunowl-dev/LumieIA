@@ -13,7 +13,8 @@ Leia antes: `../CLAUDE.md` e `../docs/contrato.md` (seções "Segurança → Fro
 - O aviso "não substitui avaliação médica" deve estar sempre visível no cartão.
 - Linguagem simples. Para cada código de erro do contrato, mostrar a mensagem de `mensagem_usuario` e a ação (ex.: "enviar novamente").
 - Nenhuma lógica de classificação no front: o status vem pronto.
-- A URL da API vem de variável de ambiente (`VITE_API_URL` ou equivalente — veja `../.env.example`). Dentro do Docker, o navegador acessa a API pelo `localhost` do computador, não pelo nome do serviço.
+- Chame a API sempre por caminho relativo (`fetch('/api/laudos')`), nunca com `http://localhost:3001`. No Docker, o nginx repassa `/api/` ao backend (sem CORS); no `npm run dev`, o `vite.config.js` faz o mesmo. Veja `../docs/docker.md`.
+- Stack: React + Vite, npm. Instale pacotes com `npm install` e commite o `package-lock.json` (o Docker usa `npm ci`).
 - Não commitar chaves nem `.env`.
 
 ## Modo de trabalho

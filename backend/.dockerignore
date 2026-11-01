@@ -1,0 +1,18 @@
+# O que NÃO vai para o contexto de build da imagem do backend.
+# dependências instaladas na máquina (a imagem instala as suas próprias)
+node_modules
+npm-debug.log*
+# segredos: a chave entra só em tempo de execução, via .env no compose
+.env
+.env.*
+# histórico do git e arquivos de editor
+.git
+.vscode
+# uploads e testes locais
+uploads
+tmp
+coverage
+# documentação para o Claude Code (não é código)
+**/CLAUDE.md
+Dockerfile
+.dockerignore

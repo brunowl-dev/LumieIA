@@ -24,6 +24,5 @@ Etapas, cada uma testável isoladamente:
 ## Modo de trabalho (Bruno)
 Modo GUIADO. Bruno é forte em Java e Python, SQL; JavaScript/Node é a maior lacuna; nunca usou OCR.
 - Explique cada conceito antes (OCR, regex, expressões regulares, async/await, módulos), relacionando com Java/Python quando ajudar.
-- Passos pequenos. Bruno escreve o código; você explica, revisa e sugere. Gere código pronto só se ele pedir, e explique os trechos relevantes.
 - Peça para ele testar cada etapa isolada (com os JSONs/PDFs de `samples/`) antes de passar para a próxima.
 - Lógica de programação ainda é ponto a fortalecer: não presuma que ele resolve algoritmos complexos sozinho; quebre em partes.

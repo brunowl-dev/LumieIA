@@ -1,0 +1,34 @@
+# Configuração do nginx do Lumie. É um "template": ao subir o container, a imagem
+# oficial do nginx troca ${BACKEND_PORT} pelo valor da variável de ambiente.
+server {
+    # Porta dentro do container; o compose publica como FRONTEND_PORT no seu computador.
+    listen 80;
+
+    # Arquivos estáticos gerados pelo "npm run build" (copiados no Dockerfile).
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Tamanho máximo do upload aceito pelo nginx. Precisa ser MAIOR que UPLOAD_MAX_MB:
+    # quem recusa arquivo grande com a mensagem do contrato (ARQUIVO_MUITO_GRANDE)
+    # é o backend; se o nginx barrar antes, o front recebe um erro 413 genérico.
+    client_max_body_size 20m;
+
+    # Proxy: tudo que começa com /api/ é repassado ao backend pela rede interna do
+    # Docker, usando o NOME do serviço ("backend"). Para o navegador, front e API
+    # têm a mesma origem (localhost:FRONTEND_PORT), então não existe CORS.
+    location /api/ {
+        proxy_pass http://backend:${BACKEND_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # A resposta pode demorar: cada analito chama o modelo na nuvem e pode ser
+        # regenerado (OLLAMA_TIMEOUT_MS x tentativas). O padrão do nginx (60 s)
+        # cortaria a requisição no meio da demo.
+        proxy_read_timeout 300s;
+    }
+
+    # Qualquer outro caminho: devolve o arquivo se existir; senão, o index.html
+    # (o React decide o que mostrar).
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
