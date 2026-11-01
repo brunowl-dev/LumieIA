@@ -34,7 +34,7 @@
       "confianca": 0.94
     },
     {
-      "id_canonico": null,
+      "id_canonico": "hemoglobina",
       "nome_no_laudo": "Hemoglobina",
       "valor": 14.2,
       "unidade": "g/dL",
@@ -42,6 +42,16 @@
       "classificacao": "dentro",
       "alerta_critico": false,
       "confianca": 0.93
+    },
+    {
+      "id_canonico": null,
+      "nome_no_laudo": "Ureia",
+      "valor": 32,
+      "unidade": "mg/dL",
+      "faixa_referencia": { "minimo": 15, "maximo": 45, "texto_original": "15 a 45 mg/dL" },
+      "classificacao": "dentro",
+      "alerta_critico": false,
+      "confianca": 0.94
     }
   ]
 }

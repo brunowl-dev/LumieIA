@@ -18,6 +18,13 @@ Etapas, nesta ordem, cada uma testável isoladamente:
 - Analito sem ficha na base: `id_canonico: null`, classificado normalmente pela faixa do laudo, `alerta_critico: false` (não há limite para ele). Não é erro do laudo inteiro.
 - Um mesmo `id_canonico` aparece no máximo uma vez por laudo (é a chave da explicação e do chat).
 - A faixa de referência é SEMPRE a que está no laudo. Não use faixa "padrão" do código.
+- Fronteiras da faixa (sentido literal do texto impresso; compara o número como impresso, vírgula → ponto, sem arredondar):
+  - "X a Y": limites INCLUSIVOS. `v < X` → abaixo; `v > Y` → acima; senão dentro (70 e 99 em "70 a 99" estão dentro).
+  - "Inferior a Y" / "Menor que Y": `v ≥ Y` → acima (190 em "Inferior a 190" é acima).
+  - "Superior a X" / "Maior que X": `v ≤ X` → abaixo.
+  - "Até Y" / "Menor ou igual a Y": `v > Y` → acima.
+  - Formato de faixa não reconhecido → não chutar: tratar como baixa confiança daquele item.
+  - Casos de teste: `samples/laudos/glicose_limite.pdf` (99 → dentro) e `colesterol_total_limite.pdf` (190 → acima).
 - Valores com vírgula decimal (ex.: `1,8`) e unidades variadas são casos reais de laudo: tratar e testar.
 - OCR no Docker: `tesseract.js` baixa o idioma (`por`) na primeira execução. Para não depender de internet na apresentação, deixe o arquivo de idioma disponível localmente (volume ou cópia na imagem).
 - Prioridade: PDF digital (P0). OCR é P1 — se faltar tempo, é o primeiro corte; avise o grupo cedo, porque o artigo descreve OCR.

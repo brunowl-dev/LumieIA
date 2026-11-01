@@ -3,7 +3,7 @@
   "id_laudo": "sintetico-varios-exames",
   "id_canonico": "glicose",
   "explicacao": {
-    "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer.",
+    "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Em geral é feito em jejum, para mostrar o nível de açúcar sem a influência da última refeição. Ajuda a acompanhar como o corpo controla o açúcar no sangue.",
     "valor_e_posicao": "Seu resultado foi 118 mg/dL. A faixa de referência do seu laudo é de 70 a 99 mg/dL, então o valor está acima da faixa.",
     "significado": "Leve este resultado a um profissional de saúde, que poderá avaliá-lo junto com o seu histórico.",
     "especialidade": "Endocrinologia",

@@ -9,11 +9,11 @@
 
 ## Tarefas em comum (GRP)
 
-- [ ] **GRP-01 (P0)** Ler e aprovar o `docs/contrato.md` (gerado pelo Claude). Resolver as "Decisões em aberto" no fim dele e preencher "Congelado em".
-- [ ] **GRP-02 (P0)** Confirmar os exames do protótipo: glicose + colesterol total, creatinina e TSH (proposta). A escolha define laudos, regras, base e telas.
-- [ ] **GRP-03 (P1)** Manter `docs/artigo-vs-prototipo.md` atualizado. O artigo já foi enviado: se o protótipo divergir, precisamos saber explicar.
+- [X] **GRP-01 (P0)** Ler e aprovar o `docs/contrato.md` (gerado pelo Claude). Resolver as "Decisões em aberto" no fim dele e preencher "Congelado em".
+- [X] **GRP-02 (P0)** Confirmar os exames do protótipo: glicose, colesterol total, creatinina, TSH e hemoglobina (tabela "Exames do protótipo" abaixo). Outros só se acabarem sendo gerados, de preferência seguindo os especificados. A escolha define laudos, regras, base e telas.
+- [x] **GRP-03 (P1)** Manter `docs/artigo-vs-prototipo.md` atualizado. O artigo já foi enviado: se o protótipo divergir, precisamos saber explicar.
 - [ ] **GRP-04 (P1)** Roteiro da apresentação e plano B em vídeo gravado (a demo depende de internet por causa do modelo na nuvem).
-- [ ] **GRP-05 (P0)** Criar `Dockerfile` do front, do back e o `docker-compose.yml`, seguindo `docs/docker.md`. Responsável: [DEFINIR — quem tiver mais familiaridade com Docker]. Só dá para fechar quando cada serviço tiver o seu `package.json`.
+- [x] **GRP-05 (P0)** Criar `Dockerfile` do front, do back e o `docker-compose.yml`, seguindo `docs/docker.md`. Responsável: [DEFINIR — quem tiver mais familiaridade com Docker]. Só dá para fechar quando cada serviço tiver o seu `package.json`.
 - [ ] **GRP-06 (P0)** Isadora e Aguiar: preencher o "Modo de trabalho" no `CLAUDE.md` da sua pasta.
 
 ---
@@ -38,7 +38,7 @@
 - RNF-B5: chaves de API fora do repositório (`.env`).
 
 **Tarefas**
-- [ ] **BWL-01 (P0)** Laudos sintéticos em PDF (Word ou IA, exportados), com paciente FICTÍCIO, em `samples/laudos/`. Para cada exame: normal, acima e abaixo da faixa (tabela abaixo). Mais uma versão "foto" (imagem) para o OCR.
+- [x] **BWL-01 (P0)** Laudos sintéticos em PDF, com paciente FICTÍCIO, em `samples/laudos/`. Para cada exame: normal, acima e abaixo da faixa (tabela abaixo), em dois layouts, mais versões "foto" para o OCR e `gabarito.json` (resposta esperada). Detalhes em `samples/laudos/README.md`.
 - [ ] **BWL-02 (P0)** Extração de texto do PDF digital, testada isolada.
 - [ ] **BWL-03 (P0)** Estruturação por analito (nome, valor, unidade, faixa), testada isolada. Atenção a vírgula decimal.
 - [ ] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
@@ -102,8 +102,9 @@
 
 **Tarefas — base de conhecimento**
 - [ ] **MAG-05 (P0)** Com o grupo, confirmar a lista de exames e os nomes como aparecem nos laudos de `samples/laudos/`.
-- [ ] **MAG-06 (P0)** Ficha de `glicose` (já há um texto-modelo: leia, confira a fonte, ajuste).
-- [ ] **MAG-07 (P0)** Fichas de `colesterol_total`, `creatinina` e `tsh`.
+- [ ] **MAG-06 (P0)** Ficha de `glicose`: leia, confira a fonte, ajuste.
+- [ ] **MAG-07 (P0)** Fichas de `colesterol_total`, `creatinina`, `tsh` e `hemoglobina`.
+  > Todas as fichas já foram preenchidas pelo Claude (texto baseado em fontes brasileiras: Ministério da Saúde/BVS, SES-DF, Hemoes, SBD e SBEM; especialidade escolhida pela área do órgão avaliado), com `status: "pendente"`. Falta a revisão humana (MAG-08) e marcar `pronto` (MAG-09). Enquanto estiverem `pendente`, o sistema trata o exame como sem ficha (sem botão de explicação).
 - [ ] **MAG-08 (P0)** Conferir as fontes e pedir revisão do texto a alguém. O artigo prevê revisão por profissionais de saúde como trabalho futuro, ou seja, **ainda não houve**: não afirmar que foi validado.
 - [ ] **MAG-09 (P0)** Validar o `exames.json` (JSON sem erro) e marcar `status: "pronto"` em cada ficha concluída.
 
@@ -112,22 +113,24 @@ O modelo de IA já sabe, em geral, o que é glicose. A base **não é para ensin
 
 Você escreve **uma ficha por exame** em `docs/base-conhecimento/exames.json`, com: nomes alternativos (como o exame aparece nos laudos), o que o exame avalia (1 a 3 frases, linguagem simples), **uma** especialidade, a fonte e o status. **Não escreva** valores de referência (vêm do laudo), diagnóstico, remédio ou palavras como "preocupante". Instruções completas e exemplos de nomes em `docs/base-conhecimento/README.md`.
 
-### Exames do protótipo (proposta — GRP-02)
-| `id_canonico` | Nomes que costumam aparecer | Unidade | Faixa de exemplo* | Especialidade sugerida |
+### Exames do protótipo (definidos — GRP-02)
+| `id_canonico` | Nome nos laudos de `samples/laudos/` | Unidade | Faixa impressa nos laudos* | Especialidade (base) |
 |---|---|---|---|---|
-| `glicose` | Glicose, Glicemia, Glicemia de jejum | mg/dL | 70 a 99 | Endocrinologia |
-| `colesterol_total` | Colesterol total | mg/dL | abaixo de 190 | Cardiologia |
-| `creatinina` | Creatinina, Creatinina sérica | mg/dL | 0,6 a 1,3 (varia por sexo) | Nefrologia |
-| `tsh` | TSH, TSH ultrassensível | mUI/L | 0,4 a 4,0 | Endocrinologia |
+| `glicose` | Glicose em jejum | mg/dL | 70 a 99 | Endocrinologia |
+| `colesterol_total` | Colesterol total | mg/dL | Inferior a 190 | Cardiologia |
+| `creatinina` | Creatinina | mg/dL | 0,6 a 1,3 | Nefrologia |
+| `tsh` | TSH | µUI/mL (= mUI/L) | 0,45 a 4,50 | Endocrinologia |
+| `hemoglobina` | Hemoglobina | g/dL | 12,0 a 16,0 | Hematologia |
 
-\* Só para entender a ordem de grandeza e criar os laudos. Cada laboratório define a sua faixa; o sistema sempre usa a do laudo. Especialidade sugerida é ponto de partida: confira na fonte.
+\* Faixas ILUSTRATIVAS, só para criar os laudos de teste. Cada laboratório define a sua faixa; o sistema sempre usa a do laudo. Outros nomes de cada exame estão em `nomes_alternativos` de `docs/base-conhecimento/exames.json`.
 
-### Valores sugeridos para os laudos sintéticos (BWL-01)
-| Exame | Normal | Acima | Abaixo |
-|---|---|---|---|
-| `glicose` (mg/dL) | 88 | 118 | 62 (e 42 para o caso crítico ilustrativo) |
-| `colesterol_total` (mg/dL) | 165 | 245 | — (não se aplica) |
-| `creatinina` (mg/dL) | 0,9 | 1,8 | 0,3 |
-| `tsh` (mUI/L) | 2,1 | 8,5 | 0,1 |
+### Valores usados nos laudos sintéticos (BWL-01)
+| Exame | Normal | Acima | Abaixo | Outros |
+|---|---|---|---|---|
+| `glicose` (mg/dL) | 88 | 118 | 62 | crítico 486 e 38; fronteira 99 |
+| `colesterol_total` (mg/dL) | 172 | 238 | — (não se aplica) | fronteira 190 |
+| `creatinina` (mg/dL) | 0,9 | 1,8 | 0,3 | |
+| `tsh` (µUI/mL) | 2,35 | 7,80 | 0,12 | |
+| `hemoglobina` (g/dL) | 13,8 | 17,2 | 10,4 | |
 
-Valores **fictícios**. Os limites críticos reais precisam de fonte (BWL-05); por isso só a glicose tem um caso crítico ilustrativo em `samples/`.
+Valores **fictícios**; a lista exata por arquivo está em `samples/laudos/gabarito.json`. Os JSONs de `samples/*.json` usam outros valores de propósito (servem para testar a IA, não o parser). Os limites críticos reais precisam de fonte (BWL-05); os casos críticos de glicose em `samples/` são ilustrativos.

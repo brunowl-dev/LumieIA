@@ -36,11 +36,22 @@
       "explicacao_disponivel": true
     },
     {
-      "id_canonico": null,
+      "id_canonico": "hemoglobina",
       "nome": "Hemoglobina",
       "valor": 14.2,
       "unidade": "g/dL",
       "faixa_referencia": { "minimo": 12.0, "maximo": 16.0, "texto_original": "12,0 a 16,0 g/dL" },
+      "classificacao": "dentro",
+      "cor": "verde",
+      "alerta_prioritario": false,
+      "explicacao_disponivel": true
+    },
+    {
+      "id_canonico": null,
+      "nome": "Ureia",
+      "valor": 32,
+      "unidade": "mg/dL",
+      "faixa_referencia": { "minimo": 15, "maximo": 45, "texto_original": "15 a 45 mg/dL" },
       "classificacao": "dentro",
       "cor": "verde",
       "alerta_prioritario": false,

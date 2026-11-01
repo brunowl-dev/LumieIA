@@ -145,7 +145,7 @@ Formato: `{"status":"erro","erro":{"codigo":"...","mensagem_usuario":"..."}}`. `
 | `ARQUIVO_ILEGIVEL` | 1 | não foi possível extrair texto | pedir novo envio (foto mais nítida) |
 | `BAIXA_CONFIANCA` | 1 | extração abaixo do mínimo | pedir novo envio |
 | `EXAME_NAO_ENCONTRADO` | 2, 3 | `id_canonico` que não está no laudo ou não tem ficha (o front não deveria chamar, pois o botão não aparece) | voltar à tela de exames |
-| `MODELO_INDISPONIVEL` | 2, 3 | usar mensagem padrão: "Estamos indisponíveis no momento" |
+| `MODELO_INDISPONIVEL` | 2, 3 | modelo fora do ar ou sem resposta dentro de `OLLAMA_TIMEOUT_MS` | usar mensagem padrão: "Estamos indisponíveis no momento" |
 | `SESSAO_EXPIRADA` | 2, 3 | `id_laudo` expirado | pedir novo envio do laudo |
 
 Ausência de ficha **não** é erro da porta 1: o laudo volta com `status: "ok"` e o item com `explicacao_disponivel: false`.
@@ -156,7 +156,7 @@ Ausência de ficha **não** é erro da porta 1: o laudo volta com `status: "ok"`
 - A segurança só **avalia**: devolve aprovado/reprovado + motivo. Ela não chama a IA.
 - Quem faz o laço é o **orquestrador**: reprovou → pede nova resposta à IA (com o motivo), até `MAX_REGENERACOES`. Esgotou → **mensagem padrão**, montada sem o modelo, e `origem_texto` passa a `"mensagem_padrao"`:
   - explicação: finalidade e especialidade da base + valor e posição do pipeline + aviso fixo;
-  - chat: "Não consegui responder essa dúvida com segurança. Converse com um profissional de saúde." + aviso fixo.
+  - chat: "Não consegui responder essa dúvida com segurança. Converse com um profissional de saúde." + especialidade da base + aviso fixo.
 
 ## 9. Aviso padrão
 Texto de referência: "Esta explicação é informativa e não substitui a avaliação de um profissional de saúde."
@@ -167,5 +167,5 @@ A IA deve incluí-lo na parte 5 (explicação) e ao fim de cada resposta do chat
 - [ ] As portas e o comportamento do chat (seção 6).
 - [ ] Mapeamento de cores (seção 5.1).
 - [ ] `MODELO_INDISPONIVEL`: erro ou mensagem padrão?
-- [ ] Lista final de exames além da glicose (GRP-02).
+- [x] Lista final de exames (GRP-02): `glicose`, `colesterol_total`, `creatinina`, `tsh`, `hemoglobina`.
 - [ ] Texto final do aviso padrão e da mensagem padrão do chat.
