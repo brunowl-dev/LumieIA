@@ -16,7 +16,10 @@
 | `foto_glicose_acima.jpg` | Foto simulada de `glicose_acima.pdf` (rotação, sombra, ruído, JPEG). Legível. Para OCR. |
 | `foto_painel_misto.jpg` | Foto simulada de `painel_misto_layoutA.pdf`. Legível. Para OCR. |
 | `foto_borrada.jpg` | Foto de `glicose_acima.pdf` com desfoque forte, de propósito: deve cair em "baixa confiança, envie novamente". |
+| `digitalizado_sem_texto.pdf` | PDF só de imagem (`foto_glicose_acima.jpg` reduzida, convertida com ImageMagick), sem camada de texto: a extração devolve `temCamadaDeTexto: false` (BWL-02). Fora do gabarito. |
+| `laudo_protegido.pdf` | `glicose_normal.pdf` criptografado com qpdf (AES-256). Senha de abertura sintética: `lumie-teste-123`. Testa `PDF_PROTEGIDO` / `SENHA_INCORRETA` (BWL-02). Fora do gabarito. |
 | `gabarito.json` | Resposta esperada para cada arquivo. |
+| `texto_extraido/` | **Derivada**, não editar à mão: texto de cada PDF digital do gabarito produzido pelo extrator (BWL-02); entrada dos testes da BWL-03. Regenerar em `backend/` com `npm run gerar:texto-extraido`. |
 
 ## Detalhes que o parser precisa tratar
 - Vírgula decimal como impressa: `13,8`, `0,45`, `7,80`.

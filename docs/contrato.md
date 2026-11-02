@@ -67,6 +67,30 @@ Cada item de `analitos`:
 
 **Falhas:** arquivo ilegível ou confiança abaixo do mínimo → o pipeline não devolve laudo; devolve erro (seção 7).
 
+### 2.1 Etapa interna: extração de texto do PDF digital (BWL-02)
+Uso interno do pipeline; não sai para o front nem para o modelo. `backend/src/pipeline/extrairTextoPdf.js`:
+
+`extrairTextoPdf(buffer, { senha? })` → `{ texto, numPaginas, caracteresUteis, temCamadaDeTexto }`
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `texto` | texto | Texto do PDF (pdf-parse v2), quebras de linha normalizadas para `\n`, sem outra limpeza. Contém dados do paciente: nunca registrar em log nem enviar ao modelo |
+| `numPaginas` | número | Páginas do PDF |
+| `caracteresUteis` | número | Caracteres não-espaço de `texto` |
+| `temCamadaDeTexto` | verdadeiro/falso | `false` se `caracteresUteis` < `LIMIAR_CARACTERES_UTEIS` (50): PDF só de imagem, candidato ao OCR |
+
+Erros: `ErroExtracaoPdf` com `codigo` estável. São códigos **internos**; o orquestrador traduz para a seção 7.
+
+| `codigo` | Quando | Tradução sugerida (seção 7) |
+|---|---|---|
+| `ARQUIVO_VAZIO` | 0 bytes | `ARQUIVO_ILEGIVEL` |
+| `ARQUIVO_NAO_E_PDF` | sem `%PDF-` nos primeiros 1024 bytes (JPG, bytes aleatórios) | imagem → OCR; senão `FORMATO_NAO_SUPORTADO` |
+| `PDF_CORROMPIDO` | o pdf-parse não consegue ler (ex.: arquivo truncado) | `ARQUIVO_ILEGIVEL` |
+| `PDF_PROTEGIDO` | PDF com senha e nenhuma senha informada | **[A CONFIRMAR no grupo]** pedir a senha |
+| `SENHA_INCORRETA` | senha informada não abre o PDF | **[A CONFIRMAR no grupo]** pedir a senha de novo |
+
+PDF com senha (proposta, depende de mudança na seção 7, na porta 1 e no front): o sistema pede a senha com mensagem FIXA ("Mande uma mensagem apenas contendo a senha do documento."), sem o modelo. A senha só abre o arquivo em memória: nunca vai para o modelo, log ou sessão.
+
 ## 3. Base de conhecimento → IA e Segurança
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
 

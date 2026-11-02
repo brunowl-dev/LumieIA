@@ -7,6 +7,8 @@ O artigo já foi enviado e não pode mudar. Esta tabela lista o que o protótipo
 | Modelo de linguagem | Família GPT (OpenAI) via API | gpt-oss via Ollama Cloud | Divergência. Argumento: custo e ausência de máquina local para rodar modelo aberto. Verificar se a justificativa convence |
 | RAG | Base de conhecimento da equipe alimenta o modelo | Busca por chave (identificador do exame) na base, sem busca vetorial | Compatível: recupera conhecimento e injeta no prompt. Com poucos exames não há ganho em busca vetorial; entra se a base crescer |
 | Classificação | Regras determinísticas | Regras determinísticas | Igual ao artigo |
+| Leitura do PDF digital | pdf-parse | pdf-parse v2 (por cima do pdf.js da Mozilla), com a normalização Unicode desligada para preservar caracteres como o `µ` | Igual ao artigo |
+| PDF protegido por senha | Não descrito | Proposta (BWL-02 já distingue "sem senha" de "senha incorreta"): o sistema pede a senha com mensagem fixa, sem o modelo; a senha só abre o arquivo e não é guardada | Extensão do protótipo. A senha nunca vai ao modelo, coerente com a pseudonimização. Rota e tela dependem do grupo |
 | OCR | Tesseract.js | P1: pode não estar pronto | Se não ficar pronto, é afirmação sem sustentação no protótipo: apresentar como previsto |
 | Camada de segurança | Aviso, especialidade conferida com a base, termos de diagnóstico/prescrição | Igual; acrescenta veredito (ex.: "preocupante") à lista de termos | Igual ao artigo, com lista ampliada |
 | Pseudonimização | Dados enviados ao modelo pseudonimizados | O modelo recebe só dados estruturados, sem identificadores | Igual, e mais restritivo (nem texto bruto vai ao modelo) |
