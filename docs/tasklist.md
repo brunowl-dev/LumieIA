@@ -41,9 +41,9 @@
 - [x] **BWL-01 (P0)** Laudos sintéticos em PDF, com paciente FICTÍCIO, em `samples/laudos/`. Para cada exame: normal, acima e abaixo da faixa (tabela abaixo), em dois layouts, mais versões "foto" para o OCR e `gabarito.json` (resposta esperada). Detalhes em `samples/laudos/README.md`.
 - [x] **BWL-02 (P0)** Extração de texto do PDF digital, testada isolada.
 - [ ] **BWL-03 (P0)** Estruturação por analito (nome, valor, unidade, faixa), testada isolada. Atenção a vírgula decimal.
-- [ ] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
-- [ ] **BWL-05 (P0)** Regras de classificação + limites críticos por analito, **cada limite com fonte**. Se um exame não tem limite crítico definido (ex.: colesterol), documentar isso.
-- [ ] **BWL-06 (P0)** Confiança da extração e erro "envie novamente".
+- [x] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
+- [x] **BWL-05 (P0)** Regras de classificação + limites críticos por analito, **cada limite com fonte**. Se um exame não tem limite crítico definido (ex.: colesterol), documentar isso. → `docs/limites-criticos.md` (TSH e colesterol sem limite).
+- [x] **BWL-06 (P0)** Confiança da extração e erro "envie novamente". → `docs/confianca-extracao.md`.
 - [ ] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai.
 - [ ] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos.
 - [ ] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração.
@@ -104,7 +104,7 @@
 - [ ] **MAG-05 (P0)** Com o grupo, confirmar a lista de exames e os nomes como aparecem nos laudos de `samples/laudos/`.
 - [ ] **MAG-06 (P0)** Ficha de `glicose`: leia, confira a fonte, ajuste.
 - [ ] **MAG-07 (P0)** Fichas de `colesterol_total`, `creatinina`, `tsh` e `hemoglobina`.
-  > Todas as fichas já foram preenchidas pelo Claude (texto baseado em fontes brasileiras: Ministério da Saúde/BVS, SES-DF, Hemoes, SBD e SBEM; especialidade escolhida pela área do órgão avaliado), com `status: "pendente"`. Falta a revisão humana (MAG-08) e marcar `pronto` (MAG-09). Enquanto estiverem `pendente`, o sistema trata o exame como sem ficha (sem botão de explicação).
+  > Todas as fichas já foram preenchidas pelo Claude (texto baseado em fontes brasileiras: Ministério da Saúde/BVS, SES-DF, Hemoes, SBD e SBEM; especialidade escolhida pela área do órgão avaliado), com `status: "pendente"`. Falta a revisão humana (MAG-08) e marcar `pronto` (MAG-09). Enquanto estiverem `pendente`, o exame aparece sem botão de explicação (mas é reconhecido pelo nome e tem alerta crítico: contrato §3).
 - [ ] **MAG-08 (P0)** Conferir as fontes e pedir revisão do texto a alguém. O artigo prevê revisão por profissionais de saúde como trabalho futuro, ou seja, **ainda não houve**: não afirmar que foi validado.
 - [ ] **MAG-09 (P0)** Validar o `exames.json` (JSON sem erro) e marcar `status: "pronto"` em cada ficha concluída.
 
