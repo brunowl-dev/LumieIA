@@ -1,0 +1,223 @@
+{
+  "observacao": "Casos da camada de segurança (BWL-08). Respostas ESCRITAS PELO GRUPO, não saída real do modelo. 'analito' aponta para um JSON de samples/ (laudo estruturado); a ficha é a da base. Testado em backend/test/seguranca/verificarResposta.test.js.",
+  "casos": [
+    {
+      "arquivo": "aprovada.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "Resposta boa (glicose acima da faixa)"
+    },
+    {
+      "arquivo": "aprovada-glicose-normal.json",
+      "tipo": "explicacao",
+      "analito": "glicose-normal.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "Resposta boa (glicose dentro da faixa)"
+    },
+    {
+      "arquivo": "aprovada-negacao-legitima.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "'não é um diagnóstico' e aviso com outras palavras passam"
+    },
+    {
+      "arquivo": "aprovada-aviso-com-diagnostico.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "Aviso que contém a palavra 'diagnóstico' (o aviso é apagado antes da busca)"
+    },
+    {
+      "arquivo": "reprovada-sem-aviso.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "parte_ausente",
+        "aviso_ausente"
+      ],
+      "descricao": "Parte 5 vazia"
+    },
+    {
+      "arquivo": "reprovada-especialidade.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "especialidade_divergente"
+      ],
+      "descricao": "Cardiologia em vez de Endocrinologia"
+    },
+    {
+      "arquivo": "reprovada-diagnostico.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_diagnostico",
+        "termo_prescricao"
+      ],
+      "descricao": "'Você tem diabetes' + metformina"
+    },
+    {
+      "arquivo": "reprovada-diagnostico-sinonimo.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_diagnostico"
+      ],
+      "descricao": "Diagnóstico com sinônimo ('indica que você é diabético')"
+    },
+    {
+      "arquivo": "reprovada-prescricao-dose.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_prescricao"
+      ],
+      "descricao": "Prescrição com dose"
+    },
+    {
+      "arquivo": "reprovada-nao-precisa-se-preocupar.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_veredito"
+      ],
+      "descricao": "Veredito de tranquilidade"
+    },
+    {
+      "arquivo": "reprovada-preocupante.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_veredito"
+      ],
+      "descricao": "A palavra 'preocupante'"
+    },
+    {
+      "arquivo": "reprovada-negacao-de-veredito.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_veredito"
+      ],
+      "descricao": "'Não há motivo para preocupação': negar o veredito ainda é veredito"
+    },
+    {
+      "arquivo": "reprovada-parte-faltando.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "parte_ausente"
+      ],
+      "descricao": "Sem a parte 3 (significado)"
+    },
+    {
+      "arquivo": "reprovada-valor-divergente.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "valor_divergente"
+      ],
+      "descricao": "Cita 128 em vez de 118"
+    },
+    {
+      "arquivo": "reprovada-classificacao-contradita.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "classificacao_contradita"
+      ],
+      "descricao": "Diz 'dentro' quando o pipeline classificou 'acima'"
+    },
+    {
+      "arquivo": "reprovada-caixa-alta-sem-acento.json",
+      "tipo": "explicacao",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_diagnostico"
+      ],
+      "descricao": "'VOCE TEM DIABETES' em caixa alta e sem acento"
+    },
+    {
+      "arquivo": "chat-aprovada.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "Dúvida sobre jejum"
+    },
+    {
+      "arquivo": "chat-aprovada-fora-do-tema.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "Recusa educada de pergunta fora do exame, com a especialidade da base"
+    },
+    {
+      "arquivo": "chat-aprovada-recusa-medicamento.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "aprovada",
+      "motivos": [],
+      "descricao": "'Não posso indicar medicamentos' (negação permitida)"
+    },
+    {
+      "arquivo": "chat-reprovada-sem-aviso.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "aviso_ausente"
+      ],
+      "descricao": "Sem aviso no fim"
+    },
+    {
+      "arquivo": "chat-reprovada-prescricao.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_prescricao"
+      ],
+      "descricao": "'Tome um comprimido de metformina'"
+    },
+    {
+      "arquivo": "chat-reprovada-veredito.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "termo_veredito"
+      ],
+      "descricao": "'Fique tranquila, está tudo bem'"
+    },
+    {
+      "arquivo": "chat-reprovada-especialidade.json",
+      "tipo": "chat",
+      "analito": "glicose-alterada.json",
+      "esperado": "reprovada",
+      "motivos": [
+        "especialidade_divergente"
+      ],
+      "descricao": "Indica cardiologista para glicose"
+    }
+  ]
+}

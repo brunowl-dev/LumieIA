@@ -3,6 +3,10 @@
 Leia antes: `../../../CLAUDE.md`, `../../CLAUDE.md` e `../../../docs/contrato.md` (seções "IA → Segurança" e "Regras de segurança").
 
 ## Escopo desta pasta
+Proteger o que entra e o que sai do modelo:
+- **Entrada (BWL-07):** `pseudonimizar.js` (lista de permissão + varredura de texto livre) e `registrarEvento.js` (log só com códigos e números). Doc: `docs/pseudonimizacao.md`.
+- **Saída (BWL-08):** `verificarResposta.js`, `termosProibidos.json`, `mensagemPadrao.js`. Doc com as 7 verificações + estrutura e os códigos de motivo: `docs/seguranca-verificacoes.md`.
+
 Verificar a resposta do modelo ANTES de ela chegar ao paciente. É código determinístico, sem modelo de linguagem. Vale para a explicação (1ª mensagem do chat) e para cada resposta do chat.
 
 Verificações da **explicação** (5 partes):
