@@ -44,7 +44,7 @@ O log de inicialização do backend mostra `OCR por: encontrado` / `OCR eng: enc
 ## Uploads e LGPD
 - `/app/uploads` é um **tmpfs** (memória RAM, 50 MB): nada vai para o disco e tudo some quando o container para.
 - Mesmo assim, o código deve **apagar o arquivo logo após extrair o texto** (`backend/src/api/CLAUDE.md`). Melhor ainda: processar o upload em memória (Buffer), sem gravar arquivo nenhum.
-- Só o laudo estruturado e pseudonimizado fica na sessão em memória, com expiração (`SESSION_TTL_MINUTES`).
+- Na sessão em memória ficam o laudo estruturado, o histórico do chat (já pseudonimizado) e, só como lista do que apagar do chat, os identificadores do cabeçalho com o mapa de substituição. Tudo some com a expiração (`SESSION_TTL_MINUTES`) e nada disso vai para disco, IA, front ou log (`docs/pseudonimizacao.md`).
 
 ## Pontos de atenção
 - **Internet na apresentação:** o modelo é na nuvem, então a demo precisa de rede. Plano B: vídeo gravado (GRP-04).

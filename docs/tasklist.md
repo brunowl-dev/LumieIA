@@ -44,9 +44,9 @@
 - [x] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
 - [x] **BWL-05 (P0)** Regras de classificação + limites críticos por analito, **cada limite com fonte**. Se um exame não tem limite crítico definido (ex.: colesterol), documentar isso. → `docs/limites-criticos.md` (TSH e colesterol sem limite).
 - [x] **BWL-06 (P0)** Confiança da extração e erro "envie novamente". → `docs/confianca-extracao.md`.
-- [ ] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai.
-- [ ] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos.
-- [ ] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração.
+- [x] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai. → `docs/pseudonimizacao.md` (prova sobre a ENTRADA da IA; o pacote final ao Ollama depende da ISA).
+- [x] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos. → `docs/seguranca-verificacoes.md` (testada só com respostas escritas pelo grupo).
+- [x] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração. → com **IA falsa**; trocar o cliente em `backend/src/server.js` quando a ISA entregar.
 - [ ] **BWL-10 (P1)** OCR com Tesseract.js. Se apertar, é o primeiro corte — mas o artigo descreve OCR, então avise o grupo cedo.
 - [ ] **BWL-11 (P2)** Lembrete de medicação.
 
@@ -56,7 +56,7 @@
 
 **Requisitos funcionais**
 - RF-I1: gerar a explicação sempre nas 5 partes e na ordem: (1) o que o exame avalia; (2) valor e posição na faixa; (3) significado sem afirmar doença; (4) especialidade; (5) aviso.
-- RF-I2: buscar a ficha do exame na base e injetá-la no prompt (RAG); em divergência, a base prevalece.
+- RF-I2: injetar no prompt a ficha do exame (RAG: o orquestrador busca a ficha pelo `id_canonico` e a entrega pronta); em divergência, a base prevalece.
 - RF-I3: responder no chat apenas sobre aquele exame (a explicação é a 1ª mensagem do chat), sem memória entre sessões.
 - RF-I4: aceitar o motivo da reprovação da segurança numa nova tentativa (quem decide tentar de novo é o orquestrador).
 
@@ -66,10 +66,10 @@
 - RNF-I3: prompt versionado e documentado.
 - RNF-I4: resposta em tempo aceitável para a demo.
 
-**Tarefas**
+**Tarefas** — roteiro passo a passo, arquivos e critérios de pronto em `backend/src/ia/CLAUDE.md`; interface no contrato §4; testes de aceitação em `backend/test/ia/clienteIa.test.js` (tirar o `todo` de cada um); medições em `docs/ia-resultados.md`.
 - [ ] **ISA-01 (P0)** Acesso ao modelo (Ollama Cloud, `gpt-oss`) com uma chamada simples isolada. Verificar se o modelo está disponível na conta e quais são os limites do plano gratuito.
 - [ ] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
-- [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt.
+- [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.
 - [ ] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
 - [ ] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
 - [ ] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.

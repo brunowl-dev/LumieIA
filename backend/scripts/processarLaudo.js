@@ -12,7 +12,11 @@ if (!arquivo) {
 }
 
 try {
-  const resultado = await processarLaudoPdf(readFileSync(arquivo), { senha, idLaudo: 'demonstracao' });
+  // Os identificadores do paciente (BWL-07) NÃO são impressos: só se mostra quais foram achados.
+  const { identificadores, ...resultado } = await processarLaudoPdf(readFileSync(arquivo), { senha, idLaudo: 'demonstracao' });
+  if (identificadores) {
+    resultado.identificadores_encontrados = Object.keys(identificadores).filter((campo) => identificadores[campo] !== null);
+  }
   console.log(JSON.stringify(resultado, null, 2));
 } catch (erro) {
   // Erros da BWL-02 (vazio, não é PDF, protegido): só o código, nunca o conteúdo.

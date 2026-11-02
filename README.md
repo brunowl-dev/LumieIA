@@ -10,7 +10,7 @@ frontend/                      React (Aguiar)
 backend/src/api/               rotas + orquestrador (Bruno)
 backend/src/pipeline/          extração, estruturação, classificação (Bruno)
 backend/src/seguranca/         camada de segurança (Bruno)
-backend/src/ia/                modelo, prompt, RAG, chat (Isadora)
+backend/src/ia/                modelo, prompts, chat (Isadora)
 docs/contrato.md               formato dos dados entre as partes
 docs/tasklist.md               tarefas e requisitos por pessoa
 docs/artigo-vs-prototipo.md    onde o protótipo difere do artigo

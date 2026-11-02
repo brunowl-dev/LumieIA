@@ -1,10 +1,14 @@
 // Pipeline completo do momento 1 (envio do laudo, sem IA):
 // texto → analitos (BWL-03) → id_canonico (BWL-04) → confiança (BWL-06)
 // → classificação e alerta crítico (BWL-05) → laudo estruturado (contrato §2).
-// A saída é montada campo a campo (lista do que ENTRA): nada do texto bruto,
-// nem nao_interpretadas, nem dados do paciente. A prova formal disso é a BWL-07.
+// O laudo é montado campo a campo (lista do que ENTRA): nada do texto bruto,
+// nem nao_interpretadas, nem dados do paciente.
+// Os identificadores do cabeçalho (BWL-07) saem SEPARADOS do laudo, em
+// `identificadores`: o orquestrador os guarda só na sessão, como lista do que
+// apagar do chat. Nunca vão para a IA, o front ou os logs (docs/pseudonimizacao.md).
 import { randomUUID } from 'node:crypto';
 import { estruturarAnalitos } from './estruturarAnalitos.js';
+import { extrairIdentificadores } from './extrairIdentificadores.js';
 import { extrairTextoPdf } from './extrairTextoPdf.js';
 import { carregarIndiceDeNomes, normalizarNomeExame } from './normalizarNome.js';
 import { carregarLimitesCriticos, classificarAnalito, normalizarUnidade, unidadeCompativel } from './classificar.js';
@@ -36,7 +40,7 @@ export function carregarDadosDoPipeline() {
  * @param {{ origem?: 'pdf_digital'|'ocr', confiancaOcr?: number|null,
  *   indiceNomes?: Map, limites?: object, limiar?: number, limiarOcr?: number,
  *   idLaudo?: string }} [opcoes]
- * @returns {{ status: 'ok', laudo: object } | { status: 'erro', erro: object }}
+ * @returns {{ status: 'ok', laudo: object, identificadores: object } | { status: 'erro', erro: object }}
  */
 export function processarTextoLaudo(texto, opcoes = {}) {
   const {
@@ -107,6 +111,8 @@ export function processarTextoLaudo(texto, opcoes = {}) {
       linhas_nao_interpretadas: linhasNaoInterpretadas,
       aviso_usuario: temItemDeFora ? AVISO_ITENS_NAO_LIDOS : null,
     },
+    // FORA do laudo, de propósito (BWL-07).
+    identificadores: extrairIdentificadores(texto),
   };
 }
 

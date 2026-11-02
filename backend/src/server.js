@@ -1,34 +1,43 @@
-// Esqueleto mínimo do backend do Lumie: só existe para o Docker subir e o
-// healthcheck funcionar. As rotas do contrato (POST /api/laudos, /api/chat)
-// entram depois, em src/api/, e este arquivo passa a só iniciar o servidor.
+// Ponto de entrada do backend: monta as peças e sobe o servidor.
+// As rotas e a orquestração ficam em src/api/rotas.js; aqui só se escolhe O QUE
+// é ligado a quê, lendo a configuração do ambiente (src/api/config.js).
+//
+// IA: IA_FALSA=true (padrão) usa a IA falsa (src/api/iaFalsa.js); IA_FALSA=false
+// usa o modelo real (src/ia/index.js). Só o `cliente` muda; o adaptador é o mesmo.
 import { createServer } from 'node:http';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  CAMINHO_BASE_CONHECIMENTO, IA_FALSA, MAX_REGENERACOES, OLLAMA_TIMEOUT_MS, PORTA, SESSION_TTL_MINUTES, UPLOAD_MAX_MB,
+} from './api/config.js';
+import { carregarFichas, criarApp } from './api/rotas.js';
+import { criarSessoes } from './api/sessao.js';
+import { criarAdaptadorIa } from './api/adaptadorIa.js';
+import { criarIaFalsa } from './api/iaFalsa.js';
+import { criarClienteIa } from './ia/index.js';
+import { carregarDadosDoPipeline } from './pipeline/processarLaudo.js';
+import { registrarEvento } from './seguranca/registrarEvento.js';
 
-const PORT = Number(process.env.BACKEND_PORT) || 3001;
 // 0.0.0.0 = aceitar conexões de fora do container (localhost só aceitaria de dentro)
 const HOST = '0.0.0.0';
 
-function responderJson(res, status, corpo) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(corpo));
-}
+// Base e limites críticos são lidos JÁ na subida: arquivo malformado derruba o
+// servidor com mensagem clara, em vez de falhar no 1º laudo enviado.
+carregarDadosDoPipeline();
+const fichas = carregarFichas(CAMINHO_BASE_CONHECIMENTO);
 
-const server = createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/api/saude') {
-    return responderJson(res, 200, { status: 'ok' });
-  }
-  if (req.method === 'GET' && req.url === '/api') {
-    return responderJson(res, 200, { projeto: 'Lumie', modulo: 'IA', versao: '0.1.0' });
-  }
-  return responderJson(res, 404, {
-    status: 'erro',
-    erro: { codigo: 'ROTA_NAO_ENCONTRADA', mensagem_usuario: 'Endereço não encontrado.' },
-  });
-});
+const sessoes = criarSessoes({ ttlMs: SESSION_TTL_MINUTES * 60_000 });
+sessoes.iniciarLimpezaPeriodica();
 
-server.listen(PORT, HOST, () => {
-  console.log(`Lumie backend ouvindo em http://${HOST}:${PORT}`);
+const cliente = IA_FALSA ? criarIaFalsa() : criarClienteIa();
+const adaptador = criarAdaptadorIa({ cliente, timeoutMs: OLLAMA_TIMEOUT_MS });
+
+const app = criarApp({ sessoes, adaptador, fichas, maxRegeneracoes: MAX_REGENERACOES, uploadMaxMb: UPLOAD_MAX_MB });
+
+createServer(app).listen(PORTA, HOST, () => {
+  registrarEvento('SERVIDOR_INICIADO', { porta: PORTA });
+  const ia = IA_FALSA ? 'IA FALSA: o modelo não está ligado (IA_FALSA=false liga)' : 'IA real: Ollama Cloud';
+  console.log(`Lumie backend ouvindo em http://${HOST}:${PORTA} (${ia})`);
 
   // Confere se os dados de idioma do OCR vieram dentro da imagem (ver Dockerfile).
   const tessdata = process.env.TESSDATA_PATH;

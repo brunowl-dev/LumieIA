@@ -10,6 +10,10 @@ Leia antes: `../../../CLAUDE.md`, `../../CLAUDE.md` e `../../../docs/contrato.md
   3. `POST /api/chat`: busca o analito e o histórico do chat na sessão → IA → segurança → (laço de regeneração) → guarda a troca no histórico → devolve a resposta.
 - **O laço de regeneração mora aqui:** a segurança reprovou → chama a IA de novo passando o motivo, até `MAX_REGENERACOES`; esgotou → pede à segurança a mensagem padrão. Nem a IA nem a segurança fazem esse laço.
 
+## Onde está cada coisa (BWL-09)
+- `server.js` (em `src/`) monta as peças; `rotas.js` tem as 3 portas e a tradução de erros; `sessao.js` guarda a sessão em memória; `gerarComSeguranca.js` faz o laço de regeneração; `config.js` lê o `.env`.
+- `adaptadorIa.js` é o ÚNICO caminho até a IA: pseudonimiza a entrada (`montarEntradaIa`), aplica o tempo limite e converte erro em `MODELO_INDISPONIVEL`. O cliente é escolhido por `IA_FALSA` (`config.js`): `true` (padrão) = `iaFalsa.js`; `false` = `criarClienteIa()` de `src/ia/index.js`.
+
 ## Regras
 - Sem regra de negócio aqui: classificação fica no pipeline, validação e mensagem padrão na segurança, texto na IA. Esta pasta só liga as peças, decide a cor a partir de `classificacao`/`alerta_critico` (mapeamento do contrato) e traduz erros para o formato do contrato.
 - Validar o upload: tipo (PDF/imagem), tamanho (`UPLOAD_MAX_MB`). Não guardar o arquivo em disco além do necessário; apagar após o processamento.

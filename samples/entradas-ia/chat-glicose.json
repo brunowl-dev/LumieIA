@@ -1,0 +1,36 @@
+{
+  "analito": {
+    "id_canonico": "glicose",
+    "nome_no_laudo": "Glicose em jejum",
+    "valor": 118,
+    "unidade": "mg/dL",
+    "faixa_referencia": {
+      "minimo": 70,
+      "maximo": 99,
+      "minimo_inclusivo": true,
+      "maximo_inclusivo": true
+    },
+    "classificacao": "acima",
+    "alerta_critico": false
+  },
+  "ficha": {
+    "id_canonico": "glicose",
+    "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Na glicemia de jejum, a coleta é feita depois de 8 a 12 horas sem comer.",
+    "especialidade": "Endocrinologia"
+  },
+  "historico": [
+    {
+      "papel": "assistente",
+      "texto": "O exame mede a quantidade de açúcar (glicose) no sangue.\nSeu resultado foi 118 mg/dL. A faixa de referência do seu laudo é de 70 a 99 mg/dL, então o valor está acima da faixa.\nValores fora da faixa merecem atenção e costumam ser avaliados junto com outras informações.\nEndocrinologia\nEsta explicação é informativa e não substitui a avaliação de um profissional de saúde."
+    },
+    {
+      "papel": "paciente",
+      "texto": "Precisa estar em jejum para esse exame?"
+    },
+    {
+      "papel": "assistente",
+      "texto": "Sim, na glicemia de jejum a coleta é feita depois de 8 a 12 horas sem comer. Esta explicação é informativa e não substitui a avaliação de um profissional de saúde."
+    }
+  ],
+  "mensagem": "Oi, meu nome é [PACIENTE_1]. O que pode deixar a glicose alta?"
+}
