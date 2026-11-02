@@ -1,16 +1,152 @@
+/* Identidade visual do app Lumie (https://lumie-iomr7wajd-lumie7.vercel.app/).
+   As cores ficam em variáveis: para mudar um tom, muda só aqui. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito+Sans:wght@600;700;800;900&display=swap');
+
+:root {
+  --texto: #08475c;
+  --texto-suave: #63849a;
+  --primaria: #13bfd4;
+  --primaria-escura: #087b92;
+  --marca: #0789d0;
+  --fundo: #f5f5ff;
+  --superficie: #fafdff;
+  --superficie-destaque: #e8fbff;
+  --borda: #dce7ed;
+
+  /* Erro de sistema (arquivo, conexão): mesmo tom do design. */
+  --erro-fundo: #fff5f5;
+  --erro-borda: #f2c7c7;
+  --erro-texto: #984b4b;
+
+  --raio: 12px;
+  --fonte-texto: 'DM Sans', sans-serif;
+  --fonte-titulo: 'Nunito Sans', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #f6f8fa;
-  color: #1f2328;
+  min-width: 320px;
+  font-family: var(--fonte-texto);
+  color: var(--texto);
+  background: var(--fundo);
 }
 
-main {
-  max-width: 40rem;
-  margin: 4rem auto;
-  padding: 0 1rem;
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3, strong { font-family: var(--fonte-titulo); }
+button, input { font: inherit; }
+
+/* ---------- Cabeçalho ---------- */
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borda);
+}
+.marca-icone { color: var(--primaria); font-size: 28px; line-height: 1; }
+.marca-nome { display: block; color: var(--marca); font-size: 24px; line-height: 1; }
+.marca-sub { display: block; margin-top: 3px; color: var(--texto-suave); font-size: 9px; letter-spacing: 1.4px; }
+
+.conteudo {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
 }
 
-.status {
-  font-weight: 600;
+/* ---------- Textos de apoio ---------- */
+.eyebrow {
+  color: var(--primaria-escura);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
 }
+.titulo { margin: 8px 0 8px; font-size: clamp(26px, 4vw, 34px); line-height: 1.15; }
+.subtitulo { color: var(--texto-suave); line-height: 1.55; }
+
+/* ---------- Botões ---------- */
+.botao {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--primaria-escura);
+  color: #fff;
+}
+.botao:hover { background: var(--texto); }
+.botao:disabled { opacity: 0.55; cursor: not-allowed; }
+.botao-secundario {
+  background: #fff;
+  color: var(--primaria-escura);
+  border: 1px solid var(--borda);
+}
+.botao-secundario:hover { background: var(--superficie-destaque); }
+
+/* ---------- Tela de envio ---------- */
+.area-envio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 36px 20px;
+  border: 2px dashed var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  text-align: center;
+  cursor: pointer;
+}
+.area-envio:hover, .area-envio:focus-within { border-color: var(--primaria); background: var(--superficie-destaque); }
+.area-envio-icone { font-size: 34px; color: var(--primaria); }
+.area-envio-dica { color: var(--texto-suave); font-size: 13px; }
+.area-envio input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.arquivo-escolhido { font-weight: 700; word-break: break-all; }
+
+.acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+
+.nota-privacidade {
+  margin-top: 24px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ---------- Carregando ---------- */
+.carregando {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+}
+.girando {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--borda);
+  border-top-color: var(--primaria);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------- Erro ---------- */
+.mensagem-erro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--erro-borda);
+  border-radius: var(--raio);
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
+}
+.mensagem-erro p { line-height: 1.5; }

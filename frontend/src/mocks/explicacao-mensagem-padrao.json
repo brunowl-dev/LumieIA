@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "id_laudo": "sintetico-varios-exames",
+  "id_canonico": "glicose",
+  "explicacao": {
+    "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer.",
+    "valor_e_posicao": "Seu resultado foi 118 mg/dL. A faixa de referência do seu laudo é de 70 a 99 mg/dL, então o valor está acima da faixa.",
+    "significado": "Leve este resultado a um profissional de saúde, que poderá avaliá-lo junto com o seu histórico.",
+    "especialidade": "Endocrinologia",
+    "aviso": "Esta explicação é informativa e não substitui a avaliação de um profissional de saúde."
+  },
+  "origem_texto": "mensagem_padrao",
+  "tentativas_regeneracao": 2
+}
