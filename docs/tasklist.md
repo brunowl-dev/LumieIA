@@ -44,9 +44,9 @@
 - [x] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
 - [x] **BWL-05 (P0)** Regras de classificação + limites críticos por analito, **cada limite com fonte**. Se um exame não tem limite crítico definido (ex.: colesterol), documentar isso. → `docs/limites-criticos.md` (TSH e colesterol sem limite).
 - [x] **BWL-06 (P0)** Confiança da extração e erro "envie novamente". → `docs/confianca-extracao.md`.
-- [ ] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai.
-- [ ] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos.
-- [ ] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração.
+- [x] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai. → `docs/pseudonimizacao.md` (prova sobre a ENTRADA da IA; o pacote final ao Ollama depende da ISA).
+- [x] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos. → `docs/seguranca-verificacoes.md` (testada só com respostas escritas pelo grupo).
+- [x] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração. → com **IA falsa**; trocar o cliente em `backend/src/server.js` quando a ISA entregar.
 - [ ] **BWL-10 (P1)** OCR com Tesseract.js. Se apertar, é o primeiro corte — mas o artigo descreve OCR, então avise o grupo cedo.
 - [ ] **BWL-11 (P2)** Lembrete de medicação.
 

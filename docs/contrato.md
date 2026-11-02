@@ -10,7 +10,7 @@
 
 ## 0. Convenções
 - Formato: JSON. Nomes de campos em português, `snake_case`. Números como número (ponto decimal no JSON). Textos em UTF-8.
-- Nenhum dado que identifique o paciente trafega a partir do pipeline (nem para o modelo, nem para o front, nem para logs).
+- Nenhum dado que identifique o paciente vai para o modelo, o front ou os logs. A única exceção é interna: o pipeline devolve os identificadores do cabeçalho do laudo **separados** do laudo estruturado (§2.6), e eles ficam só na sessão em memória do servidor, como lista do que apagar do chat (`docs/pseudonimizacao.md`).
 - Exemplos reais de cada formato estão em `samples/`. Em caso de dúvida, o exemplo vale mais do que a descrição.
 
 ## 1. Visão do fluxo
@@ -140,8 +140,9 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 
 ### 2.6 Função do pipeline usada pelo orquestrador
 `backend/src/pipeline/processarLaudo.js`:
-- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto → `ARQUIVO_ILEGIVEL` enquanto o OCR (BWL-10) não existir.
+- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo, identificadores }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto → `ARQUIVO_ILEGIVEL` enquanto o OCR (BWL-10) não existir.
 - `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto (é por aqui que o OCR vai entrar).
+- `identificadores` (BWL-07, `extrairIdentificadores.js`): `{ paciente, cpf, rg, nascimento, pedido, medico, crm, responsavel_tecnico }`, cada um texto ou `null`, lidos dos rótulos do cabeçalho ("Paciente:", "CPF:", "Solicitante:"...). Ficam **fora** de `laudo`. O orquestrador os guarda só na sessão (somem com `SESSION_TTL_MINUTES`) e os usa só como lista do que a varredura apaga do texto livre. Nunca vão para a IA, o front ou os logs.
 
 ## 3. Base de conhecimento → IA e Segurança
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
@@ -153,6 +154,11 @@ Só fichas com `status: "pronto"` são usadas **para a explicação** (IA e segu
 ## 4. IA → Segurança
 - **Produz:** IA (ISA). **Consome:** Segurança (BWL), chamada pelo orquestrador.
 - **Entrada da IA:** UM analito do laudo estruturado + a ficha dele na base (+ no chat: o histórico da conversa daquele exame e a nova mensagem). Nunca o texto bruto do laudo.
+- Toda chamada à IA passa por `backend/src/api/adaptadorIa.js`, que monta a entrada com `montarEntradaIa` (`backend/src/seguranca/pseudonimizar.js`):
+  - `analito`: `id_canonico`, `nome_no_laudo` (varrido), `valor`, `unidade`, `faixa_referencia` (`minimo`, `maximo`, `minimo_inclusivo`, `maximo_inclusivo`), `classificacao`, `alerta_critico`;
+  - `ficha`: `id_canonico`, `o_que_avalia`, `especialidade`;
+  - no chat: `historico: [{ papel: "paciente" | "assistente", texto }]` e `mensagem`, ambos varridos (identificadores trocados por marcadores como `[PACIENTE_1]`, `[CPF_1]`).
+  - **[A CONFIRMAR com a ISA]** o formato do histórico é suposição do BWL; o cliente da IA recebe `(entrada, { motivosReprovacao })`, em que `motivosReprovacao` são os códigos da §8.
 
 **4.1 Explicação (momento 2).** Um objeto com as 5 partes, em campos separados e nesta ordem:
 `o_que_avalia`, `valor_e_posicao`, `significado`, `especialidade`, `aviso`. Exemplos em `samples/respostas-ia/`.
@@ -176,6 +182,8 @@ Só fichas com `status: "pronto"` são usadas **para a explicação** (IA e segu
 | `itens` | lista | Um item por analito |
 
 Cada item: `id_canonico` (texto ou null), `nome`, `valor`, `unidade`, `faixa_referencia`, `classificacao`, `cor`, `alerta_prioritario`, `explicacao_disponivel` (verdadeiro/falso).
+
+Também no resultado (BWL-09, caso misto da §2.4): `itens_nao_lidos` (lista de `{ nome }`, **sem valor**; `[]` se não houver) e `aviso_usuario` (texto fixo ou `null`), para o front avisar que parte do laudo não foi lida.
 - `explicacao_disponivel: false` quando o exame não tem ficha na base ou a ficha ainda está `pendente`: o front mostra o valor e a classificação, sem o botão, com o texto "ainda não temos explicação para este exame".
 
 **Cores:** `verde` = `dentro`; `amarelo` = `acima` ou `abaixo` sem alerta crítico; `vermelho` = `alerta_critico` verdadeiro (alerta de atendimento prioritário).
@@ -228,9 +236,33 @@ Formato: `{"status":"erro","erro":{"codigo":"...","motivo":"...","mensagem_usuar
 
 Ausência de ficha **não** é erro da porta 1: o laudo volta com `status: "ok"` e o item com `explicacao_disponivel: false`.
 
-## 8. Regras de segurança (resumo; detalhes em `backend/src/seguranca/CLAUDE.md`)
-- **Explicação (4.1):** 1. Aviso presente. 2. Especialidade igual à da base. 3. Sem termos de diagnóstico, prescrição ou veredito. (P1: 5 partes completas e em ordem.)
-- **Chat (4.2):** 1. Aviso presente. 3. Sem termos de diagnóstico, prescrição ou veredito.
+Implementação (BWL-09, `backend/src/api/rotas.js`):
+- **Status HTTP:** 413 `ARQUIVO_MUITO_GRANDE`, 415 `FORMATO_NAO_SUPORTADO`, 422 `ARQUIVO_ILEGIVEL`/`BAIXA_CONFIANCA`, 404 `EXAME_NAO_ENCONTRADO`, 410 `SESSAO_EXPIRADA`, 503 `MODELO_INDISPONIVEL`. O front decide pelo `codigo`, não pelo status.
+- **`ARQUIVO_ILEGIVEL`, motivos novos:**
+  - `pdf_protegido`: enquanto o grupo não decide a tela de senha, pede um PDF sem senha;
+  - `ocr_indisponivel`: foto enviada antes de a BWL-10 existir;
+  - `arquivo_vazio` e `pdf_corrompido`.
+- **`MODELO_INDISPONIVEL`, motivos:** `erro_do_cliente` e `tempo_esgotado` (`OLLAMA_TIMEOUT_MS`).
+- **Códigos técnicos** (não deveriam aparecer se o front estiver certo):
+  - `REQUISICAO_INVALIDA` (400): JSON inválido, campo faltando, mensagem vazia ou com mais de 1000 caracteres;
+  - `ROTA_NAO_ENCONTRADA` (404);
+  - `ERRO_INTERNO` (500).
+
+## 8. Regras de segurança (resumo; detalhes em `docs/seguranca-verificacoes.md`)
+A segurança devolve `{ aprovada, motivos[] }`, com um código por verificação (BWL-08):
+
+| # | Verificação | Código | Explicação | Chat |
+|---|---|---|---|---|
+| 0 | 5 partes presentes e preenchidas (no chat: `resposta` preenchida) | `parte_ausente` | sim | sim |
+| 1 | Aviso presente (no chat, nas 2 últimas frases) | `aviso_ausente` | sim | sim |
+| 2 | Especialidade igual à da base (no chat, só se citar uma) | `especialidade_divergente` | sim | sim |
+| 3 | Sem diagnóstico | `termo_diagnostico` | sim | sim |
+| 4 | Sem prescrição | `termo_prescricao` | sim | sim |
+| 5 | Sem veredito | `termo_veredito` | sim | sim |
+| 6 | O valor citado na parte 2 é o do pipeline; todo número da parte 2 é o valor ou um limite da faixa | `valor_divergente` | sim | não |
+| 7 | A posição citada na parte 2 é a classificação do pipeline, e só ela | `classificacao_contradita` | sim | não |
+
+Termos em `backend/src/seguranca/termosProibidos.json`.
 - A segurança só **avalia**: devolve aprovado/reprovado + motivo. Ela não chama a IA.
 - Quem faz o laço é o **orquestrador**: reprovou → pede nova resposta à IA (com o motivo), até `MAX_REGENERACOES`. Esgotou → **mensagem padrão**, montada sem o modelo, e `origem_texto` passa a `"mensagem_padrao"`:
   - explicação: finalidade e especialidade da base + valor e posição do pipeline + aviso fixo;
