@@ -1,0 +1,63 @@
+{
+  "versao": 1,
+  "observacao": "Limites críticos por id_canonico (BWL-05). Valor crítico: valor < abaixo_de ou valor > acima_de (comparação estrita, como impresso na fonte: '< 45', '> 450'). Limite sem fonte citável não entra: fonte 'fonte_pendente' desliga o alerta daquele exame. Exame sem limite: limite_critico null + sem_limite_critico com o motivo. Detalhes em docs/limites-criticos.md.",
+  "fontes": {
+    "pncq_2019": {
+      "referencia": "Programa Nacional de Controle de Qualidade (PNCQ). Valores críticos de exames laboratoriais que necessitam de imediata tomada de decisão, em atendimento à RDC 302:2005 da ANVISA. Tabela 1: valores quantitativos em sangue de adultos e crianças que devem ser imediatamente comunicados ao médico solicitante ou responsável pelo paciente. Documento atualizado em novembro/2019.",
+      "url": "https://pncq.org.br/uploads/2019/Valores%20cr%A1ticos%20no%20laborat%A2rio%20cl%A1nico_nov2019.pdf",
+      "acesso": "2026-11-01",
+      "referencias_citadas_pela_fonte": "eJIFCC vol. 14 nº 1; Wallach, J. Interpretação de Exames Laboratoriais, 7ª ed., 2003; CLR 2018-2019; Sociedade Brasileira de Endocrinologia e Metabologia"
+    }
+  },
+  "analitos": {
+    "glicose": {
+      "unidades_aceitas": ["mg/dL"],
+      "limite_critico": {
+        "unidade": "mg/dL",
+        "abaixo_de": 45,
+        "acima_de": 450,
+        "populacao": "adultos (a fonte traz limites diferentes para recém-nascidos, Tabela 2)",
+        "fonte": "pncq_2019",
+        "trecho_da_fonte": "Glicose Adultos: < 45 mg/dL (2,5 mmol/L) > 450 mg/dL (25 mmol/L)"
+      }
+    },
+    "creatinina": {
+      "unidades_aceitas": ["mg/dL"],
+      "limite_critico": {
+        "unidade": "mg/dL",
+        "abaixo_de": null,
+        "acima_de": 7.4,
+        "populacao": "adultos e crianças (Tabela 1)",
+        "fonte": "pncq_2019",
+        "trecho_da_fonte": "Creatinina > 7,4 mg/dL"
+      }
+    },
+    "hemoglobina": {
+      "unidades_aceitas": ["g/dL"],
+      "limite_critico": {
+        "unidade": "g/dL",
+        "abaixo_de": 6.6,
+        "acima_de": 19.9,
+        "populacao": "adultos e crianças (Tabela 1; recém-nascidos têm outros limites, Tabela 2)",
+        "fonte": "pncq_2019",
+        "trecho_da_fonte": "Hemoglobina < 6,6 g/dL > 19,9 g/dL"
+      }
+    },
+    "tsh": {
+      "unidades_aceitas": ["µUI/mL", "mUI/L"],
+      "limite_critico": null,
+      "sem_limite_critico": {
+        "motivo": "A tabela da fonte consultada não tem linha para TSH (traz só T4 livre e T3 total). Sem fonte citável, não há limite crítico e o sistema não gera alerta para este exame.",
+        "fonte_consultada": "pncq_2019"
+      }
+    },
+    "colesterol_total": {
+      "unidades_aceitas": ["mg/dL"],
+      "limite_critico": null,
+      "sem_limite_critico": {
+        "motivo": "A tabela da fonte consultada não tem linha para colesterol. Sem fonte citável, não há limite crítico e o sistema não gera alerta para este exame.",
+        "fonte_consultada": "pncq_2019"
+      }
+    }
+  }
+}

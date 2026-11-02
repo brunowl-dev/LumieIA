@@ -1,3 +1,10 @@
 # Textos derivados do extrator (BWL-02): sempre com \n, também no Windows.
 # Os testes da BWL-03 dependem do texto exatamente como o extrator produz.
 samples/laudos/texto_extraido/*.txt text eol=lf
+
+# Laudos e imagens são binários: nunca converter fim de linha (um PDF não
+# compactado tem texto dentro, e o Git o confundiria com arquivo de texto).
+*.pdf binary
+*.jpg binary
+*.jpeg binary
+*.png binary

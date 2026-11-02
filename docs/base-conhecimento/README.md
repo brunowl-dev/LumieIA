@@ -40,7 +40,12 @@ Arquivo: `exames.json` (nesta pasta). Cada ficha tem:
 As cinco fichas já estão preenchidas (pelo Claude): o texto de `o_que_avalia` foi escrito a partir de fontes brasileiras citadas em `fonte` (Ministério da Saúde/BVS, Secretaria de Saúde do DF, Hemoes, SBD e SBEM), consultadas em 01/11/2026. Cada frase do texto foi conferida contra a página. A especialidade foi escolhida pela área que trata o órgão ou sistema avaliado: é **escolha do grupo**, não está na fonte (no TSH, coincide com a sociedade que publica a fonte). Todas estão com `status: "pendente"`:
 1. Leia cada ficha, abra o link da fonte e confira se o texto diz o mesmo, em linguagem simples.
 2. Confira se a especialidade faz sentido para vocês e saibam justificá-la à banca.
-3. Só então mude para `"pronto"`. Ficha `pendente` não é usada: o exame aparece sem o botão "Explicar com IA".
+3. Só então mude para `"pronto"`. Ficha `pendente` não é usada na explicação: o exame aparece sem o botão "Explicar com IA". (Os `nomes_alternativos` valem mesmo em ficha `pendente`: o pipeline reconhece o exame e aplica o alerta crítico.)
+
+## Como o sistema usa `nomes_alternativos` (BWL-04)
+O pipeline compara o nome do laudo com cada nome da lista **depois de normalizar os dois**: sem acento, sem maiúsculas, pontuação vira espaço, espaços juntados. Ou seja, "GLICOSE (jejum)", "Glicose - jejum" e "glicose jejum" são o mesmo nome; não precisa cadastrar cada variação de maiúscula ou acento.
+O que **precisa** cadastrar: palavras diferentes ("Glicemia jejum" ≠ "Glicemia de jejum"). Nada é adivinhado: nome fora da lista vira "exame sem ficha".
+Regras que o carregamento confere (e falha com mensagem clara): cada ficha tem `id_canonico` e a lista `nomes_alternativos`; o mesmo nome não pode estar em duas fichas. O próprio `id_canonico` também vale como nome.
 
 A revisão por profissionais de saúde é trabalho futuro do artigo: **não afirme que o texto foi validado**.
 

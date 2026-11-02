@@ -4,7 +4,7 @@
   "exames": [
     {
       "id_canonico": "glicose",
-      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum", "Glicose plasmática"],
+      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicemia em jejum", "Glicemia jejum", "Glicose em jejum", "Glicose jejum", "Glicose plasmática"],
       "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Na glicemia de jejum, a coleta é feita depois de 8 a 12 horas sem comer.",
       "especialidade": "Endocrinologia",
       "fonte": "Texto: Sociedade Brasileira de Diabetes (SBD), Diretriz, capítulo 'Diagnóstico de diabetes mellitus' (revisão de 09/07/2024), https://diretriz.diabetes.org.br/diagnostico-de-diabetes-mellitus/ (acesso em 01/11/2026). Especialidade: área que trata o controle do açúcar no sangue (escolha do grupo, revisada pelo grupo em 01/11/2026).",

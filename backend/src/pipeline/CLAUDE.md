@@ -7,8 +7,8 @@ Transformar um laudo (PDF digital ou imagem) em um **laudo estruturado e classif
 Etapas, nesta ordem, cada uma testável isoladamente:
 1. Extração de texto: PDF digital com `pdf-parse`; imagem/escaneado com OCR (`tesseract.js`).
 2. Estruturação por analito: nome no laudo, valor, unidade, faixa de referência do laudo.
-3. Confiança da extração: se baixa (geral ou de um item), devolver o erro do contrato (pedir novo envio) **antes** de classificar. Nunca chutar valores.
-4. Normalização do nome para o identificador canônico da base (usa a lista de `nomes_alternativos` de `docs/base-conhecimento/exames.json`).
+3. Normalização do nome para o identificador canônico da base (usa a lista de `nomes_alternativos` de `docs/base-conhecimento/exames.json`). Vem antes da confiança porque, na foto, "nome reconhecido" é um dos sinais.
+4. Confiança da extração: se baixa (geral ou de um item), devolver o erro do contrato (pedir novo envio) **antes** de classificar. Nunca chutar valores.
 5. Classificação por regra determinística: dentro / acima / abaixo da faixa DO LAUDO + alerta crítico por limite por analito.
 6. Pseudonimização: o que sai desta pasta contém só os campos do contrato (lista do que entra, não do que sai), sem nenhum identificador do paciente (nome, CPF, data de nascimento, endereço, número do pedido etc.).
 
@@ -44,6 +44,13 @@ Limites (o parser NÃO cobre):
 - Valor sem nome logo abaixo do cabeçalho da tabela usa o cabeçalho como nome (teste `todo`); a BWL-04 não acha ficha e vira `id_canonico: null`.
 - Faixa por sexo/idade na mesma linha ("Homens: ... Mulheres: ...") → não interpretada.
 - Layouts diferentes de "tabela em uma linha" e "blocos Resultado:/Valor de referência:" não foram testados.
+
+## BWL-04 a BWL-06: onde está cada coisa
+Encadeamento: `processarLaudo.js` (`processarLaudoPdf`, `processarTextoLaudo`). Contrato §2.3 a §2.6.
+- BWL-04 `normalizarNome.js`: normalização (acento, maiúscula, pontuação, espaços) + comparação EXATA. Fichas `pendente` também são reconhecidas (contrato §3).
+- BWL-05 `classificar.js` (funções puras) + `limitesCriticos.json` (números + fonte + trecho). Não converte unidades. Doc: `docs/limites-criticos.md`.
+- BWL-06 `confianca.js` + limiares SÓ em `config.js` (do `.env`). Doc: `docs/confianca-extracao.md`.
+- Testes: `test/pipeline/{normalizarNome,classificar,confianca,processarLaudo}.test.js`. O de ponta a ponta usa os PDFs de `samples/laudos/` e confere contra o gabarito.
 
 ## Modo de trabalho (Bruno)
 Modo GUIADO. Bruno é forte em Java e Python, SQL; JavaScript/Node é a maior lacuna; nunca usou OCR.

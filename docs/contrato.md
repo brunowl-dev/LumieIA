@@ -44,8 +44,11 @@ Front ──(id_laudo, id_canonico, mensagem)──> POST /api/chat ──> IA �
 |---|---|---|
 | `id_laudo` | texto | Identificador gerado pelo sistema, sem relação com o paciente |
 | `origem` | `"pdf_digital"` \| `"ocr"` | Como o texto foi obtido |
-| `confianca_extracao` | número 0–1 | Confiança geral da extração |
-| `analitos` | lista | Um item por exame encontrado (abaixo) |
+| `confianca_extracao` | número 0–1 | Confiança geral da extração (média das linhas de resultado, §2.4) |
+| `analitos` | lista | Um item por exame lido com confiança (abaixo) |
+| `itens_nao_lidos` | lista | Caso misto (§2.4): `{ id_canonico, nome_no_laudo, motivos }` dos itens que NÃO foram lidos com confiança. **Sem valor.** `[]` se não houver |
+| `linhas_nao_interpretadas` | número | Quantas linhas pareciam resultado mas não viraram analito (só a contagem; o texto da linha não sai) |
+| `aviso_usuario` | texto \| null | Mensagem fixa para o paciente quando há itens de fora; `null` se não houver |
 
 Cada item de `analitos`:
 
@@ -58,12 +61,17 @@ Cada item de `analitos`:
 | `faixa_referencia` | objeto | `minimo` (número ou null), `maximo` (número ou null), `minimo_inclusivo` / `maximo_inclusivo` (verdadeiro/falso, null se não há aquele limite; "Inferior a 190" → `maximo_inclusivo: false`; "Até 150" → `true`; "70 a 99" → ambos `true`), `texto_original` (como está no laudo) |
 | `classificacao` | `"dentro"` \| `"acima"` \| `"abaixo"` | Decidida por regra determinística, SEMPRE com a faixa do laudo |
 | `alerta_critico` | verdadeiro/falso | Decidido por limite crítico por analito (com fonte) |
-| `confianca` | número 0–1 | Confiança da extração deste item |
+| `limite_critico` | objeto | Como o alerta foi decidido e a fonte usada (§2.5): `avaliado`, `motivo`, `acionado`, `abaixo_de`, `acima_de`, `unidade`, `fonte` (`id`, `referencia`, `url`, `trecho_da_fonte`) ou null |
+| `confianca` | número 0–1 | Confiança da extração deste item (§2.4) |
+| `avisos` | lista de texto | Hoje só `unidade_diferente_da_esperada` (ex.: glicose em mmol/L). `[]` se nada |
 
-**Não existe aqui:** nome do paciente, CPF, data de nascimento, endereço, número do pedido, texto bruto do laudo.
+`faixa_referencia` aqui tem só `minimo`, `maximo`, `minimo_inclusivo`, `maximo_inclusivo` e `texto_original` (o `interpretada` da §2.2 fica no pipeline: todo analito que sai foi interpretado).
 
-- Um mesmo `id_canonico` aparece **no máximo uma vez** por laudo: ele é a chave usada para pedir a explicação e o chat.
+**Não existe aqui:** nome do paciente, CPF, data de nascimento, endereço, número do pedido, texto bruto do laudo, linhas não interpretadas, `valor_impresso`, `pendencias`.
+
+- Um mesmo `id_canonico` aparece **no máximo uma vez** por laudo: ele é a chave usada para pedir a explicação e o chat. Repetido com o mesmo valor: fica um. Com valores diferentes: o pipeline não escolhe e os dois vão para `itens_nao_lidos`.
 - Analito sem ficha na base (`id_canonico: null`): ainda é classificado (a faixa vem do laudo), mas `alerta_critico` é sempre `false`, porque os limites críticos são por `id_canonico`. Ele aparece na tela de exames **sem** botão de explicação (seção 5.1).
+- Ficha com `status: "pendente"` **é** reconhecida (tem `id_canonico` e alerta crítico); só não tem explicação (§3). Motivo: o alerta crítico não pode depender da revisão do texto da explicação.
 
 **Falhas:** arquivo ilegível ou confiança abaixo do mínimo → o pipeline não devolve laudo; devolve erro (seção 7).
 
@@ -111,14 +119,36 @@ Cada item de `analitos` já usa os nomes da seção 2; as etapas seguintes acres
 
 `nao_interpretadas`: `[{ linha, motivo }]`, linhas que parecem resultado mas não viraram analito. Nunca são descartadas em silêncio. Motivos: `formato_nao_reconhecido`, `valor_invalido`, `valor_ausente`, `valor_com_sinal` ("< 0,5": limite de detecção não é o valor 0,5), `nome_nao_encontrado`, `unidade_e_faixa_ausentes`. **Contém texto do laudo:** mesma regra do `texto` da seção 2.1 (nunca para log, front ou modelo).
 
-A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`) é da BWL-06, a partir de `confianca`, `pendencias` e `nao_interpretadas`.
+A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`) é da BWL-06 (§2.4), a partir dos campos lidos e de `nao_interpretadas`.
+
+### 2.3 Etapa interna: nome do exame → `id_canonico` (BWL-04)
+`backend/src/pipeline/normalizarNome.js`:
+- `carregarIndiceDeNomes(caminho)` / `criarIndiceDeNomes(base)` → `Map` "nome normalizado → id". Valida a base e **falha com mensagem clara** se estiver malformada ou se um mesmo nome aparecer em duas fichas. Usa todas as fichas (`pronto` e `pendente`) e o próprio `id_canonico` como nome.
+- `normalizarNomeExame(nome, indice)` → `{ reconhecido, id_canonico, nome_normalizado }`. Nunca lança erro: sem correspondência → `reconhecido: false, id_canonico: null`.
+- Normalização: sem acento, minúsculas, pontuação vira espaço, espaços juntados ("GLICOSE (jejum)" → "glicose jejum"). Depois disso a comparação é **exata**: não há "parecido com" ("Glicoze" não é reconhecido).
+
+### 2.4 Etapa interna: confiança e "envie novamente" (BWL-06)
+`backend/src/pipeline/confianca.js`. Detalhes e motivo dos números em `docs/confianca-extracao.md`.
+- Por analito: sinais ok ÷ sinais aplicáveis (nome, valor numérico, unidade, faixa interpretada; na foto também nome reconhecido), × confiança do OCR ÷ 100 na foto.
+- Limiar `CONFIANCA_MINIMA_EXTRACAO` (padrão 0,80) para item e laudo; `CONFIANCA_MINIMA_OCR` (padrão 70) para a média da foto. Ambos lidos só em `backend/src/pipeline/config.js`.
+- `confianca_extracao` = média das linhas de resultado (linhas não interpretadas valem 0). Abaixo do limiar → erro `BAIXA_CONFIANCA` (§7). Acima → segue com os itens confiáveis; os outros vão para `itens_nao_lidos`, sem valor.
+
+### 2.5 Etapa interna: classificação e limite crítico (BWL-05)
+`backend/src/pipeline/classificar.js` (funções puras) + `backend/src/pipeline/limitesCriticos.json` (números e fontes). Detalhes em `docs/limites-criticos.md`.
+- `classificarPelaFaixa(valor, faixa)` → `dentro`/`acima`/`abaixo` pela faixa do laudo, com as fronteiras de `backend/src/pipeline/CLAUDE.md`; `null` + motivo se faltar valor ou faixa.
+- `avaliarLimiteCritico(analito, limites)` → `alerta_critico` + `limite_critico`. `limite_critico.motivo` quando não avaliado: `sem_limite_definido` (TSH, colesterol), `exame_nao_reconhecido`, `unidade_diferente` (não convertemos unidades), `fonte_pendente`, `valor_invalido`.
+
+### 2.6 Função do pipeline usada pelo orquestrador
+`backend/src/pipeline/processarLaudo.js`:
+- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto → `ARQUIVO_ILEGIVEL` enquanto o OCR (BWL-10) não existir.
+- `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto (é por aqui que o OCR vai entrar).
 
 ## 3. Base de conhecimento → IA e Segurança
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
 
 Cada ficha: `id_canonico`, `nomes_alternativos` (lista), `o_que_avalia` (texto simples), `especialidade` (UMA), `fonte`, `status` (`"pronto"` ou `"pendente"`).
-Só fichas com `status: "pronto"` são usadas. O carregamento deve validar o arquivo e falhar com mensagem clara se estiver malformado.
-**Falha:** exame sem ficha `pronto` → tratado como sem ficha (`id_canonico: null` no pipeline; sem botão de explicação).
+Só fichas com `status: "pronto"` são usadas **para a explicação** (IA e segurança). Para **reconhecer o nome** (pipeline), todas as fichas valem, inclusive as `pendente`: assim o exame tem `id_canonico` e alerta crítico mesmo antes de o texto ser revisado. O carregamento deve validar o arquivo e falhar com mensagem clara se estiver malformado.
+**Falha:** exame sem ficha → `id_canonico: null` no pipeline, sem botão de explicação. Exame com ficha `pendente` → tem `id_canonico`, mas sem botão de explicação (o orquestrador confere o `status`).
 
 ## 4. IA → Segurança
 - **Produz:** IA (ISA). **Consome:** Segurança (BWL), chamada pelo orquestrador.
@@ -146,7 +176,7 @@ Só fichas com `status: "pronto"` são usadas. O carregamento deve validar o arq
 | `itens` | lista | Um item por analito |
 
 Cada item: `id_canonico` (texto ou null), `nome`, `valor`, `unidade`, `faixa_referencia`, `classificacao`, `cor`, `alerta_prioritario`, `explicacao_disponivel` (verdadeiro/falso).
-- `explicacao_disponivel: false` quando o exame não tem ficha na base: o front mostra o valor e a classificação, sem o botão, com o texto "ainda não temos explicação para este exame".
+- `explicacao_disponivel: false` quando o exame não tem ficha na base ou a ficha ainda está `pendente`: o front mostra o valor e a classificação, sem o botão, com o texto "ainda não temos explicação para este exame".
 
 **Cores:** `verde` = `dentro`; `amarelo` = `acima` ou `abaixo` sem alerta crítico; `vermelho` = `alerta_critico` verdadeiro (alerta de atendimento prioritário).
 O front nunca decide status: a cor e o alerta chegam prontos.
@@ -182,7 +212,9 @@ O front nunca decide status: a cor e o alerta chegam prontos.
 **Lembretes:** horários e doses vêm sempre dos dados cadastrados; o modelo só redige o tom.
 
 ## 7. Erros
-Formato: `{"status":"erro","erro":{"codigo":"...","mensagem_usuario":"..."}}`. `mensagem_usuario` é em linguagem simples, pronta para exibir.
+Formato: `{"status":"erro","erro":{"codigo":"...","motivo":"...","mensagem_usuario":"..."}}`. `mensagem_usuario` é em linguagem simples, pronta para exibir. `motivo` é opcional: código interno estável, para teste e depuração (nunca contém dado do paciente); o front decide só pelo `codigo`.
+
+`BAIXA_CONFIANCA` (BWL-06), motivos: `ocr_baixa_confianca`, `nenhum_resultado_encontrado`, `confianca_abaixo_do_minimo`, `nenhum_resultado_confiavel`. Mensagens fixas em `backend/src/pipeline/confianca.js`: uma para foto (pede foto nítida, com luz, sem sombra, laudo inteiro), uma para PDF e uma para "nenhum resultado encontrado". `ARQUIVO_ILEGIVEL` com motivo `sem_camada_de_texto`: PDF só de imagem, enquanto não houver OCR.
 
 | Código | Porta | Quando | O que o front faz |
 |---|---|---|---|
