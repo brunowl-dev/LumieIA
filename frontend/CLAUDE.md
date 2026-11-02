@@ -22,4 +22,6 @@ React. O fluxo das telas:
 - Não commitar chaves nem `.env`.
 
 ## Modo de trabalho
-[PREENCHER pela Aguiar: como você quer trabalhar com o Claude Code nesta pasta — por exemplo, "pode gerar telas com explicação do que cada parte faz". Enquanto isso, vale o padrão da raiz: explicar antes e passos pequenos, para você conseguir defender o front na apresentação.]
+- O Claude pode gerar cada tela/componente completo, mas deve explicar o que cada parte faz e por quê.
+- Uma tela por vez: eu testo cada uma antes de seguir para a próxima.
+- Visual: seguir o design do app Lumie (https://lumie-iomr7wajd-lumie7.vercel.app/), recriando só as telas do módulo (envio, exames, chat do exame, erros, alerta).

@@ -1,0 +1,30 @@
+{
+  "FORMATO_NAO_SUPORTADO": {
+    "status": "erro",
+    "erro": { "codigo": "FORMATO_NAO_SUPORTADO", "mensagem_usuario": "Este tipo de arquivo não é aceito. Envie o laudo em PDF, JPG ou PNG." }
+  },
+  "ARQUIVO_MUITO_GRANDE": {
+    "status": "erro",
+    "erro": { "codigo": "ARQUIVO_MUITO_GRANDE", "mensagem_usuario": "O arquivo é maior do que o permitido. Envie um arquivo menor." }
+  },
+  "ARQUIVO_ILEGIVEL": {
+    "status": "erro",
+    "erro": { "codigo": "ARQUIVO_ILEGIVEL", "mensagem_usuario": "Não conseguimos ler o seu exame. Tente enviar de novo, com uma foto mais nítida ou o PDF original do laboratório." }
+  },
+  "BAIXA_CONFIANCA": {
+    "status": "erro",
+    "erro": { "codigo": "BAIXA_CONFIANCA", "mensagem_usuario": "Não conseguimos ler o laudo com segurança. Envie novamente, de preferência o PDF original." }
+  },
+  "EXAME_NAO_ENCONTRADO": {
+    "status": "erro",
+    "erro": { "codigo": "EXAME_NAO_ENCONTRADO", "mensagem_usuario": "Ainda não temos explicação para este exame." }
+  },
+  "MODELO_INDISPONIVEL": {
+    "status": "erro",
+    "erro": { "codigo": "MODELO_INDISPONIVEL", "mensagem_usuario": "Estamos indisponíveis no momento." }
+  },
+  "SESSAO_EXPIRADA": {
+    "status": "erro",
+    "erro": { "codigo": "SESSAO_EXPIRADA", "mensagem_usuario": "Sua sessão expirou. Envie o laudo novamente para continuar." }
+  }
+}
