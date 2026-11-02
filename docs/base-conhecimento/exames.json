@@ -4,7 +4,7 @@
   "exames": [
     {
       "id_canonico": "glicose",
-      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum", "Glicose plasmática"],
+      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicemia em jejum", "Glicemia jejum", "Glicose em jejum", "Glicose jejum", "Glicose plasmática"],
       "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Em geral é feito em jejum, para mostrar o nível de açúcar sem a influência da última refeição. Ajuda a acompanhar como o corpo controla o açúcar no sangue.",
       "especialidade": "Endocrinologia",
       "fonte": "Texto: Sociedade Brasileira de Diabetes (SBD), Diretriz, capítulo 'Diagnóstico de diabetes mellitus' (revisão de 09/07/2024), https://diretriz.diabetes.org.br/diagnostico-de-diabetes-mellitus/ (acesso em 01/11/2026). Especialidade: área que trata o controle do açúcar no sangue (escolha do grupo, a revisar).",
