@@ -10,7 +10,7 @@ Etapas, nesta ordem, cada uma testável isoladamente:
 3. Normalização do nome para o identificador canônico da base (usa a lista de `nomes_alternativos` de `docs/base-conhecimento/exames.json`). Vem antes da confiança porque, na foto, "nome reconhecido" é um dos sinais.
 4. Confiança da extração: se baixa (geral ou de um item), devolver o erro do contrato (pedir novo envio) **antes** de classificar. Nunca chutar valores.
 5. Classificação por regra determinística: dentro / acima / abaixo da faixa DO LAUDO + alerta crítico por limite por analito.
-6. Pseudonimização: o que sai desta pasta contém só os campos do contrato (lista do que entra, não do que sai), sem nenhum identificador do paciente (nome, CPF, data de nascimento, endereço, número do pedido etc.).
+6. Identificadores (BWL-07): o laudo estruturado contém só os campos do contrato (lista do que entra), sem identificador do paciente. Os identificadores do cabeçalho (`extrairIdentificadores.js`) saem SEPARADOS, em `identificadores` (contrato §2.6), só para a sessão do orquestrador usar como lista do que apagar do chat. A pseudonimização em si fica em `../seguranca/pseudonimizar.js` (`docs/pseudonimizacao.md`).
 
 ## Regras
 - O modelo de linguagem NUNCA classifica nem decide alerta. Aqui só há regras no código.

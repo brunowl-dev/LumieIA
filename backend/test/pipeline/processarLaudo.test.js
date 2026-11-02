@@ -144,13 +144,22 @@ describe('ponta a ponta: regras do laudo estruturado', () => {
   it('id_laudo gerado pelo sistema (UUID), sem relação com o paciente', () => {
     assert.match(processarTextoLaudo(lerTexto('glicose_normal.pdf')).laudo.id_laudo, /^[0-9a-f-]{36}$/);
   });
-  it('nenhum identificador do paciente (fictício) sai do pipeline', async () => {
+  it('nenhum identificador do paciente (fictício) aparece no LAUDO estruturado', async () => {
     for (const arquivo of ['painel_misto_layoutA.pdf', 'painel_misto_layoutB.pdf', 'painel_parcial_ilegivel.pdf']) {
-      const saida = JSON.stringify(await processarLaudoPdf(lerLaudo(arquivo)));
+      const saida = JSON.stringify((await processarLaudoPdf(lerLaudo(arquivo))).laudo);
       for (const identificador of IDENTIFICADORES) {
         assert.ok(!saida.includes(identificador), `"${identificador}" apareceu na saída de ${arquivo}`);
       }
     }
+  });
+  it('identificadores saem SEPARADOS do laudo (contrato §2.6), só para a sessão', async () => {
+    const r = await processarLaudoPdf(lerLaudo('glicose_acima.pdf'));
+    assert.deepEqual(Object.keys(r).sort(), ['identificadores', 'laudo', 'status']);
+    assert.equal(r.identificadores.paciente, 'Maria Teste da Silva');
+    assert.equal(r.identificadores.cpf, '000.000.000-00');
+  });
+  it('erro de confiança não devolve identificadores', () => {
+    assert.equal(processarTextoLaudo('').identificadores, undefined);
   });
   it('só os campos do contrato saem em cada analito (nada de valor_impresso, pendencias, linhas do laudo)', async () => {
     const { laudo } = await processarLaudoPdf(lerLaudo('glicose_acima.pdf'));
