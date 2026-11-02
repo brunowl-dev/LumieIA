@@ -1,0 +1,13 @@
+LABORATÓRIO MODELO LUMIE (FICTÍCIO)
+Unidade Centro Fictício - atendimento de exemplo
+Nome: Maria Teste da Silva Sexo: Feminino Idade: 34 anos
+Data de nascimento: 14/03/1992 CPF: 000.000.000-00
+Solicitante: Dr. João Exemplo Fictício (CRM FICTÍCIO) Atendimento: TESTE-0019
+Data da coleta: 20/10/2026 07:40 Data de liberação: 21/10/2026 15:10
+GLICOSE EM JEJUM
+Material: Plasma (fluoreto) Método: Enzimático (hexoquinase)
+Resultado: 118 mg/dL
+Valor de referência: 70 a 99 mg/dL
+Liberado eletronicamente por: Dr. Carlos Modelo (fictício) - registro FICTÍCIO
+Faixas de referência ilustrativas; não usar como referência clínica.
+DOCUMENTO SINTÉTICO, USO EM TESTES Página 1 de 1

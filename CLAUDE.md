@@ -6,7 +6,7 @@ Ordem de leitura: este arquivo → o `CLAUDE.md` da pasta em que você está tra
 ## Contexto
 - Lumie é um hub de saúde digital (exames, consultas, medicações). Este repositório contém SOMENTE o módulo de IA, apresentado como artigo de iniciação científica no COBRIC (Santos). Apresentação: **05/11/2026**.
 - Autores: Bruno Antonio Wai Lu, Isadora Oliveira da Silva, Maria Eduarda Aguiar Duarte (Fatec Rubens Lara, ADS).
-- O artigo JÁ FOI ENVIADO e não pode mudar. **O protótipo é que precisa corresponder ao artigo.** Se o código divergir do artigo, avise a pessoa e registre em `docs/artigo-vs-prototipo.md`.
+- O artigo JÁ FOI ENVIADO e não pode mudar (texto em `docs/artigo/artigo-cobric.docx`, banner em `docs/artigo/banner-cobric.pdf`). **O protótipo é que precisa corresponder ao artigo.** Se o código divergir do artigo, avise a pessoa e registre em `docs/artigo-vs-prototipo.md`.
 
 ## O que o módulo faz
 1. Interpretação de exames, em três momentos (diagrama em `docs/contrato.md` §1):

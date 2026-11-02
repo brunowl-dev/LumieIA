@@ -1,0 +1,497 @@
+{
+  "_aviso": "Dados FICTÍCIOS. Faixas de referência ilustrativas. Fonte da verdade de BWL-02/BWL-03.",
+  "laudos": [
+    {
+      "arquivo": "glicose_normal.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 88,
+          "valor_impresso": "88",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_acima.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_abaixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 62,
+          "valor_impresso": "62",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "abaixo",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_critico_alto.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 486,
+          "valor_impresso": "486",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": true
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_critico_baixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 38,
+          "valor_impresso": "38",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "abaixo",
+          "critico": true
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_limite.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 99,
+          "valor_impresso": "99",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "hemoglobina_normal.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Hemoglobina",
+          "valor": 13.8,
+          "valor_impresso": "13,8",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "hemoglobina_acima.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Hemoglobina",
+          "valor": 17.2,
+          "valor_impresso": "17,2",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "hemoglobina_abaixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Hemoglobina",
+          "valor": 10.4,
+          "valor_impresso": "10,4",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "abaixo",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "tsh_normal.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "TSH",
+          "valor": 2.35,
+          "valor_impresso": "2,35",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "tsh_acima.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "TSH",
+          "valor": 7.8,
+          "valor_impresso": "7,80",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "tsh_abaixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "TSH",
+          "valor": 0.12,
+          "valor_impresso": "0,12",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50",
+          "classificacao_esperada": "abaixo",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "colesterol_total_normal.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Colesterol total",
+          "valor": 172,
+          "valor_impresso": "172",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "colesterol_total_acima.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Colesterol total",
+          "valor": 238,
+          "valor_impresso": "238",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "colesterol_total_limite.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Colesterol total",
+          "valor": 190,
+          "valor_impresso": "190",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "creatinina_normal.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Creatinina",
+          "valor": 0.9,
+          "valor_impresso": "0,9",
+          "unidade": "mg/dL",
+          "faixa_impressa": "0,6 a 1,3",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "creatinina_acima.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Creatinina",
+          "valor": 1.8,
+          "valor_impresso": "1,8",
+          "unidade": "mg/dL",
+          "faixa_impressa": "0,6 a 1,3",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "creatinina_abaixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Creatinina",
+          "valor": 0.3,
+          "valor_impresso": "0,3",
+          "unidade": "mg/dL",
+          "faixa_impressa": "0,6 a 1,3",
+          "classificacao_esperada": "abaixo",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_acima_layoutB.pdf",
+      "layout": "B",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99 mg/dL",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "painel_misto_layoutB.pdf",
+      "layout": "B",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99 mg/dL",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Hemoglobina",
+          "valor": 13.8,
+          "valor_impresso": "13,8",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0 g/dL",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        },
+        {
+          "nome": "TSH",
+          "valor": 7.8,
+          "valor_impresso": "7,80",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50 µUI/mL",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Colesterol total",
+          "valor": 172,
+          "valor_impresso": "172",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190 mg/dL",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "painel_misto_layoutA.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Hemoglobina",
+          "valor": 13.8,
+          "valor_impresso": "13,8",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        },
+        {
+          "nome": "TSH",
+          "valor": 7.8,
+          "valor_impresso": "7,80",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Colesterol total",
+          "valor": 172,
+          "valor_impresso": "172",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "foto_glicose_acima.jpg",
+      "layout": "A",
+      "tipo": "foto",
+      "gerado_de": "glicose_acima.pdf",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "foto_painel_misto.jpg",
+      "layout": "A",
+      "tipo": "foto",
+      "gerado_de": "painel_misto_layoutA.pdf",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Hemoglobina",
+          "valor": 13.8,
+          "valor_impresso": "13,8",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        },
+        {
+          "nome": "TSH",
+          "valor": 7.8,
+          "valor_impresso": "7,80",
+          "unidade": "µUI/mL",
+          "faixa_impressa": "0,45 a 4,50",
+          "classificacao_esperada": "acima",
+          "critico": false
+        },
+        {
+          "nome": "Colesterol total",
+          "valor": 172,
+          "valor_impresso": "172",
+          "unidade": "mg/dL",
+          "faixa_impressa": "Inferior a 190",
+          "classificacao_esperada": "dentro",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "foto_borrada.jpg",
+      "layout": "A",
+      "tipo": "foto",
+      "gerado_de": "glicose_acima.pdf",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 118,
+          "valor_impresso": "118",
+          "unidade": "mg/dL",
+          "faixa_impressa": "70 a 99",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": true
+    }
+  ]
+}

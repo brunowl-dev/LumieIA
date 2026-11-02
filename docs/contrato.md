@@ -55,7 +55,7 @@ Cada item de `analitos`:
 | `nome_no_laudo` | texto | Como o exame aparece escrito no laudo |
 | `valor` | número | Valor obtido |
 | `unidade` | texto | Ex.: `mg/dL` |
-| `faixa_referencia` | objeto | `minimo` (número ou null), `maximo` (número ou null), `texto_original` (como está no laudo) |
+| `faixa_referencia` | objeto | `minimo` (número ou null), `maximo` (número ou null), `minimo_inclusivo` / `maximo_inclusivo` (verdadeiro/falso, null se não há aquele limite; "Inferior a 190" → `maximo_inclusivo: false`; "Até 150" → `true`; "70 a 99" → ambos `true`), `texto_original` (como está no laudo) |
 | `classificacao` | `"dentro"` \| `"acima"` \| `"abaixo"` | Decidida por regra determinística, SEMPRE com a faixa do laudo |
 | `alerta_critico` | verdadeiro/falso | Decidido por limite crítico por analito (com fonte) |
 | `confianca` | número 0–1 | Confiança da extração deste item |
@@ -66,6 +66,52 @@ Cada item de `analitos`:
 - Analito sem ficha na base (`id_canonico: null`): ainda é classificado (a faixa vem do laudo), mas `alerta_critico` é sempre `false`, porque os limites críticos são por `id_canonico`. Ele aparece na tela de exames **sem** botão de explicação (seção 5.1).
 
 **Falhas:** arquivo ilegível ou confiança abaixo do mínimo → o pipeline não devolve laudo; devolve erro (seção 7).
+
+### 2.1 Etapa interna: extração de texto do PDF digital (BWL-02)
+Uso interno do pipeline; não sai para o front nem para o modelo. `backend/src/pipeline/extrairTextoPdf.js`:
+
+`extrairTextoPdf(buffer, { senha? })` → `{ texto, numPaginas, caracteresUteis, temCamadaDeTexto }`
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `texto` | texto | Texto do PDF (pdf-parse v2), quebras de linha normalizadas para `\n`, sem outra limpeza. Contém dados do paciente: nunca registrar em log nem enviar ao modelo |
+| `numPaginas` | número | Páginas do PDF |
+| `caracteresUteis` | número | Caracteres não-espaço de `texto` |
+| `temCamadaDeTexto` | verdadeiro/falso | `false` se `caracteresUteis` < `LIMIAR_CARACTERES_UTEIS` (50): PDF só de imagem, candidato ao OCR |
+
+Erros: `ErroExtracaoPdf` com `codigo` estável. São códigos **internos**; o orquestrador traduz para a seção 7.
+
+| `codigo` | Quando | Tradução sugerida (seção 7) |
+|---|---|---|
+| `ARQUIVO_VAZIO` | 0 bytes | `ARQUIVO_ILEGIVEL` |
+| `ARQUIVO_NAO_E_PDF` | sem `%PDF-` nos primeiros 1024 bytes (JPG, bytes aleatórios) | imagem → OCR; senão `FORMATO_NAO_SUPORTADO` |
+| `PDF_CORROMPIDO` | o pdf-parse não consegue ler (ex.: arquivo truncado) | `ARQUIVO_ILEGIVEL` |
+| `PDF_PROTEGIDO` | PDF com senha e nenhuma senha informada | **[A CONFIRMAR no grupo]** pedir a senha |
+| `SENHA_INCORRETA` | senha informada não abre o PDF | **[A CONFIRMAR no grupo]** pedir a senha de novo |
+
+PDF com senha (proposta, depende de mudança na seção 7, na porta 1 e no front): o sistema pede a senha com mensagem FIXA ("Mande uma mensagem apenas contendo a senha do documento."), sem o modelo. A senha só abre o arquivo em memória: nunca vai para o modelo, log ou sessão.
+
+### 2.2 Etapa interna: estruturação por analito (BWL-03)
+Uso interno do pipeline; não sai para o front nem para o modelo. `backend/src/pipeline/estruturarAnalitos.js`:
+
+`estruturarAnalitos(texto)` → `{ analitos, nao_interpretadas }`. Função pura (sem rede, sem modelo, sem log). Só lê o que está impresso: não classifica (BWL-05) nem normaliza o nome (BWL-04).
+
+Cada item de `analitos` já usa os nomes da seção 2; as etapas seguintes acrescentam `id_canonico`, `classificacao` e `alerta_critico`.
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `nome_no_laudo` | texto | Como está no laudo, só juntando espaços (Layout B vem em maiúsculas: "GLICOSE EM JEJUM") |
+| `valor` | número | Vírgula é decimal, ponto é milhar ("1.234,5" → 1234.5; "5.000" → 5000). Ponto sem grupos de 3 dígitos é tratado como decimal ("4.5" → 4.5) |
+| `valor_impresso` | texto | O valor como impresso, para auditoria |
+| `unidade` | texto \| null | Token com `/` ou `%` logo após o valor (`mg/dL`, `µUI/mL`), como impresso |
+| `faixa_referencia` | objeto | Seção 2 + `interpretada` (verdadeiro/falso). Formato não reconhecido → `interpretada: false`, limites `null`, `texto_original` preservado |
+| `outras_faixas` | lista de texto | Quando o laudo traz várias categorias ("Normal", "Glicemia de jejum alterada", "Diabetes"): a faixa usada é a "Normal"; as demais ficam aqui, como texto. Senão, `[]` |
+| `confianca` | número 0–1 | Campos encontrados / 4 (nome, valor, unidade, faixa interpretada) |
+| `pendencias` | lista | `unidade_ausente`, `faixa_ausente`, `faixa_nao_interpretada` |
+
+`nao_interpretadas`: `[{ linha, motivo }]`, linhas que parecem resultado mas não viraram analito. Nunca são descartadas em silêncio. Motivos: `formato_nao_reconhecido`, `valor_invalido`, `valor_ausente`, `valor_com_sinal` ("< 0,5": limite de detecção não é o valor 0,5), `nome_nao_encontrado`, `unidade_e_faixa_ausentes`. **Contém texto do laudo:** mesma regra do `texto` da seção 2.1 (nunca para log, front ou modelo).
+
+A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`) é da BWL-06, a partir de `confianca`, `pendencias` e `nao_interpretadas`.
 
 ## 3. Base de conhecimento → IA e Segurança
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
@@ -145,7 +191,7 @@ Formato: `{"status":"erro","erro":{"codigo":"...","mensagem_usuario":"..."}}`. `
 | `ARQUIVO_ILEGIVEL` | 1 | não foi possível extrair texto | pedir novo envio (foto mais nítida) |
 | `BAIXA_CONFIANCA` | 1 | extração abaixo do mínimo | pedir novo envio |
 | `EXAME_NAO_ENCONTRADO` | 2, 3 | `id_canonico` que não está no laudo ou não tem ficha (o front não deveria chamar, pois o botão não aparece) | voltar à tela de exames |
-| `MODELO_INDISPONIVEL` | 2, 3 | usar mensagem padrão: "Estamos indisponíveis no momento" |
+| `MODELO_INDISPONIVEL` | 2, 3 | modelo fora do ar ou sem resposta dentro de `OLLAMA_TIMEOUT_MS` | usar mensagem padrão: "Estamos indisponíveis no momento" |
 | `SESSAO_EXPIRADA` | 2, 3 | `id_laudo` expirado | pedir novo envio do laudo |
 
 Ausência de ficha **não** é erro da porta 1: o laudo volta com `status: "ok"` e o item com `explicacao_disponivel: false`.
@@ -156,7 +202,7 @@ Ausência de ficha **não** é erro da porta 1: o laudo volta com `status: "ok"`
 - A segurança só **avalia**: devolve aprovado/reprovado + motivo. Ela não chama a IA.
 - Quem faz o laço é o **orquestrador**: reprovou → pede nova resposta à IA (com o motivo), até `MAX_REGENERACOES`. Esgotou → **mensagem padrão**, montada sem o modelo, e `origem_texto` passa a `"mensagem_padrao"`:
   - explicação: finalidade e especialidade da base + valor e posição do pipeline + aviso fixo;
-  - chat: "Não consegui responder essa dúvida com segurança. Converse com um profissional de saúde." + aviso fixo.
+  - chat: "Não consegui responder essa dúvida com segurança. Converse com um profissional de saúde." + especialidade da base + aviso fixo.
 
 ## 9. Aviso padrão
 Texto de referência: "Esta explicação é informativa e não substitui a avaliação de um profissional de saúde."
@@ -167,5 +213,5 @@ A IA deve incluí-lo na parte 5 (explicação) e ao fim de cada resposta do chat
 - [ ] As portas e o comportamento do chat (seção 6).
 - [ ] Mapeamento de cores (seção 5.1).
 - [ ] `MODELO_INDISPONIVEL`: erro ou mensagem padrão?
-- [ ] Lista final de exames além da glicose (GRP-02).
+- [x] Lista final de exames (GRP-02): `glicose`, `colesterol_total`, `creatinina`, `tsh`, `hemoglobina`.
 - [ ] Texto final do aviso padrão e da mensagem padrão do chat.
