@@ -156,7 +156,7 @@ Só fichas com `status: "pronto"` são usadas **para a explicação** (IA e segu
 - As decisões abaixo estão **fechadas** para a ISA poder implementar sem esperar o grupo. Se alguma se mostrar ruim, quem muda é o BWL, junto com o adaptador e os testes.
 
 ### 4.0 O que a ISA entrega (e o que NÃO é dela)
-Um arquivo `backend/src/ia/index.js` que exporta **uma** função:
+O arquivo `backend/src/ia/index.js` (o **esqueleto já existe**, com esta forma) exporta **uma** função:
 
 ```js
 export function criarClienteIa(opcoes = {}) {
@@ -169,7 +169,7 @@ export function criarClienteIa(opcoes = {}) {
 }
 ```
 
-O BWL liga com uma linha em `backend/src/server.js` (troca `criarIaFalsa()` por `criarClienteIa()`). A ISA **não** mexe em `api/`, `seguranca/` nem `pipeline/`. A IA falsa (`backend/src/api/iaFalsa.js`) é um exemplo funcional de cliente com essa mesma forma.
+O servidor escolhe o cliente pela variável `IA_FALSA` do `.env`: `true` (padrão) usa a IA falsa (`backend/src/api/iaFalsa.js`, um exemplo funcional com esta mesma forma); `false` usa `criarClienteIa()`. Ninguém precisa editar `server.js` para ligar o modelo. A ISA **não** mexe em `api/`, `seguranca/` nem `pipeline/`. Roteiro de implementação e testes de aceitação: `backend/src/ia/CLAUDE.md` e `backend/test/ia/clienteIa.test.js`.
 
 | É da ISA | NÃO é da ISA (já existe no orquestrador) |
 |---|---|
@@ -241,7 +241,7 @@ Campos a mais são ignorados. Exemplos aprovados e reprovados, com o motivo: `sa
 - **Terminar** com o aviso da §9 (a segurança procura nas 2 últimas frases).
 
 ### 4.5 Prompts
-- Arquivos de texto versionados em `backend/src/ia/prompts/v1/explicacao.md` e `backend/src/ia/prompts/v1/chat.md`. Nova versão = nova pasta (`v2/`), sem apagar a anterior. A versão em uso é uma constante em `ia/index.js`.
+- Arquivos de texto versionados em `backend/src/ia/prompts/v1/explicacao.md` e `backend/src/ia/prompts/v1/chat.md`. Nova versão = nova pasta (`v2/`), sem apagar a anterior. A versão em uso é a constante `VERSAO_PROMPT` em `ia/prompts.js`.
 - O prompt deve conter:
   - as 5 partes e a ordem;
   - as regras da coluna "O que a segurança confere" da §4.3;
@@ -274,7 +274,7 @@ A ISA não guarda estado entre tentativas e não decide quantas são.
 - **Nada de `console.log`** da `entrada`, do prompt montado ou da resposta do modelo (LGPD: o log só aceita códigos, ver `registrarEvento`). A chave da API fica só no `.env`.
 - Testes com `node:test`, sem rede: passar um `fetch` falso em `criarClienteIa({ fetch })` e conferir o corpo enviado e o objeto devolvido. Entradas de teste: `samples/entradas-ia/`.
 - Para conferir as próprias saídas, a ISA pode importar (só ler, não alterar) `verificarExplicacao` e `verificarChat` de `backend/src/seguranca/verificarResposta.js`.
-- Teste com o modelo real: manual, fora do `npm test` (precisa de internet e da chave).
+- Teste com o modelo real: manual, fora do `npm test` (precisa de internet e da chave): `npm.cmd run testar:ia` na pasta `backend` (`backend/scripts/testarIa.js`). Esse script pode imprimir as respostas porque as entradas são sintéticas; o código de `src/ia` não imprime nada. Resultados em `docs/ia-resultados.md`.
 
 ## 5. Orquestrador → Front
 - **Produz:** orquestrador (BWL). **Consome:** Front (MAG). Exemplos em `samples/respostas-api/`.

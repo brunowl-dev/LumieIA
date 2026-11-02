@@ -56,7 +56,7 @@
 
 **Requisitos funcionais**
 - RF-I1: gerar a explicação sempre nas 5 partes e na ordem: (1) o que o exame avalia; (2) valor e posição na faixa; (3) significado sem afirmar doença; (4) especialidade; (5) aviso.
-- RF-I2: buscar a ficha do exame na base e injetá-la no prompt (RAG); em divergência, a base prevalece.
+- RF-I2: injetar no prompt a ficha do exame (RAG: o orquestrador busca a ficha pelo `id_canonico` e a entrega pronta); em divergência, a base prevalece.
 - RF-I3: responder no chat apenas sobre aquele exame (a explicação é a 1ª mensagem do chat), sem memória entre sessões.
 - RF-I4: aceitar o motivo da reprovação da segurança numa nova tentativa (quem decide tentar de novo é o orquestrador).
 
@@ -66,7 +66,7 @@
 - RNF-I3: prompt versionado e documentado.
 - RNF-I4: resposta em tempo aceitável para a demo.
 
-**Tarefas**
+**Tarefas** — roteiro passo a passo, arquivos e critérios de pronto em `backend/src/ia/CLAUDE.md`; interface no contrato §4; testes de aceitação em `backend/test/ia/clienteIa.test.js` (tirar o `todo` de cada um); medições em `docs/ia-resultados.md`.
 - [ ] **ISA-01 (P0)** Acesso ao modelo (Ollama Cloud, `gpt-oss`) com uma chamada simples isolada. Verificar se o modelo está disponível na conta e quais são os limites do plano gratuito.
 - [ ] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
 - [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.

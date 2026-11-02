@@ -9,7 +9,8 @@
     "start": "node src/server.js",
     "test": "node --test \"test/**/*.test.js\"",
     "gerar:texto-extraido": "node scripts/gerarTextoExtraido.js",
-    "pipeline": "node scripts/processarLaudo.js"
+    "pipeline": "node scripts/processarLaudo.js",
+    "testar:ia": "node --env-file=../.env scripts/testarIa.js"
   },
   "engines": {
     "node": ">=24"

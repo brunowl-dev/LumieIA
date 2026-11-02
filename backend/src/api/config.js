@@ -30,5 +30,10 @@ export const UPLOAD_MAX_MB = lerNumero('UPLOAD_MAX_MB', 10, 1, 19);
 // Tempo máximo de UMA chamada ao modelo. Estourou → MODELO_INDISPONIVEL.
 export const OLLAMA_TIMEOUT_MS = lerNumero('OLLAMA_TIMEOUT_MS', 60000, 1000, 300000);
 
+// true (padrão) = IA falsa, sem rede; false = modelo real (src/ia, Ollama Cloud).
+// Qualquer valor diferente de "false" mantém a IA falsa: a demo nunca liga o
+// modelo por engano.
+export const IA_FALSA = (process.env.IA_FALSA ?? '').trim().toLowerCase() !== 'false';
+
 export const CAMINHO_BASE_CONHECIMENTO = process.env.KNOWLEDGE_BASE_PATH
   || join(RAIZ_DO_REPOSITORIO, 'docs', 'base-conhecimento', 'exames.json');

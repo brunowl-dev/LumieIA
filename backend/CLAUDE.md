@@ -6,7 +6,7 @@ Leia antes: `../CLAUDE.md` (raiz) e `../docs/contrato.md`.
 - `src/api/` — rotas HTTP e orquestrador (envio do laudo → pipeline; explicação e chat → IA → segurança, com o laço de regeneração). Dono: Bruno (BWL).
 - `src/pipeline/` — extração, estruturação, classificação por regras. Dono: Bruno (BWL).
 - `src/seguranca/` — validação da resposta do modelo. Dono: Bruno (BWL).
-- `src/ia/` — cliente do modelo, prompt, busca na base (RAG), chat. Dono: Isadora (ISA).
+- `src/ia/` — cliente do modelo (Ollama Cloud), prompts, chat. A ficha da base chega pronta do orquestrador. Dono: Isadora (ISA). Roteiro em `src/ia/CLAUDE.md`.
 
 ## Regras do backend
 - Um único projeto Node, módulos separados por pasta. Um módulo NÃO importa o interior de outro: conversam só pelo formato definido em `docs/contrato.md`.
