@@ -374,6 +374,82 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   line-height: 1.5;
 }
 
+/* ---------- Chat do exame ---------- */
+.chat {
+  display: grid;
+  margin-top: 14px;
+  border: 1px solid var(--borda);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 40px #063f5714;
+  overflow: hidden;
+}
+.chat-mensagens { display: grid; align-content: start; gap: 12px; min-height: 280px; padding: 20px; }
+
+.balao { max-width: 78%; padding: 14px 16px; border-radius: 14px; font-size: 14px; line-height: 1.55; }
+.balao-lumie { justify-self: start; border: 1px solid #c9eef2; border-top-left-radius: 4px; background: #f3fcfe; }
+.balao-paciente { justify-self: end; border-top-right-radius: 4px; background: var(--primaria-escura); color: #fff; }
+.balao-autor {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  color: var(--primaria-escura);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+}
+.balao-autor .ui-icon { width: 14px; height: 14px; }
+.digitando { color: var(--texto-suave); font-style: italic; }
+
+.parte + .parte { margin-top: 12px; }
+.parte strong { display: block; margin-bottom: 2px; color: var(--texto); font-size: 13px; }
+.parte p { color: var(--texto-medio); }
+.parte-aviso {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed #c9eef2;
+  color: #0a617f;
+  font-size: 12px;
+}
+.origem-padrao {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff6e7;
+  color: #8d651f;
+  font-size: 12px;
+}
+
+.chat-campo {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--borda);
+  background: #fafdff;
+}
+.chat-campo input {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid #d7e1e9;
+  border-radius: 11px;
+  background: #fff;
+  color: var(--texto);
+}
+.chat-campo input:focus { outline: 2px solid #bcecf4; border-color: var(--primaria); }
+.chat-campo .primary { height: 46px; }
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ---------- Celular ---------- */
 @media (max-width: 850px) {
   .app-layout { grid-template-columns: 1fr; }
@@ -386,4 +462,6 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   .selo { margin-left: 57px; }
   .sem-explicacao { max-width: none; text-align: left; }
   .data-error { align-items: flex-start; flex-direction: column; }
+  .balao { max-width: 92%; }
+  .exams-heading { flex-wrap: wrap; }
 }

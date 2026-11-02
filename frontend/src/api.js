@@ -48,11 +48,20 @@ export async function enviarLaudo(arquivo) {
 }
 
 // Porta 2 — POST /api/explicacoes (contrato §5.2): 1ª mensagem do chat.
-// No mock, a creatinina simula a mensagem padrão (segurança reprovou tudo).
+// No mock (os samples só têm texto de glicose, então o texto é o mesmo para todos):
+// creatinina → mensagem padrão (segurança reprovou tudo);
+// TSH → alterna: falha ao abrir, funciona no "Tentar de novo".
+// Chamadas a menos de 0,5 s da anterior repetem o resultado: no modo de
+// desenvolvimento o React abre a tela duas vezes seguidas (StrictMode).
+let ultimaTsh = { em: 0, falhou: false };
 export async function pedirExplicacao(idLaudo, idCanonico) {
   if (USAR_MOCK) {
+    if (idCanonico === 'tsh' && Date.now() - ultimaTsh.em > 500) {
+      ultimaTsh = { em: Date.now(), falhou: !ultimaTsh.falhou };
+    }
     await esperar(2000);
     if (idCanonico === 'creatinina') return explicacaoPadrao;
+    if (idCanonico === 'tsh' && ultimaTsh.falhou) return erros.MODELO_INDISPONIVEL;
     return explicacaoGlicose;
   }
   return chamar('/api/explicacoes', {
@@ -63,9 +72,11 @@ export async function pedirExplicacao(idLaudo, idCanonico) {
 }
 
 // Porta 3 — POST /api/chat (contrato §5.3): resposta a uma dúvida digitada.
+// No mock, uma dúvida com a palavra "expirou" simula a sessão expirada.
 export async function enviarDuvida(idLaudo, idCanonico, mensagem) {
   if (USAR_MOCK) {
     await esperar(1500);
+    if (mensagem.toLowerCase().includes('expirou')) return erros.SESSAO_EXPIRADA;
     return chatResposta;
   }
   return chamar('/api/chat', {
