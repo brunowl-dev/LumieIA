@@ -40,7 +40,7 @@
 **Tarefas**
 - [x] **BWL-01 (P0)** Laudos sintéticos em PDF, com paciente FICTÍCIO, em `samples/laudos/`. Para cada exame: normal, acima e abaixo da faixa (tabela abaixo), em dois layouts, mais versões "foto" para o OCR e `gabarito.json` (resposta esperada). Detalhes em `samples/laudos/README.md`.
 - [x] **BWL-02 (P0)** Extração de texto do PDF digital, testada isolada.
-- [ ] **BWL-03 (P0)** Estruturação por analito (nome, valor, unidade, faixa), testada isolada. Atenção a vírgula decimal.
+- [x] **BWL-03 (P0)** Estruturação por analito (nome, valor, unidade, faixa), testada isolada. Atenção a vírgula decimal.
 - [x] **BWL-04 (P0)** Normalizar o nome do exame para o `id_canonico` (usa `nomes_alternativos` da base).
 - [x] **BWL-05 (P0)** Regras de classificação + limites críticos por analito, **cada limite com fonte**. Se um exame não tem limite crítico definido (ex.: colesterol), documentar isso. → `docs/limites-criticos.md` (TSH e colesterol sem limite).
 - [x] **BWL-06 (P0)** Confiança da extração e erro "envie novamente". → `docs/confianca-extracao.md`.
