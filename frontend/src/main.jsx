@@ -1,26 +1,48 @@
-// Esqueleto mínimo do front: mostra o nome do projeto e testa a ligação com o
-// backend. A chamada usa caminho RELATIVO (/api/...): o navegador pede ao mesmo
-// endereço do front e o nginx repassa ao backend, então não há CORS.
-import { StrictMode, useEffect, useState } from 'react';
+// Ponto de entrada do front. O App guarda em qual tela o paciente está:
+// sem resultado → envio; com resultado → exames; com exame escolhido → chat do exame.
+import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import Layout from './components/Layout.jsx';
+import TelaChat from './telas/TelaChat.jsx';
+import TelaEnvio from './telas/TelaEnvio.jsx';
+import TelaExames from './telas/TelaExames.jsx';
 import './styles.css';
 
 function App() {
-  const [backend, setBackend] = useState('verificando...');
+  // resultado = resposta de POST /api/laudos (contrato §5.1), ou null.
+  const [resultado, setResultado] = useState(null);
+  // exameAberto = item cujo botão "Explicar com IA" foi clicado, ou null.
+  const [exameAberto, setExameAberto] = useState(null);
 
-  useEffect(() => {
-    fetch('/api/saude')
-      .then((res) => res.json())
-      .then((dados) => setBackend(dados.status === 'ok' ? 'conectado' : 'resposta inesperada'))
-      .catch(() => setBackend('sem conexão'));
-  }, []);
+  function novoEnvio() {
+    setResultado(null);
+    setExameAberto(null);
+  }
+
+  let pagina;
+  let tela;
+  if (!resultado) {
+    pagina = 'Enviar exame';
+    tela = <TelaEnvio onResultado={setResultado} />;
+  } else if (exameAberto) {
+    pagina = exameAberto.nome;
+    tela = (
+      <TelaChat
+        idLaudo={resultado.id_laudo}
+        exame={exameAberto}
+        onVoltar={() => setExameAberto(null)}
+        onNovoEnvio={novoEnvio}
+      />
+    );
+  } else {
+    pagina = 'Meus exames';
+    tela = <TelaExames resultado={resultado} onExplicar={setExameAberto} onNovoEnvio={novoEnvio} />;
+  }
 
   return (
-    <main>
-      <h1>Lumie</h1>
-      <p>Módulo de IA — interpretação de exames em linguagem simples.</p>
-      <p className="status">Backend: {backend}</p>
-    </main>
+    <Layout pagina={pagina} totalExames={resultado ? resultado.itens.length : 0}>
+      {tela}
+    </Layout>
   );
 }
 

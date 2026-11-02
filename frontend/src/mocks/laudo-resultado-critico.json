@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "id_laudo": "sintetico-glicose-critica",
+  "itens": [
+    {
+      "id_canonico": "glicose",
+      "nome": "Glicose em jejum",
+      "valor": 42,
+      "unidade": "mg/dL",
+      "faixa_referencia": { "minimo": 70, "maximo": 99, "minimo_inclusivo": true, "maximo_inclusivo": true, "texto_original": "70 a 99 mg/dL" },
+      "classificacao": "abaixo",
+      "cor": "vermelho",
+      "alerta_prioritario": true,
+      "explicacao_disponivel": true
+    }
+  ]
+}
