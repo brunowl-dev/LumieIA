@@ -5,33 +5,33 @@
     {
       "id_canonico": "glicose",
       "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum"],
-      "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer.",
+      "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer. A glicose é a principal fonte de energia do corpo.",
       "especialidade": "Endocrinologia",
-      "fonte": "[PREENCHER pela Aguiar: onde você conferiu este texto e a especialidade]",
+      "fonte": "A CONFERIR — Sociedade Brasileira de Diabetes, Diretriz da SBD (diretriz.diabetes.org.br); explicação em linguagem simples: Rede D'Or, página 'Glicose' em análises clínicas",
       "status": "pendente"
     },
     {
       "id_canonico": "colesterol_total",
-      "nomes_alternativos": ["Colesterol total", "Colesterol Total", "Colesterol"],
-      "o_que_avalia": "[PREENCHER]",
-      "especialidade": "[PREENCHER]",
-      "fonte": "[PREENCHER]",
+      "nomes_alternativos": ["Colesterol total", "Colesterol Total", "COLESTEROL TOTAL"],
+      "o_que_avalia": "O exame mede a quantidade total de colesterol no sangue. O colesterol é um tipo de gordura que o corpo usa para funcionar e que circula pelos vasos sanguíneos; o valor total soma as suas diferentes partes, como o HDL e o LDL.",
+      "especialidade": "Cardiologia",
+      "fonte": "A CONFERIR — Sociedade Brasileira de Cardiologia, Atualização da Diretriz Brasileira de Dislipidemias (Arq Bras Cardiol); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/colesterol-total",
       "status": "pendente"
     },
     {
       "id_canonico": "creatinina",
-      "nomes_alternativos": ["Creatinina", "Creatinina sérica", "Creatinina sanguínea"],
-      "o_que_avalia": "[PREENCHER]",
-      "especialidade": "[PREENCHER]",
-      "fonte": "[PREENCHER]",
+      "nomes_alternativos": ["Creatinina", "Creatinina sérica", "Creatinina sanguínea", "Creatinina no sangue"],
+      "o_que_avalia": "A creatinina é uma substância produzida pelos músculos e eliminada do corpo pelos rins. O exame mede quanto dela há no sangue e ajuda a avaliar como os rins estão filtrando o sangue.",
+      "especialidade": "Nefrologia",
+      "fonte": "A CONFERIR — Sociedade Brasileira de Nefrologia, campanha do Dia Mundial do Rim (sbn.org.br); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/richet/exames-e-procedimentos/analises-clinicas/creatinina",
       "status": "pendente"
     },
     {
       "id_canonico": "tsh",
-      "nomes_alternativos": ["TSH", "TSH ultrassensível", "Hormônio tireoestimulante"],
-      "o_que_avalia": "[PREENCHER]",
-      "especialidade": "[PREENCHER]",
-      "fonte": "[PREENCHER]",
+      "nomes_alternativos": ["TSH", "TSH ultrassensível", "TSH ultra-sensível", "Hormônio tireoestimulante", "Tireotrofina"],
+      "o_que_avalia": "O TSH é um hormônio produzido por uma glândula na base do cérebro (a hipófise) que comanda o funcionamento da tireoide. O exame mede a quantidade desse hormônio no sangue e ajuda a avaliar como a tireoide está funcionando.",
+      "especialidade": "Endocrinologia",
+      "fonte": "A CONFERIR — Sociedade Brasileira de Endocrinologia e Metabologia, Departamento de Tireoide (tireoide.org.br); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/tsh",
       "status": "pendente"
     }
   ]
