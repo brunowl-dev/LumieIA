@@ -476,6 +476,57 @@
       "esperado_baixa_confianca": false
     },
     {
+      "arquivo": "creatinina_critico_alto.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Creatinina",
+          "valor": 8.1,
+          "valor_impresso": "8,1",
+          "unidade": "mg/dL",
+          "faixa_impressa": "0,6 a 1,3",
+          "classificacao_esperada": "acima",
+          "critico": true
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "hemoglobina_critico_baixo.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Hemoglobina",
+          "valor": 5.9,
+          "valor_impresso": "5,9",
+          "unidade": "g/dL",
+          "faixa_impressa": "12,0 a 16,0",
+          "classificacao_esperada": "abaixo",
+          "critico": true
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
+      "arquivo": "glicose_unidade_mmol.pdf",
+      "layout": "A",
+      "tipo": "pdf_digital",
+      "analitos": [
+        {
+          "nome": "Glicose em jejum",
+          "valor": 6.5,
+          "valor_impresso": "6,5",
+          "unidade": "mmol/L",
+          "faixa_impressa": "3,9 a 5,5",
+          "classificacao_esperada": "acima",
+          "critico": false
+        }
+      ],
+      "esperado_baixa_confianca": false
+    },
+    {
       "arquivo": "foto_borrada.jpg",
       "layout": "A",
       "tipo": "foto",

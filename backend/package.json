@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test \"test/**/*.test.js\"",
-    "gerar:texto-extraido": "node scripts/gerarTextoExtraido.js"
+    "gerar:texto-extraido": "node scripts/gerarTextoExtraido.js",
+    "pipeline": "node scripts/processarLaudo.js"
   },
   "engines": {
     "node": ">=24"

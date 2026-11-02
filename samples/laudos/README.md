@@ -18,6 +18,10 @@
 | `foto_borrada.jpg` | Foto de `glicose_acima.pdf` com desfoque forte, de propósito: deve cair em "baixa confiança, envie novamente". |
 | `digitalizado_sem_texto.pdf` | PDF só de imagem (`foto_glicose_acima.jpg` reduzida, convertida com ImageMagick), sem camada de texto: a extração devolve `temCamadaDeTexto: false` (BWL-02). Fora do gabarito. |
 | `laudo_protegido.pdf` | `glicose_normal.pdf` criptografado com qpdf (AES-256). Senha de abertura sintética: `lumie-teste-123`. Testa `PDF_PROTEGIDO` / `SENHA_INCORRETA` (BWL-02). Fora do gabarito. |
+| `creatinina_critico_alto.pdf` (8,1) / `hemoglobina_critico_baixo.pdf` (5,9) | Alerta crítico em outros exames (BWL-05; limites em `docs/limites-criticos.md`). |
+| `glicose_unidade_mmol.pdf` (6,5 mmol/L, faixa 3,9 a 5,5) | Unidade diferente da esperada: classifica pela faixa do laudo (acima), mas o limite crítico (em mg/dL) não é avaliado. |
+| `painel_parcial_ilegivel.pdf` | Caso misto (BWL-06): 5 linhas boas (inclui Ureia, sem ficha na base) + creatinina com faixa "Ver observação no verso". Esperado: segue, creatinina em `itens_nao_lidos`. Fora do gabarito (o gabarito só tem leitura perfeita). |
+| `painel_maioria_ilegivel.pdf` | Maioria ilegível (BWL-06): glicose boa, hemoglobina e creatinina sem faixa, TSH "< 0,01". Esperado: `BAIXA_CONFIANCA` (confiança 0,63). Fora do gabarito. |
 | `gabarito.json` | Resposta esperada para cada arquivo. |
 | `texto_extraido/` | **Derivada**, não editar à mão: texto de cada PDF digital do gabarito produzido pelo extrator (BWL-02); entrada dos testes da BWL-03. Regenerar em `backend/` com `npm run gerar:texto-extraido`. |
 
