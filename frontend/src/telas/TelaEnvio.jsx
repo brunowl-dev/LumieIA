@@ -12,6 +12,8 @@ const TAMANHO_MAXIMO_MB = 10; // igual a UPLOAD_MAX_MB do .env.example
 
 export default function TelaEnvio({ onResultado }) {
   const [arquivo, setArquivo] = useState(null);
+  // O artigo exige consentimento específico para tratar o exame: sem ele, não envia.
+  const [consentimento, setConsentimento] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState(null);
 
@@ -90,7 +92,19 @@ export default function TelaEnvio({ onResultado }) {
 
             {erro && <MensagemErro erro={erro} />}
 
-            <button type="submit" className="primary" disabled={!arquivo}>
+            <label className="consentimento">
+              <input
+                type="checkbox"
+                checked={consentimento}
+                onChange={(evento) => setConsentimento(evento.target.checked)}
+              />
+              <span>
+                Autorizo a Lumie a ler este exame para mostrar os resultados e, quando eu pedir, gerar explicações
+                com inteligência artificial. Meu nome e meus documentos não são enviados à inteligência artificial.
+              </span>
+            </label>
+
+            <button type="submit" className="primary" disabled={!arquivo || !consentimento}>
               Enviar exame →
             </button>
           </>

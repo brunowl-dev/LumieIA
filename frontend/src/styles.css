@@ -199,6 +199,17 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 }
 .area-envio input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 
+.consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--texto-medio);
+  font-size: 13px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.consentimento input { width: 18px; height: 18px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--primaria-escura); }
+
 .carregando {
   display: flex;
   align-items: center;
