@@ -47,7 +47,7 @@ Para parar: `Ctrl+C` e depois `docker compose down`.
 4. Navegador em http://localhost:3000 → página "Lumie" com **Backend: conectado**.
 5. `docker compose logs backend` → `OCR por: encontrado` e `OCR eng: encontrado`.
 
-### Os 3 erros mais prováveis
+### Erros mais prováveis
 | Erro | Causa | Solução |
 |---|---|---|
 | `env file ... .env not found` | O `.env` não foi criado | `cp .env.example .env` na raiz do repositório |

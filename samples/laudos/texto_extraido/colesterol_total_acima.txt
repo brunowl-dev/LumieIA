@@ -1,0 +1,13 @@
+Laboratório Modelo Lumie (fictício)
+Rua Exemplo, 000 - Cidade Fictícia/SP - Tel. (00) 0000-0000
+LAUDO DE EXAMES LABORATORIAIS
+Paciente: Maria Teste da Silva Pedido nº: TESTE-0014
+Sexo: Feminino Idade: 34 anos
+Nascimento: 14/03/1992 CPF: 000.000.000-00
+Médico solicitante: Dr. João Exemplo Fictício - CRM: FICTÍCIO
+Coleta: 20/10/2026 07:40 Liberação: 21/10/2026 15:10
+Exame Resultado Unidade Valores de referência
+Colesterol total 238 mg/dL Inferior a 190
+Responsável técnico: Dra. Ana Exemplo (fictícia) - registro FICTÍCIO
+Faixas de referência ilustrativas; não usar como referência clínica.
+DOCUMENTO SINTÉTICO, USO EM TESTES

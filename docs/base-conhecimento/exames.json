@@ -4,34 +4,42 @@
   "exames": [
     {
       "id_canonico": "glicose",
-      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum"],
-      "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue, geralmente depois de um período sem comer. A glicose é a principal fonte de energia do corpo.",
+      "nomes_alternativos": ["Glicose", "Glicemia", "Glicemia de jejum", "Glicose em jejum", "Glicose jejum", "Glicose plasmática"],
+      "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Em geral é feito em jejum, para mostrar o nível de açúcar sem a influência da última refeição. Ajuda a acompanhar como o corpo controla o açúcar no sangue.",
       "especialidade": "Endocrinologia",
-      "fonte": "A CONFERIR — Sociedade Brasileira de Diabetes, Diretriz da SBD (diretriz.diabetes.org.br); explicação em linguagem simples: Rede D'Or, página 'Glicose' em análises clínicas",
+      "fonte": "Texto: Sociedade Brasileira de Diabetes (SBD), Diretriz, capítulo 'Diagnóstico de diabetes mellitus' (revisão de 09/07/2024), https://diretriz.diabetes.org.br/diagnostico-de-diabetes-mellitus/ (acesso em 01/11/2026). Especialidade: área que trata o controle do açúcar no sangue (escolha do grupo, a revisar).",
       "status": "pendente"
     },
     {
       "id_canonico": "colesterol_total",
-      "nomes_alternativos": ["Colesterol total", "Colesterol Total", "COLESTEROL TOTAL"],
-      "o_que_avalia": "O exame mede a quantidade total de colesterol no sangue. O colesterol é um tipo de gordura que o corpo usa para funcionar e que circula pelos vasos sanguíneos; o valor total soma as suas diferentes partes, como o HDL e o LDL.",
+      "nomes_alternativos": ["Colesterol total", "Colesterol Total", "Colesterol"],
+      "o_que_avalia": "O exame mede a quantidade total de colesterol no sangue. O colesterol é uma gordura que o corpo precisa para formar as células e produzir alguns hormônios e vitaminas. O resultado costuma ser avaliado junto com outras partes do colesterol (como HDL e LDL), ligadas à saúde do coração e dos vasos.",
       "especialidade": "Cardiologia",
-      "fonte": "A CONFERIR — Sociedade Brasileira de Cardiologia, Atualização da Diretriz Brasileira de Dislipidemias (Arq Bras Cardiol); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/colesterol-total",
+      "fonte": "Texto: Ministério da Saúde, notícia '\"Colesterol ruim\" elevado está relacionado ao desenvolvimento de doenças cardiovasculares' (08/08/2022), https://www.gov.br/saude/pt-br/assuntos/noticias/2022/agosto/201ccolesterol-ruim201d-elevado-esta-relacionado-ao-desenvolvimento-de-doencas-cardiovasculares (acesso em 01/11/2026). Especialidade: área que trata o coração e os vasos (escolha do grupo, a revisar).",
       "status": "pendente"
     },
     {
       "id_canonico": "creatinina",
       "nomes_alternativos": ["Creatinina", "Creatinina sérica", "Creatinina sanguínea", "Creatinina no sangue"],
-      "o_que_avalia": "A creatinina é uma substância produzida pelos músculos e eliminada do corpo pelos rins. O exame mede quanto dela há no sangue e ajuda a avaliar como os rins estão filtrando o sangue.",
+      "o_que_avalia": "O exame mede a creatinina no sangue, um resíduo que se forma quando os músculos produzem energia. Quando funcionam bem, os rins filtram a creatinina do sangue e a eliminam na urina, por isso o exame ajuda a avaliar como os rins estão funcionando.",
       "especialidade": "Nefrologia",
-      "fonte": "A CONFERIR — Sociedade Brasileira de Nefrologia, campanha do Dia Mundial do Rim (sbn.org.br); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/richet/exames-e-procedimentos/analises-clinicas/creatinina",
+      "fonte": "Texto: Secretaria de Saúde do Distrito Federal, notícia 'Dia Mundial do Rim reforça a importância da saúde renal' (12/03/2025), https://www.saude.df.gov.br/web/guest/w/dia-mundial-do-rim-refor%C3%A7a-a-import%C3%A2ncia-da-sa%C3%BAde-renal; e Ministério da Saúde, 'Seus rins estão saudáveis? Saiba o que é a doença renal crônica e como preveni-la' (09/03/2023), https://www.gov.br/saude/pt-br/assuntos/noticias/2023/marco/seus-rins-estao-saudaveis-saiba-o-que-e-a-doenca-renal-cronica-e-como-preveni-la (acessos em 01/11/2026). Especialidade: área que trata os rins (escolha do grupo, a revisar).",
       "status": "pendente"
     },
     {
       "id_canonico": "tsh",
-      "nomes_alternativos": ["TSH", "TSH ultrassensível", "TSH ultra-sensível", "Hormônio tireoestimulante", "Tireotrofina"],
-      "o_que_avalia": "O TSH é um hormônio produzido por uma glândula na base do cérebro (a hipófise) que comanda o funcionamento da tireoide. O exame mede a quantidade desse hormônio no sangue e ajuda a avaliar como a tireoide está funcionando.",
+      "nomes_alternativos": ["TSH", "TSH ultrassensível", "Hormônio tireoestimulante", "Hormônio tiroestimulante", "Hormônio estimulante da tireoide", "Tireotrofina"],
+      "o_que_avalia": "O exame mede o TSH, um hormônio produzido pela hipófise, uma pequena glândula na base do cérebro. O TSH estimula a tireoide a produzir os seus hormônios (T3 e T4), por isso o exame ajuda a avaliar como a tireoide está funcionando.",
       "especialidade": "Endocrinologia",
-      "fonte": "A CONFERIR — Sociedade Brasileira de Endocrinologia e Metabologia, Departamento de Tireoide (tireoide.org.br); explicação em linguagem simples: Rede D'Or, https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/tsh",
+      "fonte": "Texto: Sociedade Brasileira de Endocrinologia e Metabologia (SBEM), 'Entendendo a Tireoide: Hipertireoidismo' (tradução de material da Hormone Health Network/Endocrine Society), https://www.endocrino.org.br/2013/09/30/entendendo-a-tireoide-hipertireoidismo/ (acesso em 01/11/2026). Especialidade: Endocrinologia, a especialidade da sociedade que publica a fonte (a revisar).",
+      "status": "pendente"
+    },
+    {
+      "id_canonico": "hemoglobina",
+      "nomes_alternativos": ["Hemoglobina", "Hb", "HGB", "Hemoglobina (Hb)"],
+      "o_que_avalia": "O exame mede a hemoglobina, a proteína que fica dentro dos glóbulos vermelhos (hemácias) e leva o oxigênio dos pulmões para todo o corpo. Por isso, ajuda a avaliar o transporte de oxigênio pelo sangue.",
+      "especialidade": "Hematologia",
+      "fonte": "Texto: Biblioteca Virtual em Saúde do Ministério da Saúde, '27/10 – Dia Nacional de Luta pelos Direitos das Pessoas com Doenças Falciformes', https://bvsms.saude.gov.br/27-10-dia-nacional-de-luta-pelos-direitos-das-pessoas-com-doencas-falciformes-3/; e Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (acessos em 01/11/2026). Especialidade: área que trata o sangue (escolha do grupo, a revisar).",
       "status": "pendente"
     }
   ]

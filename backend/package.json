@@ -6,9 +6,14 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "gerar:texto-extraido": "node scripts/gerarTextoExtraido.js"
   },
   "engines": {
     "node": ">=24"
+  },
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
   }
 }

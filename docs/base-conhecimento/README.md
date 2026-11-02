@@ -25,16 +25,25 @@ Arquivo: `exames.json` (nesta pasta). Cada ficha tem:
 - Diagnósticos ("indica diabetes"), remédios ou condutas.
 - Palavras como "preocupante", "grave", "normal/anormal" como veredito. Só **o que o exame mede e para que serve**.
 
-## Os exames a fazer (proposta, a confirmar no grupo — GRP-02)
-| `id_canonico` | Nomes que costumam aparecer | Unidade | Faixa de exemplo* | Especialidade sugerida |
+## Os exames do protótipo (definidos — GRP-02)
+| `id_canonico` | Nome nos laudos de teste | Unidade | Faixa impressa nos laudos de teste* | Especialidade na ficha |
 |---|---|---|---|---|
-| `glicose` | Glicose, Glicemia, Glicemia de jejum | mg/dL | 70 a 99 | Endocrinologia |
-| `colesterol_total` | Colesterol total | mg/dL | abaixo de 190 | Cardiologia |
-| `creatinina` | Creatinina, Creatinina sérica | mg/dL | 0,6 a 1,3 (varia por sexo) | Nefrologia |
-| `tsh` | TSH, TSH ultrassensível | mUI/L | 0,4 a 4,0 | Endocrinologia |
+| `glicose` | Glicose em jejum | mg/dL | 70 a 99 | Endocrinologia |
+| `colesterol_total` | Colesterol total | mg/dL | Inferior a 190 | Cardiologia |
+| `creatinina` | Creatinina | mg/dL | 0,6 a 1,3 | Nefrologia |
+| `tsh` | TSH | µUI/mL (= mUI/L) | 0,45 a 4,50 | Endocrinologia |
+| `hemoglobina` | Hemoglobina | g/dL | 12,0 a 16,0 | Hematologia |
 
-\* Faixas só para você entender a ordem de grandeza e para criar os laudos de teste. Cada laboratório define a sua; **o sistema sempre usa a faixa que está no laudo**. A especialidade sugerida é um ponto de partida: confira na fonte e ajuste se necessário.
+\* Faixas ILUSTRATIVAS, só para os laudos de teste. Cada laboratório define a sua; **o sistema sempre usa a faixa que está no laudo**.
+
+## Situação das fichas
+As cinco fichas já estão preenchidas (pelo Claude): o texto de `o_que_avalia` foi escrito a partir de fontes brasileiras citadas em `fonte` (Ministério da Saúde/BVS, Secretaria de Saúde do DF, Hemoes, SBD e SBEM), consultadas em 01/11/2026. Cada frase do texto foi conferida contra a página. A especialidade foi escolhida pela área que trata o órgão ou sistema avaliado: é **escolha do grupo**, não está na fonte (no TSH, coincide com a sociedade que publica a fonte). Todas estão com `status: "pendente"`:
+1. Leia cada ficha, abra o link da fonte e confira se o texto diz o mesmo, em linguagem simples.
+2. Confira se a especialidade faz sentido para vocês e saibam justificá-la à banca.
+3. Só então mude para `"pronto"`. Ficha `pendente` não é usada: o exame aparece sem o botão "Explicar com IA".
+
+A revisão por profissionais de saúde é trabalho futuro do artigo: **não afirme que o texto foi validado**.
 
 ## Antes de commitar
 O arquivo é JSON: **uma vírgula ou aspas faltando quebra o arquivo inteiro**. Peça ao Claude Code para validar o `exames.json` antes de cada commit.
-A ficha de glicose já vem com um texto-modelo (status `pendente`): leia, confira a fonte, ajuste e só então marque `pronto`.
+Se mudar o `o_que_avalia` ou a `especialidade` da glicose, atualize também `samples/respostas-api/explicacao-*.json`, que copiam esses textos.

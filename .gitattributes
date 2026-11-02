@@ -1,0 +1,3 @@
+# Textos derivados do extrator (BWL-02): sempre com \n, também no Windows.
+# Os testes da BWL-03 dependem do texto exatamente como o extrator produz.
+samples/laudos/texto_extraido/*.txt text eol=lf
