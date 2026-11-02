@@ -29,6 +29,22 @@ Etapas, nesta ordem, cada uma testável isoladamente:
 - OCR no Docker: `tesseract.js` baixa o idioma (`por`) na primeira execução. Para não depender de internet na apresentação, deixe o arquivo de idioma disponível localmente (volume ou cópia na imagem).
 - Prioridade: PDF digital (P0). OCR é P1 — se faltar tempo, é o primeiro corte; avise o grupo cedo, porque o artigo descreve OCR.
 
+## Estruturação (BWL-03): decisões e limites conhecidos
+Formato de saída no contrato §2.2. Testes em `backend/test/pipeline/estruturarAnalitos.test.js` (texto real de `samples/laudos/texto_extraido/` + fixtures em string).
+Decisões:
+- Números: vírgula decimal, ponto de milhar; ponto que não forma grupos de 3 dígitos é lido como decimal. Nunca `parseFloat` direto.
+- Linha só vira analito com nome + valor + (unidade OU faixa reconhecida). Sem valor legível → `nao_interpretadas`, nunca analito.
+- Valor com sinal ("< 0,5") → `nao_interpretadas` (`valor_com_sinal`): não inventar número.
+- Faixa com várias categorias: usa a de rótulo "Normal"/"Desejável"/"Ótimo"/"Adequado"; sem exatamente uma, não escolhe (faixa não interpretada).
+- Da faixa só se remove a unidade do próprio resultado; nenhuma outra palavra.
+Limites (o parser NÃO cobre):
+- Nome com dígito ("T4 livre", "Vitamina B12") → vai para `nao_interpretadas`.
+- Unidade sem `/` nem `%` (fL, pg) não é reconhecida como unidade.
+- Nome quebrado em duas linhas ("Glicose em" / "jejum 88 ...") → nome fica só "jejum" (teste `todo`).
+- Valor sem nome logo abaixo do cabeçalho da tabela usa o cabeçalho como nome (teste `todo`); a BWL-04 não acha ficha e vira `id_canonico: null`.
+- Faixa por sexo/idade na mesma linha ("Homens: ... Mulheres: ...") → não interpretada.
+- Layouts diferentes de "tabela em uma linha" e "blocos Resultado:/Valor de referência:" não foram testados.
+
 ## Modo de trabalho (Bruno)
 Modo GUIADO. Bruno é forte em Java e Python, SQL; JavaScript/Node é a maior lacuna; nunca usou OCR.
 - Explique cada conceito antes (OCR, regex, expressões regulares, async/await, módulos), relacionando com Java/Python quando ajudar.
