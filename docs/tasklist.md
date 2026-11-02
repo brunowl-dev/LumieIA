@@ -69,7 +69,7 @@
 **Tarefas**
 - [ ] **ISA-01 (P0)** Acesso ao modelo (Ollama Cloud, `gpt-oss`) com uma chamada simples isolada. Verificar se o modelo está disponível na conta e quais são os limites do plano gratuito.
 - [ ] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
-- [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt.
+- [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.
 - [ ] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
 - [ ] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
 - [ ] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.

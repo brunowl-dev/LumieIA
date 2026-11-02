@@ -11,9 +11,8 @@
 // 3. A resposta sai no formato do contrato §4 (objeto); texto JSON é convertido.
 //
 // "cliente" = objeto com gerarExplicacao(entrada, { motivosReprovacao }) e
-// responderChat(entrada, { motivosReprovacao }). SUPOSIÇÃO NOSSA: o formato do
-// histórico entregue à IA ([{ papel, texto }]) pode mudar quando a parte da
-// Isadora existir; ajustar aqui.
+// responderChat(entrada, { motivosReprovacao }). O cliente real é o
+// criarClienteIa() de src/ia/index.js; a forma dele está fechada no contrato §4.
 import { montarEntradaIa } from '../seguranca/pseudonimizar.js';
 
 export class ErroModeloIndisponivel extends Error {

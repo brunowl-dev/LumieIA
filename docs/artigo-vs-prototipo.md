@@ -5,7 +5,7 @@ O artigo já foi enviado e não pode mudar. Esta tabela lista o que o protótipo
 | Item | O que o artigo diz | O que o protótipo faz | Situação / como explicar |
 |---|---|---|---|
 | Modelo de linguagem | Família GPT (OpenAI) via API | gpt-oss via Ollama Cloud | Divergência. Argumento: custo e ausência de máquina local para rodar modelo aberto. Verificar se a justificativa convence |
-| RAG | Base de conhecimento da equipe alimenta o modelo | Busca por chave (identificador do exame) na base, sem busca vetorial | Compatível: recupera conhecimento e injeta no prompt. Com poucos exames não há ganho em busca vetorial; entra se a base crescer |
+| RAG | Base de conhecimento da equipe alimenta o modelo | Busca por chave (identificador do exame) na base, sem busca vetorial. A busca é feita pelo orquestrador, que entrega a ficha pronta à IA; a IA a injeta no prompt (contrato §4) | Compatível: recupera conhecimento e injeta no prompt. Com poucos exames não há ganho em busca vetorial; entra se a base crescer |
 | Classificação | Regras determinísticas | Regras determinísticas | Igual ao artigo |
 | Leitura do PDF digital | pdf-parse | pdf-parse v2 (por cima do pdf.js da Mozilla), com a normalização Unicode desligada para preservar caracteres como o `µ` | Igual ao artigo |
 | PDF protegido por senha | Não descrito | Proposta (BWL-02 já distingue "sem senha" de "senha incorreta"): o sistema pede a senha com mensagem fixa, sem o modelo; a senha só abre o arquivo e não é guardada | Extensão do protótipo. A senha nunca vai ao modelo, coerente com a pseudonimização. Rota e tela dependem do grupo |
