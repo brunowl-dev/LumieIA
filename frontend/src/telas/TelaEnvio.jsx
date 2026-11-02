@@ -1,8 +1,10 @@
 // Tela 1 — envio do laudo (POST /api/laudos). Três estados:
 // escolhendo arquivo → enviando ("Analisando...") → erro (com ação) ou sucesso
 // (o resultado sobe para o App, que troca para a tela de exames).
+// Visual do formulário "Adicionar exame" do app Lumie.
 import { useState } from 'react';
 import { enviarLaudo } from '../api.js';
+import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 
 const TIPOS_ACEITOS = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -31,7 +33,8 @@ export default function TelaEnvio({ onResultado }) {
     setArquivo(escolhido);
   }
 
-  async function enviar() {
+  async function enviar(evento) {
+    evento.preventDefault();
     setEnviando(true);
     setErro(null);
     const resposta = await enviarLaudo(arquivo);
@@ -44,51 +47,59 @@ export default function TelaEnvio({ onResultado }) {
     }
   }
 
-  if (enviando) {
-    return (
-      <div className="carregando" role="status">
-        <div className="girando" aria-hidden="true" />
+  return (
+    <>
+      <div className="exams-heading">
         <div>
-          <strong>Analisando seu exame...</strong>
-          <p className="subtitulo">Estamos lendo os valores do laudo. Isso leva alguns segundos.</p>
+          <p className="eyebrow">SEUS EXAMES, SEMPRE COM VOCÊ</p>
+          <h1>Entenda seu exame</h1>
+          <span>Organize, acompanhe e entenda seus resultados em um só lugar.</span>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <section>
-      <span className="eyebrow">SEUS EXAMES, SEMPRE COM VOCÊ</span>
-      <h1 className="titulo">Entenda seu exame</h1>
-      <p className="subtitulo">
-        Envie o laudo do laboratório. Mostramos cada resultado com a faixa de referência e, se quiser,
-        uma explicação em linguagem simples.
-      </p>
+      <form className="painel-envio" onSubmit={enviar}>
+        <p className="eyebrow">ADICIONAR EXAME</p>
+        <h2>Envie o laudo do laboratório</h2>
+        <p className="subcopy">
+          Mostramos cada resultado com a faixa de referência do seu laudo e, se quiser, uma explicação em
+          linguagem simples.
+        </p>
 
-      {/* O <label> envolve o input: clicar em qualquer parte da área abre a escolha de arquivo. */}
-      <label className="area-envio">
-        <span className="area-envio-icone" aria-hidden="true">⇪</span>
-        {arquivo ? (
-          <span className="arquivo-escolhido">{arquivo.name}</span>
+        {enviando ? (
+          <div className="carregando" role="status">
+            <div className="girando" aria-hidden="true" />
+            <div>
+              <strong>Analisando seu exame...</strong>
+              <p>Estamos lendo os valores do laudo. Isso leva alguns segundos.</p>
+            </div>
+          </div>
         ) : (
-          <strong>Escolha o arquivo do exame</strong>
+          <>
+            {/* O <label> envolve o input: clicar em qualquer parte da área abre a escolha de arquivo. */}
+            <label className="area-envio">
+              <i>
+                <Icone nome="documento" />
+              </i>
+              <span>
+                <strong>{arquivo ? arquivo.name : 'Documento do exame'}</strong>
+                <small className="upload-hint">PDF, JPG ou PNG, até {TAMANHO_MAXIMO_MB} MB.</small>
+              </span>
+              <span className="area-envio-acao">{arquivo ? 'Trocar' : 'Escolher arquivo'}</span>
+              <input type="file" accept={TIPOS_ACEITOS.join(',')} onChange={escolherArquivo} />
+            </label>
+
+            {erro && <MensagemErro erro={erro} />}
+
+            <button type="submit" className="primary" disabled={!arquivo}>
+              Enviar exame →
+            </button>
+          </>
         )}
-        <span className="area-envio-dica">PDF, JPG ou PNG, até {TAMANHO_MAXIMO_MB} MB.</span>
-        <input type="file" accept={TIPOS_ACEITOS.join(',')} onChange={escolherArquivo} />
-      </label>
 
-      {erro && <MensagemErro erro={erro} />}
-
-      <div className="acoes">
-        <button type="button" className="botao" disabled={!arquivo} onClick={enviar}>
-          Enviar exame →
-        </button>
-      </div>
-
-      <p className="nota-privacidade">
-        Seu laudo é lido no nosso servidor. A inteligência artificial recebe só os valores dos exames,
-        nunca seu nome ou documentos. Use apenas laudos fictícios nesta demonstração.
-      </p>
-    </section>
+        <p className="ocr-disclaimer">
+          Seu laudo é lido no nosso servidor. Use apenas laudos fictícios nesta demonstração.
+        </p>
+      </form>
+    </>
   );
 }
