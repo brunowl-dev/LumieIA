@@ -7,7 +7,7 @@
 
 import { chamarOllama } from './ollama.js';
 import { montarMensagens } from './mensagens.js';
-import { ESQUEMA_EXPLICACAO } from './esquemas.js';
+import { ESQUEMA_CHAT, ESQUEMA_EXPLICACAO } from './esquemas.js';
 
 // O texto do modelo vira objeto. Se não for JSON, volta o texto como veio:
 // o adaptador e a camada de segurança tratam (contrato §4.7). Nada é completado
@@ -52,7 +52,11 @@ export function criarClienteIa(opcoes = {}) {
      * @returns {Promise<{ resposta: string }>}
      */
     async responderChat(entrada, { motivosReprovacao = [] } = {}) {
-      throw new Error('IA ainda não implementada (ISA-05)');
+      // Mesmo caminho da explicação; muda o prompt (chat.md) e o schema ({ resposta }).
+      // O histórico já vem DENTRO da entrada (contrato §4.1), não como mensagens separadas.
+      const { system, user } = montarMensagens('chat', entrada, motivosReprovacao);
+      const texto = await chamarOllama(config, { system, user, format: ESQUEMA_CHAT });
+      return lerJson(texto);
     },
   };
 }

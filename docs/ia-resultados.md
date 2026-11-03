@@ -17,6 +17,7 @@ Uma linha por medição (por versão de prompt).
 | Data | Prompt | Chamadas | Aprovada de 1ª | Aprovada depois de regenerar | Mensagem padrão | Erro | Tempo médio (s) | Tempo máximo (s) |
 |---|---|---|---|---|---|---|---|---|
 | 03/11/2026 | v1 | 3 (só explicação; chat ainda não implementado, ISA-05) | 3 | 0 | 0 | 0 | 2,2 | 2,7 |
+| 03/11/2026 | v1 | 4 (3 explicações + 1 chat, depois da ISA-05) | 4 | 0 | 0 | 0 | 3,2 | 4,5 |
 
 ## Motivos de reprovação mais frequentes
 [PREENCHER: os códigos que mais apareceram nas linhas "REPROVADA" e o que foi mudado no prompt por causa deles.]

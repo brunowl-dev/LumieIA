@@ -88,7 +88,7 @@ describe('cliente da IA: explicação (ISA-01 a ISA-04)', () => {
 });
 
 describe('cliente da IA: chat (ISA-05)', () => {
-  it('devolve { resposta } e manda a entrada do chat (com histórico) como user', { todo: 'ISA-05' }, async () => {
+  it('devolve { resposta } e manda a entrada do chat (com histórico) como user', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(CHAT_BOM) });
     const r = await criarClienteIa({ ...OPCOES, fetch: f.fetch }).responderChat(ENTRADA_CHAT);
     assert.deepEqual(r, CHAT_BOM);
@@ -99,7 +99,7 @@ describe('cliente da IA: chat (ISA-05)', () => {
     assert.ok(f.pedidos[0].corpo.format, 'format deve ser o JSON Schema de { resposta }');
   });
 
-  it('o prompt do chat é outro (prompts/v1/chat.md)', { todo: 'ISA-05' }, async () => {
+  it('o prompt do chat é outro (prompts/v1/chat.md)', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(CHAT_BOM) });
     const cliente = criarClienteIa({ ...OPCOES, fetch: f.fetch });
     await cliente.responderChat(ENTRADA_CHAT);
