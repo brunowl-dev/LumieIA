@@ -11,6 +11,17 @@
  *   OLLAMA_MODEL, OLLAMA_TEMPERATURE) e do fetch global. Os testes passam um fetch falso.
  */
 export function criarClienteIa(opcoes = {}) {
+  // ISA-01: configuração da chamada. O ambiente é lido AQUI (e não no topo do
+  // módulo) para que os testes, que passam `opcoes`, nunca dependam do .env.
+  // Usado por chamarOllama (./ollama.js) a partir da ISA-04.
+  const config = {
+    fetch: opcoes.fetch ?? globalThis.fetch,
+    baseUrl: opcoes.baseUrl ?? process.env.OLLAMA_BASE_URL,
+    apiKey: opcoes.apiKey ?? process.env.OLLAMA_API_KEY,
+    modelo: opcoes.modelo ?? process.env.OLLAMA_MODEL,
+    temperatura: opcoes.temperatura ?? Number(process.env.OLLAMA_TEMPERATURE),
+  };
+
   return {
     /**
      * Explicação em 5 partes (contrato §4.3).
