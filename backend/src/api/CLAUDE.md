@@ -3,7 +3,7 @@
 Leia antes: `../../../CLAUDE.md`, `../../CLAUDE.md` e `../../../docs/contrato.md` (seções "Visão do fluxo", "Portas HTTP" e "Erros").
 
 ## Escopo desta pasta
-- Rotas HTTP do contrato (enviar laudo, explicar exame, chat, lembretes P2, saúde).
+- Rotas HTTP do contrato (enviar laudo, explicar exame, chat, saúde). Lembretes foram cortados.
 - **Orquestrador:** é o único lugar que chama os três módulos. Três fluxos:
   1. `POST /api/laudos`: valida o upload → pipeline → guarda o laudo estruturado na sessão → monta o resultado da tela de exames (cor, alerta, `explicacao_disponivel`). **Não chama a IA.**
   2. `POST /api/explicacoes`: busca o analito na sessão → IA → segurança → (laço de regeneração) → devolve a 1ª mensagem do chat.

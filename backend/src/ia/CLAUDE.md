@@ -74,4 +74,4 @@ Rodar os testes sempre na pasta `backend`: `npm.cmd test` (Windows/PowerShell: u
 - **Nada de `console.log`/`console.error` em `src/ia`** (há teste para isso). Erros saem por `throw`.
 - Nada de chave, URL ou nome de modelo fixos no código: só por `opcoes` ou `process.env`.
 - Sem nova tentativa, sem tempo limite e sem mensagem de reserva aqui: isso é do orquestrador.
-- Lembretes (ISA-07, P2): só se sobrar tempo, depois do Passo 6.
+- Lembretes (ISA-07): **cortados em 04/11/2026 por prazo**. Não implementar.

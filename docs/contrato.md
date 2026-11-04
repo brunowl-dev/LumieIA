@@ -323,7 +323,7 @@ O front nunca decide status: a cor e o alerta chegam prontos.
 | Técnica | `GET /api/saude` | — | `{"status":"ok"}` (healthcheck do Docker) |
 
 **Chat:** responde só sobre aquele exame (analito da sessão + ficha da base). O histórico da conversa de cada exame fica na sessão em memória e some junto com ela (`SESSION_TTL_MINUTES`); não há memória entre sessões. Pergunta fora do exame → a resposta recusa com educação e indica a especialidade da base. Passa pela segurança (seção 8). A explicação em 5 partes está no artigo; as perguntas livres no chat são extensão do protótipo (ver `artigo-vs-prototipo.md`).
-**Lembretes:** horários e doses vêm sempre dos dados cadastrados; o modelo só redige o tom.
+**Lembretes:** cortados do protótipo em 04/11/2026 (não há rota). Regra para trabalho futuro: horários e doses vêm sempre dos dados cadastrados; o modelo só redige o tom.
 
 ## 7. Erros
 Formato: `{"status":"erro","erro":{"codigo":"...","motivo":"...","mensagem_usuario":"..."}}`. `mensagem_usuario` é em linguagem simples, pronta para exibir. `motivo` é opcional: código interno estável, para teste e depuração (nunca contém dado do paciente); o front decide só pelo `codigo`.

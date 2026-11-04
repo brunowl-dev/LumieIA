@@ -13,7 +13,7 @@ Ordem de leitura: este arquivo → o `CLAUDE.md` da pasta em que você está tra
    - **Envio (sem IA):** o paciente envia o laudo (PDF digital ou foto) → texto extraído (pdf-parse; OCR com Tesseract.js) → estruturado por analito (nome, valor, unidade, faixa de referência do laudo) → classificado por REGRAS DETERMINÍSTICAS (dentro/acima/abaixo; limites críticos por analito acionam alerta prioritário) → a tela de exames mostra cada exame com valor, faixa, cor e alerta.
    - **Explicação (sob demanda):** em cada exame há um botão "Explicar com IA". Ao clicar, abre um chat daquele exame cuja 1ª mensagem é a explicação: o modelo de linguagem recebe os dados estruturados do analito + conteúdo da base de conhecimento (RAG) + prompt, e escreve SEMPRE nesta ordem: (1) o que o exame avalia; (2) valor obtido e posição na faixa; (3) significado sem afirmar doença; (4) especialidade recomendada; (5) aviso de que não substitui avaliação médica → camada de segurança verifica a resposta antes de exibir; se falhar, o orquestrador pede nova resposta ou usa mensagem padrão.
    - **Dúvidas:** no mesmo chat, o paciente digita perguntas sobre aquele exame; cada resposta também passa pela camada de segurança.
-2. Lembretes (P2, só se sobrar tempo): a partir de medicações/consultas cadastradas; o modelo só redige o tom; horários e doses vêm sempre dos dados cadastrados.
+2. Lembretes: **cortados em 04/11/2026 por prazo** (BWL-11 e ISA-07). Estão no artigo (fluxo B); a divergência está em `docs/artigo-vs-prototipo.md`. Não implementar.
 
 ## Princípios inegociáveis
 - A IA NÃO diagnostica, NÃO indica nem ajusta medicamento, NÃO dá veredito conclusivo de tranquilidade ou de preocupação. Linguagem de "merece atenção", sem a palavra "preocupante".
@@ -34,7 +34,7 @@ Regra: edite apenas a pasta do dono da sessão. Se precisar tocar em outra pasta
 A ligação front↔back (quem faz) está em aberto — veja "Decisões em aberto" no contrato.
 
 ## Stack e execução
-- Front: React. Back: Node.js. Modelo do protótipo: gpt-oss via Ollama Cloud (o artigo diz "família GPT via API" — divergência já registrada).
+- Front: React. Back: Node.js. Modelo do protótipo: `beam` via Ollama Cloud (o `gpt-oss` dá HTTP 402 na conta gratuita; o artigo diz "família GPT via API" — divergência registrada).
 - **A aplicação roda em Docker por enquanto.** Configuração por variáveis de ambiente: copie `.env.example` para `.env` e preencha. Nunca commite o `.env`.
 - Dentro do Docker, os serviços se comunicam pelo NOME do serviço (ex.: `backend`), não por `localhost`. Veja `docs/docker.md`.
 - O modelo roda na nuvem: a demo precisa de internet. Plano B: vídeo gravado.
