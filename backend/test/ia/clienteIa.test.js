@@ -41,7 +41,7 @@ describe('cliente da IA: forma (contrato §4.0)', () => {
 });
 
 describe('cliente da IA: explicação (ISA-01 a ISA-04)', () => {
-  it('chama POST {baseUrl}/api/chat com chave, modelo, sem stream e com format', { todo: 'ISA-04' }, async () => {
+  it('chama POST {baseUrl}/api/chat com chave, modelo, sem stream e com format', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
     await criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO);
     assert.equal(f.pedidos.length, 1);
@@ -55,7 +55,7 @@ describe('cliente da IA: explicação (ISA-01 a ISA-04)', () => {
     assert.equal(corpo.options?.temperature, 0.2);
   });
 
-  it('manda o prompt como system e a entrada (e só ela) como user', { todo: 'ISA-04' }, async () => {
+  it('manda o prompt como system e a entrada (e só ela) como user', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
     await criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO);
     const [system, user, ...resto] = f.pedidos[0].corpo.messages;
@@ -66,20 +66,20 @@ describe('cliente da IA: explicação (ISA-01 a ISA-04)', () => {
     assert.equal(resto.length, 0);
   });
 
-  it('devolve as 5 partes como objeto, e a resposta boa passa na segurança', { todo: 'ISA-04' }, async () => {
+  it('devolve as 5 partes como objeto, e a resposta boa passa na segurança', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
     const r = await criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO);
     assert.deepEqual(r, EXPLICACAO_BOA);
     assert.deepEqual(verificarExplicacao(r, ENTRADA_EXPLICACAO.analito, ENTRADA_EXPLICACAO.ficha), { aprovada: true, motivos: [] });
   });
 
-  it('ignora o raciocínio do modelo (message.thinking)', { todo: 'ISA-04' }, async () => {
+  it('ignora o raciocínio do modelo (message.thinking)', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA), thinking: 'RACIOCINIO_INTERNO' });
     const r = await criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO);
     assert.ok(!JSON.stringify(r).includes('RACIOCINIO_INTERNO'));
   });
 
-  it('JSON incompleto volta como veio (quem reprova é a segurança)', { todo: 'ISA-04' }, async () => {
+  it('JSON incompleto volta como veio (quem reprova é a segurança)', async () => {
     const incompleta = { o_que_avalia: 'Mede o açúcar no sangue.' };
     const f = fetchFalso({ conteudo: JSON.stringify(incompleta) });
     const r = await criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO);
@@ -88,7 +88,7 @@ describe('cliente da IA: explicação (ISA-01 a ISA-04)', () => {
 });
 
 describe('cliente da IA: chat (ISA-05)', () => {
-  it('devolve { resposta } e manda a entrada do chat (com histórico) como user', { todo: 'ISA-05' }, async () => {
+  it('devolve { resposta } e manda a entrada do chat (com histórico) como user', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(CHAT_BOM) });
     const r = await criarClienteIa({ ...OPCOES, fetch: f.fetch }).responderChat(ENTRADA_CHAT);
     assert.deepEqual(r, CHAT_BOM);
@@ -99,7 +99,7 @@ describe('cliente da IA: chat (ISA-05)', () => {
     assert.ok(f.pedidos[0].corpo.format, 'format deve ser o JSON Schema de { resposta }');
   });
 
-  it('o prompt do chat é outro (prompts/v1/chat.md)', { todo: 'ISA-05' }, async () => {
+  it('o prompt do chat é outro (prompts/v1/chat.md)', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(CHAT_BOM) });
     const cliente = criarClienteIa({ ...OPCOES, fetch: f.fetch });
     await cliente.responderChat(ENTRADA_CHAT);
@@ -131,19 +131,19 @@ describe('cliente da IA: nova tentativa (ISA-06)', () => {
 });
 
 describe('cliente da IA: falhas e privacidade (contrato §4.7 e §4.8)', () => {
-  it('HTTP diferente de 2xx → lança erro', { todo: 'ISA-04' }, async () => {
+  it('HTTP diferente de 2xx → lança erro', async () => {
     const f = fetchFalso({ conteudo: '', status: 500 });
     await assert.rejects(criarClienteIa({ ...OPCOES, fetch: f.fetch }).gerarExplicacao(ENTRADA_EXPLICACAO));
   });
 
-  it('erro de rede → lança erro (sem tentar de novo)', { todo: 'ISA-04' }, async () => {
+  it('erro de rede → lança erro (sem tentar de novo)', async () => {
     let chamadas = 0;
     const fetch = async () => { chamadas += 1; throw new TypeError('fetch failed'); };
     await assert.rejects(criarClienteIa({ ...OPCOES, fetch }).gerarExplicacao(ENTRADA_EXPLICACAO));
     assert.equal(chamadas, 1);
   });
 
-  it('não escreve nada no console (entrada e resposta são dados de saúde)', { todo: 'ISA-04' }, async (t) => {
+  it('não escreve nada no console (entrada e resposta são dados de saúde)', async (t) => {
     const log = t.mock.method(console, 'log');
     const erro = t.mock.method(console, 'error');
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
