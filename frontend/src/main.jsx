@@ -2,7 +2,7 @@
 // sem resultado → catálogo de laudos de demonstração (ou envio manual, pelo link);
 // com resultado → exames; "Explicar todos" → todas as explicações; com exame
 // escolhido → chat do exame.
-import { StrictMode, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Layout from './components/Layout.jsx';
 import TelaCatalogo from './telas/TelaCatalogo.jsx';
@@ -84,9 +84,21 @@ function App() {
     );
   }
 
+  // Troca de tela com transição: a `key` muda a cada tela, então o React monta
+  // um <div> novo e a animação de entrada (.tela no styles.css) roda de novo.
+  // O chat usa o exame na chave: abrir outro exame também anima.
+  const chaveDaTela = `${pagina}-${exameAberto?.id_canonico ?? ''}`;
+
+  // Cada tela nova começa do topo (sem isso, a tela abre rolada no meio).
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [chaveDaTela]);
+
   return (
     <Layout pagina={pagina} totalExames={resultado ? resultado.itens.length : 0}>
-      {tela}
+      <div key={chaveDaTela} className="tela">
+        {tela}
+      </div>
     </Layout>
   );
 }

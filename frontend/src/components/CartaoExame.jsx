@@ -3,9 +3,9 @@
 import Icone from './Icone.jsx';
 import SeloStatus, { formatarNumero } from './SeloStatus.jsx';
 
-export default function CartaoExame({ item, onExplicar }) {
+export default function CartaoExame({ item, ordem = 0, onExplicar }) {
   return (
-    <article className={`exam-row cor-${item.cor}`}>
+    <article className={`exam-row cor-${item.cor}`} style={{ '--ordem': ordem }}>
       <i className="lab">
         <Icone nome="frasco" />
       </i>

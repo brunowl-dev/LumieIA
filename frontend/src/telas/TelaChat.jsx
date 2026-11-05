@@ -117,11 +117,15 @@ export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, 
       <section className="chat" aria-label={`Conversa sobre ${exame.nome}`}>
         <div className="chat-mensagens" aria-live="polite">
           {carregandoExplicacao && (
-            <div className="carregando" role="status">
+            <div className="carregando carregando-explicacao" role="status">
               <div className="girando" aria-hidden="true" />
               <div>
                 <strong>Preparando a explicação...</strong>
                 <p>A resposta passa por uma verificação de segurança antes de aparecer.</p>
+                {/* Esqueleto: linhas cinzas no lugar do texto que ainda vai chegar. */}
+                <span className="esqueleto" aria-hidden="true">
+                  <i /> <i /> <i />
+                </span>
               </div>
             </div>
           )}
@@ -146,7 +150,11 @@ export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, 
 
           {respondendo && (
             <p className="balao balao-lumie digitando" role="status">
-              Lumie está escrevendo...
+              {/* Três pontos animados; o texto fica para o leitor de tela. */}
+              <span className="pontinhos" aria-hidden="true">
+                <i /> <i /> <i />
+              </span>
+              <span className="visualmente-oculto">Lumie está escrevendo...</span>
             </p>
           )}
 

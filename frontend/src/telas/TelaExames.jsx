@@ -85,9 +85,10 @@ export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onN
       </div>
 
       <div className="exam-list">
-        {itens.map((item) => (
+        {itens.map((item, indice) => (
           // Exame sem ficha na base tem id_canonico null; o nome serve de chave.
-          <CartaoExame key={item.id_canonico ?? item.nome} item={item} onExplicar={onExplicar} />
+          // `ordem`: os cartões entram um depois do outro (ver .exam-list no styles.css).
+          <CartaoExame key={item.id_canonico ?? item.nome} item={item} ordem={indice} onExplicar={onExplicar} />
         ))}
       </div>
 

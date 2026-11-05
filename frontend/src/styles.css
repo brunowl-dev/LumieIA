@@ -537,6 +537,87 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   to { opacity: 1; transform: none; }
 }
 
+/* ---------- Movimento (etapa 2) ----------
+   Regra geral: entradas curtas (0,3 a 0,45 s), só opacidade e deslocamento
+   pequeno (transform), que o navegador anima sem travar. Nada pisca sem parar,
+   exceto os indicadores de "carregando". */
+
+/* Troca de tela: cada tela nova entra suave (a key no main.jsx reinicia isto). */
+.tela { animation: subir 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+
+/* Botões: resposta ao hover e ao clique, e foco visível para quem usa teclado. */
+.primary, .secondary, .upload, .view-ocr, .data-error button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.primary:hover:not(:disabled) { background: #1fa9c2; box-shadow: 0 12px 20px #14afca40; }
+.secondary:hover:not(:disabled) { border-color: var(--primaria); background: #f0fcfe; }
+.upload:hover { transform: translateY(-1px); box-shadow: 0 8px 18px #9aaec244; }
+.primary:active:not(:disabled), .secondary:active:not(:disabled), .upload:active, .view-ocr:active { transform: scale(0.97); }
+:is(.primary, .secondary, .upload, .view-ocr, .data-error button, .link-envio button):focus-visible {
+  outline: 3px solid #bcecf4;
+  outline-offset: 2px;
+}
+
+/* Tela de exames: resumos e cartões entram em sequência. */
+.stat { animation: subir 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+.stat:nth-child(2) { animation-delay: 60ms; }
+.stat:nth-child(3) { animation-delay: 120ms; }
+.exam-list .exam-row {
+  animation: subir 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(150ms + var(--ordem, 0) * 60ms);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.exam-list .exam-row:hover { transform: translateY(-2px); box-shadow: 0 10px 22px #063f5712; }
+.exam-list .exam-row.cor-vermelho:hover { box-shadow: 0 0 0 3px #fff0ee, 0 10px 22px #063f5712; }
+
+/* Alerta prioritário: entra com destaque e o ícone pulsa 2 vezes (não fica piscando). */
+.alerta-prioritario { animation: subir 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+.alerta-prioritario > i { animation: pulsar 1.2s ease-out 0.4s 2; }
+@keyframes pulsar {
+  0% { box-shadow: 0 0 0 0 #c9443a55; }
+  100% { box-shadow: 0 0 0 12px #c9443a00; }
+}
+
+/* Erros e avisos aparecem suaves, em vez de surgirem secos. */
+.data-error, .aviso-nao-lidos, .carregando { animation: subir 0.3s ease both; }
+
+/* Chat: balão da Lumie vem da esquerda, o do paciente da direita. */
+.balao-lumie { animation: daEsquerda 0.35s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+.balao-paciente { animation: daDireita 0.3s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+@keyframes daEsquerda { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@keyframes daDireita { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+
+/* As 5 partes da explicação entram uma depois da outra (--ordem vem do JSX). */
+.parte, .parte-aviso {
+  animation: subir 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(150ms + var(--ordem, 0) * 140ms);
+}
+
+/* "Lumie está escrevendo": três pontos que sobem em sequência. */
+.digitando { display: inline-flex; align-items: center; min-height: 44px; }
+.pontinhos { display: inline-flex; gap: 5px; }
+.pontinhos i { width: 7px; height: 7px; border-radius: 50%; background: var(--primaria); animation: pular 1s ease-in-out infinite; }
+.pontinhos i:nth-child(2) { animation-delay: 0.15s; }
+.pontinhos i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes pular {
+  0%, 60%, 100% { opacity: 0.35; transform: none; }
+  30% { opacity: 1; transform: translateY(-5px); }
+}
+
+/* Esqueleto enquanto a explicação não chega: linhas com brilho que passa. */
+.carregando-explicacao > div:last-child { flex: 1; }
+.esqueleto { display: grid; gap: 7px; margin-top: 12px; }
+.esqueleto i {
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #e8f1f5 25%, #f6fbfd 50%, #e8f1f5 75%);
+  background-size: 200% 100%;
+  animation: brilho 1.4s linear infinite;
+}
+.esqueleto i:nth-child(2) { width: 85%; }
+.esqueleto i:nth-child(3) { width: 60%; }
+@keyframes brilho { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
 /* Quem pediu ao sistema menos movimento (acessibilidade) não vê as animações. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
