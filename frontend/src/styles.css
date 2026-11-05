@@ -537,6 +537,146 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   to { opacity: 1; transform: none; }
 }
 
+/* ---------- Mascote: banner de dicas, boas-vindas e avatar ---------- */
+/* Tela estreita: uma coluna, e o banner fica no fim da página. */
+.conteudo-com-dicas { display: grid; gap: 24px; }
+.conteudo-principal { min-width: 0; }
+
+.painel-dicas {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-areas: 'mascote eyebrow' 'mascote texto' 'mascote controles';
+  align-items: start;
+  gap: 4px 16px;
+  max-width: 560px;
+  padding: 18px;
+  border: 1px solid #c9eef2;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #f3fdfe 0%, #ffffff 70%);
+  box-shadow: 0 14px 40px #063f5710;
+  animation: subir 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) 0.3s both;
+}
+.painel-dicas .eyebrow { grid-area: eyebrow; }
+.mascote-dicas {
+  grid-area: mascote;
+  width: 96px;
+  height: auto;
+  /* Flutua de leve, devagar, para dar vida sem distrair. */
+  animation: flutuar 4s ease-in-out infinite;
+}
+@keyframes flutuar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.dica-texto { grid-area: texto; min-height: 92px; animation: subir 0.35s ease both; }
+.dica-texto strong { display: block; margin: 4px 0; font-size: 15px; }
+.dica-texto p { color: var(--texto-medio); font-size: 13px; line-height: 1.5; }
+.dica-controles { grid-area: controles; display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.dica-controles button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid #cbdce8;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--primaria-escura);
+  font-size: 16px;
+  line-height: 1;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.dica-controles button:hover { border-color: var(--primaria); background: #f0fcfe; }
+.dica-controles button:focus-visible { outline: 3px solid #bcecf4; outline-offset: 2px; }
+.dica-pontos { display: inline-flex; gap: 5px; }
+.dica-pontos i { width: 6px; height: 6px; border-radius: 50%; background: #cbdce8; transition: background-color 0.2s ease, width 0.2s ease; }
+.dica-pontos i.ativo { width: 16px; border-radius: 3px; background: var(--primaria); }
+
+/* Tela larga: o banner vira uma coluna fixa à direita (ocupa o espaço vazio). */
+@media (min-width: 1280px) {
+  .content { max-width: 1420px; }
+  .conteudo-com-dicas { grid-template-columns: minmax(0, 1fr) 260px; gap: 32px; align-items: start; }
+  .painel-dicas {
+    position: sticky;
+    top: 24px;
+    grid-template-columns: 1fr;
+    grid-template-areas: 'mascote' 'eyebrow' 'texto' 'controles';
+    justify-items: start;
+    margin-top: 27px;
+  }
+  .mascote-dicas { justify-self: center; width: 150px; margin-bottom: 6px; }
+}
+
+/* Pop-up de boas-vindas: entra pelo canto de baixo. */
+.boas-vindas {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  width: min(380px, calc(100vw - 32px));
+  padding: 16px 18px 16px 10px;
+  border: 1px solid #c9eef2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 20px 50px #063f5726;
+  animation: daBaixo 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.boas-vindas img { flex: 0 0 auto; width: 92px; height: auto; animation: acenar 1.6s ease-in-out 0.5s 2; }
+.boas-vindas strong { font-size: 16px; }
+.boas-vindas p { margin: 4px 0 12px; color: var(--texto-medio); font-size: 13px; line-height: 1.5; }
+.boas-vindas .primary { height: 38px; padding: 0 16px; font-size: 13px; }
+@keyframes daBaixo { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes acenar {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+
+/* Avatar do mascote nos balões da Lumie. */
+.avatar-lumie {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e3f8fa;
+  object-fit: contain;
+}
+
+/* ---------- Pré-visualização do laudo ---------- */
+/* Com prévia, o painel fica mais largo para a página do PDF caber melhor. */
+.painel-envio:has(.previa) { max-width: 720px; }
+.previa {
+  display: grid;
+  margin: 0;
+  border: 1px solid #d7e1e9;
+  border-radius: 12px;
+  background: #fafdff;
+  overflow: hidden;
+  animation: subir 0.35s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.previa figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e4ed;
+  background: #fff;
+  font-size: 13px;
+}
+.previa figcaption span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--texto-medio); }
+.previa figcaption strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.previa figcaption .ui-icon { width: 16px; height: 16px; color: #9874dd; }
+.previa figcaption a { flex: 0 0 auto; color: var(--primaria-escura); font-weight: 700; text-decoration: none; }
+.previa figcaption a:hover { text-decoration: underline; }
+.previa figcaption a:focus-visible { outline: 3px solid #bcecf4; outline-offset: 2px; border-radius: 4px; }
+/* Altura fixa: o PDF rola dentro do quadro, e a página não fica gigante. */
+.previa-quadro { height: 460px; background: #eef3f7; }
+.previa-quadro iframe { display: block; width: 100%; height: 100%; border: 0; }
+.previa-quadro img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 /* ---------- Movimento (etapa 2) ----------
    Regra geral: entradas curtas (0,3 a 0,45 s), só opacidade e deslocamento
    pequeno (transform), que o navegador anima sem travar. Nada pisca sem parar,
@@ -645,6 +785,11 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   .sem-explicacao { max-width: none; text-align: left; }
   .data-error { align-items: flex-start; flex-direction: column; }
   .balao { max-width: 92%; }
+  .previa-quadro { height: 340px; }
+  .painel-dicas { grid-template-columns: 72px minmax(0, 1fr); padding: 14px; }
+  .mascote-dicas { width: 72px; }
+  .boas-vindas { right: 16px; bottom: 16px; }
+  .boas-vindas img { width: 72px; }
   .exams-heading { flex-wrap: wrap; }
   .result-title { flex-wrap: wrap; gap: 10px; }
 }

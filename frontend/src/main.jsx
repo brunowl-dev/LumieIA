@@ -4,6 +4,7 @@
 // escolhido → chat do exame.
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import BoasVindas from './components/BoasVindas.jsx';
 import Layout from './components/Layout.jsx';
 import TelaCatalogo from './telas/TelaCatalogo.jsx';
 import TelaChat from './telas/TelaChat.jsx';
@@ -40,6 +41,8 @@ function App() {
 
   let pagina;
   let tela;
+  // contexto = qual conjunto de dicas o banner da Lumie mostra (dicas.js).
+  let contexto = 'catalogo';
   if (!resultado && enviandoArquivo) {
     pagina = 'Enviar exame';
     tela = <TelaEnvio onResultado={setResultado} onVoltar={() => setEnviandoArquivo(false)} />;
@@ -48,6 +51,7 @@ function App() {
     tela = <TelaCatalogo onResultado={setResultado} onEnviarArquivo={() => setEnviandoArquivo(true)} />;
   } else if (exameAberto) {
     pagina = exameAberto.nome;
+    contexto = 'chat';
     tela = (
       <TelaChat
         // key: trocar de exame recria a tela, com a conversa daquele exame.
@@ -62,6 +66,7 @@ function App() {
     );
   } else if (vendoTodas) {
     pagina = 'Explicações';
+    contexto = 'chat';
     tela = (
       <TelaExplicacoes
         resultado={resultado}
@@ -74,6 +79,7 @@ function App() {
     );
   } else {
     pagina = 'Meus exames';
+    contexto = 'exames';
     tela = (
       <TelaExames
         resultado={resultado}
@@ -95,10 +101,12 @@ function App() {
   }, [chaveDaTela]);
 
   return (
-    <Layout pagina={pagina} totalExames={resultado ? resultado.itens.length : 0}>
+    <Layout pagina={pagina} contexto={contexto} totalExames={resultado ? resultado.itens.length : 0}>
       <div key={chaveDaTela} className="tela">
         {tela}
       </div>
+      {/* Só no catálogo: é a primeira coisa que o paciente vê. */}
+      {!resultado && <BoasVindas />}
     </Layout>
   );
 }

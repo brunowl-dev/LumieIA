@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { enviarDuvida, pedirExplicacao } from '../api.js';
 import AvisoMedico from '../components/AvisoMedico.jsx';
-import { Explicacao, NotaMensagemPadrao } from '../components/Explicacao.jsx';
+import { AutorLumie, Explicacao, NotaMensagemPadrao } from '../components/Explicacao.jsx';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 import SeloStatus, { formatarNumero } from '../components/SeloStatus.jsx';
@@ -139,9 +139,7 @@ export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, 
               </p>
             ) : (
               <div key={indice} className="balao balao-lumie">
-                <span className="balao-autor">
-                  <Icone nome="faisca" /> Lumie
-                </span>
+                <AutorLumie />
                 {mensagem.explicacao ? <Explicacao explicacao={mensagem.explicacao} /> : <p>{mensagem.texto}</p>}
                 <NotaMensagemPadrao origem={mensagem.origem} />
               </div>

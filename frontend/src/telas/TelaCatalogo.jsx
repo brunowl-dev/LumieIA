@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { enviarLaudo } from '../api.js';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
+import PreviaArquivo from '../components/PreviaArquivo.jsx';
 import { LAUDOS_DEMO, carregarLaudoDemo } from '../laudosDemo.js';
 
 export default function TelaCatalogo({ onResultado, onEnviarArquivo }) {
@@ -90,6 +91,9 @@ export default function TelaCatalogo({ onResultado, onEnviarArquivo }) {
           <h2>
             {escolhido.titulo} <small>· {escolhido.caso}</small>
           </h2>
+
+          {/* Fica visível também enquanto o back lê: dá para mostrar o laudo durante a leitura. */}
+          <PreviaArquivo url={`/laudos/${escolhido.arquivo}`} tipo={escolhido.tipo} nome={escolhido.arquivo} />
 
           {lendo ? (
             <div className="carregando" role="status">

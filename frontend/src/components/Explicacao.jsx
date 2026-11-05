@@ -1,6 +1,5 @@
 // A explicação em 5 partes, sempre na ordem do artigo (contrato §5.2).
 // Usada no chat do exame e na tela "Todas as explicações".
-import Icone from './Icone.jsx';
 
 // Títulos das partes 1 a 4; a parte 5 (aviso) fecha a mensagem sem título.
 const PARTES = [
@@ -43,13 +42,20 @@ export function NotaMensagemPadrao({ origem }) {
   );
 }
 
+// Cabeçalho dos balões da Lumie: o mascote (a gotinha) como avatar + o nome.
+export function AutorLumie() {
+  return (
+    <span className="balao-autor">
+      <img className="avatar-lumie" src="/mascote.png" alt="" aria-hidden="true" /> Lumie
+    </span>
+  );
+}
+
 // Balão da Lumie com a explicação (1ª mensagem do chat).
 export function BalaoExplicacao({ explicacao, origem }) {
   return (
     <div className="balao balao-lumie">
-      <span className="balao-autor">
-        <Icone nome="faisca" /> Lumie
-      </span>
+      <AutorLumie />
       <Explicacao explicacao={explicacao} />
       <NotaMensagemPadrao origem={origem} />
     </div>
