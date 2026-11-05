@@ -109,7 +109,13 @@ export function avaliarConfiancaLaudo({ analitos, nao_interpretadas: naoInterpre
   if (origem === ORIGENS.OCR && !(typeof confiancaOcrLaudo === 'number' && confiancaOcrLaudo >= limiarOcr)) {
     return falha('ocr_baixa_confianca');
   }
-  const totalLinhas = analitos.length + naoInterpretadas.length;
+  // No PDF digital, linha de formato desconhecido (formato_nao_reconhecido) não
+  // entra na média: o texto é exato, então não é leitura duvidosa, é um layout
+  // que o parser não cobre, e um novo envio daria o mesmo resultado. Ela continua
+  // contada em linhas_nao_interpretadas e o paciente é avisado (AVISO_ITENS_NAO_LIDOS).
+  // Na foto, entra com 0: ali uma linha não reconhecida pode ser erro do OCR.
+  const contaNaMedia = (linha) => origem === ORIGENS.OCR || linha.motivo !== 'formato_nao_reconhecido';
+  const totalLinhas = analitos.length + naoInterpretadas.filter(contaNaMedia).length;
   if (totalLinhas === 0) return falha('nenhum_resultado_encontrado');
 
   const soma = analitos.reduce((total, analito) => total + analito.avaliacao.confianca, 0);

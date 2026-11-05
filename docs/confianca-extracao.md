@@ -38,6 +38,7 @@ Nesta ordem:
 1. Foto com confiança média do OCR < `CONFIANCA_MINIMA_OCR` → erro `BAIXA_CONFIANCA` (motivo `ocr_baixa_confianca`).
 2. Nenhuma linha com cara de resultado → erro (`nenhum_resultado_encontrado`).
 3. `confianca_extracao` = **média** da confiança de todas as linhas de resultado. As linhas que parecem resultado mas nem viraram analito (`nao_interpretadas` da BWL-03, ex.: "< 0,01") entram com **0**. Abaixo do limiar → erro (`confianca_abaixo_do_minimo`).
+   **Exceção (04/11/2026), só no PDF digital:** linha com motivo `formato_nao_reconhecido` não entra na média. O texto do PDF é exato: essa linha não é leitura duvidosa, é um layout que o parser não cobre, e um novo envio daria o mesmo resultado. Ela continua em `linhas_nao_interpretadas` e o paciente vê o aviso de itens não lidos. Na foto, continua entrando com 0 (pode ser erro do OCR). Motivo: um laudo real de 10 páginas, com muitos exames fora do protótipo, tinha média 0,34 e era recusado inteiro, mesmo com a hemoglobina e o TSH lidos sem erro; com a exceção, 0,86. `painel_maioria_ilegivel.pdf` continua recusado (os motivos dele são outros).
 4. Nenhum analito confiável → erro (`nenhum_resultado_confiavel`). Rede de segurança: com o mesmo limiar nos dois níveis, a regra 3 já pega.
 5. Senão, o laudo **segue**.
 

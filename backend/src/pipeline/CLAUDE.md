@@ -45,12 +45,15 @@ Decisões:
 - Faixa com várias categorias: usa a de rótulo "Normal"/"Desejável"/"Ótimo"/"Adequado"; sem exatamente uma, não escolhe (faixa não interpretada).
 - Da faixa só se remove a unidade do próprio resultado; nenhuma outra palavra.
 Limites (o parser NÃO cobre):
-- Nome com dígito ("T4 livre", "Vitamina B12") → vai para `nao_interpretadas`.
+- Nome com dígito na MESMA linha do valor ("T4 livre 1,2 ng/dL") → vai para `nao_interpretadas`. Na linha acima do "Resultado:" ("VITAMINA B12") é aceito desde o Layout C.
 - Unidade sem `/` nem `%` (fL, pg) não é reconhecida como unidade.
 - Nome quebrado em duas linhas ("Glicose em" / "jejum 88 ...") → nome fica só "jejum" (teste `todo`).
 - Valor sem nome logo abaixo do cabeçalho da tabela usa o cabeçalho como nome (teste `todo`); a BWL-04 não acha ficha e vira `id_canonico: null`.
 - Faixa por sexo/idade na mesma linha ("Homens: ... Mulheres: ...") → não interpretada.
-- Layouts diferentes de "tabela em uma linha" e "blocos Resultado:/Valor de referência:" não foram testados.
+- Faixa em categorias (uma por linha): usa a de rótulo normal/desejável/ótimo/adequado/**Adultos**/"Valores normais" se houver EXATAMENTE uma; senão não interpretada, mesmo com uma categoria só ("Recém-nascido: 100 - 250" não é a do paciente). Por sexo nunca escolhe.
+- Layout C (`test/pipeline/layoutC.test.js`, formato de um laudo real, dados fictícios): valor antes do nome no hemograma ("14.2 HEMOGLOBINA g/dL (13,5 a 17,5)"), faixa entre parênteses, unidade colada ("450.000/mm3"), "Entre X e Y", cabeçalho "Valor de Referência" acima do resultado, nome "SIGLA - NOME" (reconhecido pelas partes em normalizarNome.js), registro "CRBM 00000" ignorado.
+- Leucograma com % e valor absoluto na mesma linha ("1 BASÓFILOS 63 (0 a 105) (0 a 1)"): ambíguo, não interpretado.
+- Outros layouts não foram testados: cada laboratório novo pode precisar de regra nova.
 
 ## BWL-04 a BWL-06: onde está cada coisa
 Encadeamento: `processarLaudo.js` (`processarLaudoPdf`, `processarTextoLaudo`). Contrato §2.3 a §2.6.

@@ -85,6 +85,17 @@ export function carregarIndiceDeNomes(caminho) {
  */
 export function normalizarNomeExame(nomeNoLaudo, indice) {
   const nomeNormalizado = normalizarTexto(nomeNoLaudo);
-  const id = indice.get(nomeNormalizado) ?? null;
+  const id = indice.get(nomeNormalizado) ?? idPelasPartes(nomeNoLaudo, indice);
   return { reconhecido: id !== null, id_canonico: id, nome_normalizado: nomeNormalizado };
+}
+
+// "Sigla - nome por extenso" ("TSH - HORMÔNIO TIREOESTIMULANTE"): cada parte
+// separada por " - " é procurada (ainda comparação EXATA). Só aceita se todas
+// as partes reconhecidas levarem ao MESMO exame; se levarem a dois, não escolhe.
+function idPelasPartes(nomeNoLaudo, indice) {
+  if (typeof nomeNoLaudo !== 'string' || !/\s[-–]\s/.test(nomeNoLaudo)) return null;
+  const ids = new Set(
+    nomeNoLaudo.split(/\s[-–]\s/).map((parte) => indice.get(normalizarTexto(parte))).filter(Boolean),
+  );
+  return ids.size === 1 ? [...ids][0] : null;
 }

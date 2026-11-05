@@ -19,6 +19,7 @@
 // "Nascimento"), para a alternância da regex pegar o rótulo inteiro.
 const ROTULOS = [
   ['data de nascimento', 'nascimento'],
+  ['data nasc\\.?', 'nascimento'],
   ['nascimento', 'nascimento'],
   ['m[ée]dico solicitante', 'medico'],
   ['solicitante', 'medico'],
@@ -38,6 +39,10 @@ const ROTULOS = [
   ['coleta', null],
   ['data de libera[çc][ãa]o', null],
   ['libera[çc][ãa]o', null],
+  ['ficha', null],
+  ['cadastro', null],
+  ['emiss[ãa]o', null],
+  ['conv[êe]nio', null],
 ];
 
 // Rótulo = início de palavra + nome do rótulo + ":". O CRM é exceção: aparece
@@ -67,12 +72,24 @@ export function extrairIdentificadores(texto) {
     rotulos.forEach((rotulo, i) => {
       if (!rotulo.campo || identificadores[rotulo.campo] !== null) return; // fica o 1º (cabeçalho)
       const fim = i + 1 < rotulos.length ? rotulos[i + 1].inicioRotulo : linha.length;
-      const valor = limparValor(linha.slice(rotulo.inicioValor, fim), CAMPOS_DE_PESSOA.has(rotulo.campo));
+      let valor = limparValor(linha.slice(rotulo.inicioValor, fim), CAMPOS_DE_PESSOA.has(rotulo.campo));
+      // "3/14/1992, 34a": só a data (a idade não identifica).
+      if (rotulo.campo === 'nascimento') valor = DATA.exec(valor ?? '')?.[0] ?? valor;
       if (valor) identificadores[rotulo.campo] = valor;
     });
   }
+  // "Solicitante: CRM-SP-123456 NOME DO MÉDICO": o rótulo CRM vem antes do nome, então
+  // o nome caiu no valor do CRM e o solicitante ficou vazio. Separa os dois.
+  const crmComNome = /^([-\s/]*[a-z]{2}[-\s/]*[\d.]+|[\d.]+)\s+(\p{L}.*)$/iu.exec(identificadores.crm ?? '');
+  if (crmComNome) {
+    identificadores.crm = crmComNome[1].replace(/^[-\s/]+/, '');
+    identificadores.medico ??= limparValor(crmComNome[2], true);
+  }
   return identificadores;
 }
+
+// Data impressa: "14/03/1992", "3/14/1992".
+const DATA = /\d{1,2}\/\d{1,2}\/\d{2,4}/;
 
 function campoDoRotulo(rotuloLido) {
   const minusculo = rotuloLido.toLowerCase();
@@ -86,6 +103,7 @@ function limparValor(bruto, ehPessoa) {
   let valor = bruto;
   if (ehPessoa) {
     valor = valor
+      .replace(/^\s*\d[\d./]*\s*[-–]\s*/, '') // código antes do nome: "000123 - NOME" (vem ANTES da regra do " - ")
       .replace(/\([^)]*\)?/g, ' ')            // "(fictícia)", "(CRM ..." sem fechar
       .replace(/\s-\s.*$/, ' ')               // " - registro FICTÍCIO"
       .replace(/^\s*dr[a]?\.?\s+/i, '');      // "Dr. " / "Dra. "
