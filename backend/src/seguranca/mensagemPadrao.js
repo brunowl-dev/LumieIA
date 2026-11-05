@@ -9,7 +9,9 @@ export const AVISO_PADRAO = 'Esta explicação é informativa e não substitui a
 const POSICAO = { dentro: 'dentro da faixa', acima: 'acima da faixa', abaixo: 'abaixo da faixa' };
 
 // 0.9 → "0,9" (vírgula decimal, como no laudo).
-const formatar = (n) => String(n).replace('.', ',');
+// Como o paciente lê: vírgula decimal e ponto de milhar ("329.000", "5,8").
+// A verificação lê os dois formatos (numerosDoTexto em verificarResposta.js).
+const formatar = (n) => n.toLocaleString('pt-BR', { maximumFractionDigits: 10 });
 
 // A faixa escrita a partir dos limites do pipeline (não do texto do laudo).
 function descreverFaixa({ minimo, maximo, minimo_inclusivo: minInc, maximo_inclusivo: maxInc }, unidade) {

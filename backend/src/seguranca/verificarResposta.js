@@ -107,8 +107,11 @@ const raizDaEspecialidade = (nome) => ESPECIALIDADES.find((raiz) => normalizar(n
 // --- Valor e posição (verificações 6 e 7) --------------------------------------
 
 // "118" → 118; "0,9" → 0.9; "1.234,5" → 1234.5 (mesma convenção do pipeline).
+// Dígito colado DEPOIS de uma letra não é número do resultado: é parte da unidade
+// ou do nome ("milh/mm3", "/mm3", "B12", "T4"). Sem isso, o "3" de "mm3" reprovava
+// toda explicação de hemácias e plaquetas, inclusive a mensagem padrão.
 function numerosDoTexto(texto) {
-  return [...String(texto).matchAll(/\d+(?:[.,]\d+)*/g)].map(([n]) => {
+  return [...String(texto).matchAll(/(?<![\p{L}\d.,])\d+(?:[.,]\d+)*/gu)].map(([n]) => {
     if (n.includes(',')) return Number(n.replace(/\./g, '').replace(',', '.'));
     if (/^\d{1,3}(\.\d{3})+$/.test(n)) return Number(n.replace(/\./g, ''));
     return Number(n);
