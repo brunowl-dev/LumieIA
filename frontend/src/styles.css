@@ -537,6 +537,39 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   to { opacity: 1; transform: none; }
 }
 
+/* ---------- Pré-visualização do laudo ---------- */
+/* Com prévia, o painel fica mais largo para a página do PDF caber melhor. */
+.painel-envio:has(.previa) { max-width: 720px; }
+.previa {
+  display: grid;
+  margin: 0;
+  border: 1px solid #d7e1e9;
+  border-radius: 12px;
+  background: #fafdff;
+  overflow: hidden;
+  animation: subir 0.35s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.previa figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e4ed;
+  background: #fff;
+  font-size: 13px;
+}
+.previa figcaption span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--texto-medio); }
+.previa figcaption strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.previa figcaption .ui-icon { width: 16px; height: 16px; color: #9874dd; }
+.previa figcaption a { flex: 0 0 auto; color: var(--primaria-escura); font-weight: 700; text-decoration: none; }
+.previa figcaption a:hover { text-decoration: underline; }
+.previa figcaption a:focus-visible { outline: 3px solid #bcecf4; outline-offset: 2px; border-radius: 4px; }
+/* Altura fixa: o PDF rola dentro do quadro, e a página não fica gigante. */
+.previa-quadro { height: 460px; background: #eef3f7; }
+.previa-quadro iframe { display: block; width: 100%; height: 100%; border: 0; }
+.previa-quadro img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 /* ---------- Movimento (etapa 2) ----------
    Regra geral: entradas curtas (0,3 a 0,45 s), só opacidade e deslocamento
    pequeno (transform), que o navegador anima sem travar. Nada pisca sem parar,
@@ -645,6 +678,7 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   .sem-explicacao { max-width: none; text-align: left; }
   .data-error { align-items: flex-start; flex-direction: column; }
   .balao { max-width: 92%; }
+  .previa-quadro { height: 340px; }
   .exams-heading { flex-wrap: wrap; }
   .result-title { flex-wrap: wrap; gap: 10px; }
 }

@@ -2,10 +2,11 @@
 // escolhendo arquivo → enviando ("Analisando...") → erro (com ação) ou sucesso
 // (o resultado sobe para o App, que troca para a tela de exames).
 // Visual do formulário "Adicionar exame" do app Lumie.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { enviarLaudo } from '../api.js';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
+import PreviaArquivo from '../components/PreviaArquivo.jsx';
 
 const TIPOS_ACEITOS = ['application/pdf', 'image/jpeg', 'image/png'];
 const TAMANHO_MAXIMO_MB = 10; // igual a UPLOAD_MAX_MB do .env.example
@@ -16,6 +17,21 @@ export default function TelaEnvio({ onResultado, onVoltar }) {
   const [consentimento, setConsentimento] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState(null);
+  // Endereço LOCAL do arquivo (blob:), só para a pré-visualização: nada sai do
+  // navegador até o paciente clicar em "Enviar exame".
+  const [urlPrevia, setUrlPrevia] = useState(null);
+
+  // Cria o endereço quando o arquivo muda e o libera da memória quando o arquivo
+  // é trocado ou a tela fecha (a função de limpeza do useEffect).
+  useEffect(() => {
+    if (!arquivo) {
+      setUrlPrevia(null);
+      return undefined;
+    }
+    const url = URL.createObjectURL(arquivo);
+    setUrlPrevia(url);
+    return () => URL.revokeObjectURL(url);
+  }, [arquivo]);
 
   // Conferência rápida antes de enviar, só para poupar a espera do paciente.
   // O back confere de novo (FORMATO_NAO_SUPORTADO / ARQUIVO_MUITO_GRANDE).
@@ -79,20 +95,27 @@ export default function TelaEnvio({ onResultado, onVoltar }) {
             </div>
           </div>
         ) : (
-          <>
-            {/* O <label> envolve o input: clicar em qualquer parte da área abre a escolha de arquivo. */}
-            <label className="area-envio">
-              <i>
-                <Icone nome="documento" />
-              </i>
-              <span>
-                <strong>{arquivo ? arquivo.name : 'Documento do exame'}</strong>
-                <small className="upload-hint">PDF, JPG ou PNG, até {TAMANHO_MAXIMO_MB} MB.</small>
-              </span>
-              <span className="area-envio-acao">{arquivo ? 'Trocar' : 'Escolher arquivo'}</span>
-              <input type="file" accept={TIPOS_ACEITOS.join(',')} onChange={escolherArquivo} />
-            </label>
+          // O <label> envolve o input: clicar em qualquer parte da área abre a escolha de arquivo.
+          <label className="area-envio">
+            <i>
+              <Icone nome="documento" />
+            </i>
+            <span>
+              <strong>{arquivo ? arquivo.name : 'Documento do exame'}</strong>
+              <small className="upload-hint">PDF, JPG ou PNG, até {TAMANHO_MAXIMO_MB} MB.</small>
+            </span>
+            <span className="area-envio-acao">{arquivo ? 'Trocar' : 'Escolher arquivo'}</span>
+            <input type="file" accept={TIPOS_ACEITOS.join(',')} onChange={escolherArquivo} />
+          </label>
+        )}
 
+        {/* Fora do "enviando ? :" para continuar visível durante a leitura. */}
+        {urlPrevia && (
+          <PreviaArquivo url={urlPrevia} tipo={arquivo.type === 'application/pdf' ? 'pdf' : 'foto'} nome={arquivo.name} />
+        )}
+
+        {!enviando && (
+          <>
             {erro && <MensagemErro erro={erro} />}
 
             <label className="consentimento">
