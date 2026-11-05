@@ -4,6 +4,7 @@ Leia antes: `../CLAUDE.md` e `../docs/contrato.md` (seções "Visão do fluxo", 
 
 ## Escopo desta pasta
 React. O fluxo das telas:
+0. **Catálogo (tela inicial):** laudos de demonstração SINTÉTICOS (`src/laudosDemo.js`, arquivos copiados de `samples/laudos/` para `public/laudos/`). Escolher um → confirmar o consentimento → o front baixa o arquivo e o envia por `POST /api/laudos`, igual ao envio manual (o back lê de verdade). O envio manual fica num link no fim do catálogo.
 1. **Envio do laudo** (PDF/foto) → `POST /api/laudos`.
 2. **Tela de exames:** um cartão por exame com nome, valor, faixa de referência, status com cor e alerta de atendimento prioritário (quando houver). Cada exame com `explicacao_disponivel: true` tem um botão **"Explicar com IA"**; os demais mostram "ainda não temos explicação para este exame".
 3. **Chat do exame** (abre ao clicar no botão): mostra "carregando" enquanto chama `POST /api/explicacoes`; a 1ª mensagem é a explicação nas 5 partes (na ordem), com a especialidade e o aviso. Depois o paciente digita dúvidas → `POST /api/chat`. Cada chat é de um exame só.

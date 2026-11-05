@@ -1,9 +1,11 @@
 // Ponto de entrada do front. O App guarda em qual tela o paciente está:
-// sem resultado → envio; com resultado → exames; "Explicar todos" → todas as
-// explicações; com exame escolhido → chat do exame.
+// sem resultado → catálogo de laudos de demonstração (ou envio manual, pelo link);
+// com resultado → exames; "Explicar todos" → todas as explicações; com exame
+// escolhido → chat do exame.
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Layout from './components/Layout.jsx';
+import TelaCatalogo from './telas/TelaCatalogo.jsx';
 import TelaChat from './telas/TelaChat.jsx';
 import TelaEnvio from './telas/TelaEnvio.jsx';
 import TelaExames from './telas/TelaExames.jsx';
@@ -21,6 +23,8 @@ function App() {
   // Fica aqui, e não em cada tela, para a explicação não ser pedida de novo ao modelo
   // quando o paciente vai de uma tela para outra.
   const [conversas, setConversas] = useState({});
+  // true = o paciente clicou em "Enviar um arquivo" no catálogo (envio manual).
+  const [enviandoArquivo, setEnviandoArquivo] = useState(false);
 
   function guardarConversa(idCanonico, mensagens) {
     setConversas((atuais) => ({ ...atuais, [idCanonico]: mensagens }));
@@ -31,13 +35,17 @@ function App() {
     setExameAberto(null);
     setVendoTodas(false);
     setConversas({});
+    setEnviandoArquivo(false);
   }
 
   let pagina;
   let tela;
-  if (!resultado) {
+  if (!resultado && enviandoArquivo) {
     pagina = 'Enviar exame';
-    tela = <TelaEnvio onResultado={setResultado} />;
+    tela = <TelaEnvio onResultado={setResultado} onVoltar={() => setEnviandoArquivo(false)} />;
+  } else if (!resultado) {
+    pagina = 'Escolher exame';
+    tela = <TelaCatalogo onResultado={setResultado} onEnviarArquivo={() => setEnviandoArquivo(true)} />;
   } else if (exameAberto) {
     pagina = exameAberto.nome;
     tela = (

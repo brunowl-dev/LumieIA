@@ -24,7 +24,7 @@ export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onN
           <span>Cada valor aparece com a faixa de referência do seu laudo.</span>
         </div>
         <button type="button" className="upload" onClick={onNovoEnvio}>
-          Enviar outro
+          Escolher outro
           <br />
           exame →
         </button>
