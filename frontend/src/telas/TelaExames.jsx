@@ -23,10 +23,10 @@ export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onN
           <h1>Meus exames</h1>
           <span>Cada valor aparece com a faixa de referência do seu laudo.</span>
         </div>
-        <button type="button" className="upload" onClick={onNovoEnvio}>
-          Escolher outro
-          <br />
-          exame →
+        {/* Ação da tela, no canto direito do título. Descarta este laudo e volta
+            ao catálogo: por isso "Ler outro laudo", e não "outro exame". */}
+        <button type="button" className="secondary com-icone" onClick={onNovoEnvio}>
+          <Icone nome="documento" /> Ler outro laudo
         </button>
       </div>
 

@@ -73,7 +73,11 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   color: #49708e;
   font-size: 14px;
 }
+/* "Meus exames" é um <button>: tira o visual padrão de botão. */
+button.nav-item { width: 100%; background: transparent; text-align: left; }
 .nav-item.selected { background: #e3f8fa; color: #04769f; font-weight: 800; }
+button.nav-item.selected:hover { background: #d3f6fc; }
+button.nav-item:focus-visible { outline: 3px solid #bcecf4; outline-offset: 1px; }
 /* Itens ilustrativos da plataforma completa: visíveis, mas claramente indisponíveis. */
 .nav-item.inativo { color: #8aa3b9; cursor: default; transition: background-color 0.15s ease; }
 .nav-item.inativo:hover { background: #f6f8fc; }
@@ -111,22 +115,62 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 .help p { margin-top: 9px; color: #7194ac; font-size: 11px; line-height: 1.45; }
 
 .content { min-width: 0; width: 100%; max-width: 1100px; padding: 0 4.4% 40px; }
+/* Cabeçalho: faixa em degradê azul (tons da marca), com saudação, trilha
+   clicável e usuário. Os brilhos ✦ ecoam o símbolo da logo e o mascote. */
 .topbar {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 61px;
-  border-bottom: 1px solid #e0e1ef;
-  color: #7891ad;
-  font-size: 12px;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 16px 22px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 88% -30%, #ffffff33 0, transparent 45%),
+    linear-gradient(115deg, #08738a 0%, #0789d0 58%, #27b7d1 100%);
+  box-shadow: 0 14px 34px #0789d033;
+  color: #fff;
+  overflow: hidden;
+  animation: subir 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
-.topbar p span { margin: 0 12px; color: #bbc7d6; }
-.topbar p b { color: #225573; }
-.topbar { justify-content: space-between; gap: 12px; }
+.topbar::after {
+  content: '✦';
+  position: absolute;
+  right: 34%;
+  bottom: -18px;
+  color: #ffffff1f;
+  font-size: 84px;
+  line-height: 1;
+  pointer-events: none;
+}
+.topbar-esquerda { position: relative; z-index: 1; display: grid; gap: 4px; min-width: 0; }
+.topbar-saudacao { font-family: 'Nunito Sans', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.2px; }
+
+/* Trilha: "Meus exames / Todas as explicações / Glicose". */
+.trilha ol { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.trilha li { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: #d3f6fc; }
+.trilha li + li::before { content: '/'; color: #ffffff66; }
+.trilha li span[aria-current] { color: #fff; font-weight: 700; }
+.trilha button {
+  padding: 2px 4px;
+  margin: 0 -4px;
+  border-radius: 6px;
+  background: transparent;
+  color: #d3f6fc;
+  font-size: 13px;
+  text-decoration: underline;
+  text-decoration-color: #ffffff55;
+  text-underline-offset: 3px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.trilha button:hover { background: #ffffff22; color: #fff; }
+.trilha button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 
 /* Usuário FICTÍCIO da demonstração (não há login). */
-.usuario-demo { display: flex; align-items: center; gap: 12px; }
-.sino-demo { position: relative; display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #fff; color: #49708e; box-shadow: 0 3px 10px #9aaec233; }
-.sino-demo i { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; border: 2px solid #fff; border-radius: 50%; background: #e0675e; }
+.usuario-demo { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; }
+.sino-demo { position: relative; display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #ffffff26; color: #fff; }
+.sino-demo i { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; border: 2px solid #0789d0; border-radius: 50%; background: #ffb4ad; }
 .avatar-usuario {
   display: grid;
   width: 36px;
@@ -140,8 +184,34 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   font-weight: 800;
 }
 .usuario-texto { display: grid; line-height: 1.2; }
-.usuario-texto strong { color: var(--texto); font-size: 13px; }
-.usuario-texto small { color: var(--texto-suave); font-size: 11px; }
+.usuario-texto strong { color: #fff; font-size: 13px; }
+.usuario-texto small { color: #d3f6fc; font-size: 11px; }
+.topbar .avatar-usuario { background: #fff; color: var(--marca); box-shadow: 0 0 0 3px #ffffff40; }
+
+/* "Voltar" padronizado: alto à esquerda, acima do título (components/Voltar.jsx). */
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 22px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--primaria-escura);
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.15s ease;
+}
+.voltar span { font-size: 16px; transition: transform 0.15s ease; }
+.voltar:hover:not(:disabled) { background: #e3f8fa; }
+.voltar:hover:not(:disabled) span { transform: translateX(-3px); }
+.voltar:focus-visible { outline: 3px solid #bcecf4; outline-offset: 2px; }
+.voltar:disabled { opacity: 0.5; cursor: default; }
+.voltar + .exams-heading { margin-top: 6px; }
+
+/* Botão secundário com ícone (ex.: "Ler outro laudo"). */
+.secondary.com-icone { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.secondary.com-icone .ui-icon { width: 17px; height: 17px; color: var(--marca); }
 
 /* ---------- Cabeçalho das telas ---------- */
 .exams-heading {
@@ -537,6 +607,17 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   border-radius: 12px;
   font-style: normal;
 }
+/* Cartão "Enviar meu laudo": mesmo formato dos outros, em azul de destaque. */
+.laudo-card-envio {
+  border-color: transparent;
+  background: linear-gradient(140deg, #0789d0 0%, #27b7d1 100%);
+  color: #fff;
+  box-shadow: 0 10px 24px #0789d033;
+}
+.laudo-card-envio:hover:not(:disabled) { border-color: transparent; box-shadow: 0 14px 30px #0789d04d; }
+.laudo-card-envio .laudo-icone { background: #ffffff2e; color: #fff; }
+.laudo-card-envio .laudo-texto small, .laudo-card-envio .laudo-caso { color: #e3f8fa; }
+.laudo-card-envio .laudo-formato { background: #fff; color: var(--marca); }
 .laudo-icone.tipo-pdf { background: #f1eaff; color: #9874dd; }
 .laudo-icone.tipo-foto { background: #e5fbff; color: var(--primaria-escura); }
 .laudo-texto { display: grid; gap: 2px; min-width: 0; }

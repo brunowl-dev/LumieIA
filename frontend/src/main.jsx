@@ -46,12 +46,25 @@ function App() {
     setResultado(resultadoDoChat);
   }
 
+  // "Meus exames" (menu lateral e 1º nível da trilha): os resultados do laudo,
+  // ou o catálogo se ainda não há laudo. Nunca descarta o laudo lido.
+  function irParaMeusExames() {
+    setExameAberto(null);
+    setVendoTodas(false);
+    setEnviandoArquivo(false);
+  }
+
   let pagina;
   let tela;
   // contexto = qual conjunto de dicas o banner da Lumie mostra (dicas.js).
   let contexto = 'catalogo';
+  // trilha = onde o paciente está, no cabeçalho. Item com onClick é clicável
+  // (volta àquele nível); o último é a tela atual.
+  const raiz = { rotulo: 'Meus exames', onClick: irParaMeusExames };
+  let trilha = [{ rotulo: 'Meus exames' }];
   if (!resultado && enviandoArquivo) {
     pagina = 'Enviar exame';
+    trilha = [raiz, { rotulo: 'Enviar meu laudo' }];
     tela = <TelaEnvio onResultado={setResultado} onVoltar={() => setEnviandoArquivo(false)} />;
   } else if (!resultado) {
     pagina = 'Escolher exame';
@@ -59,6 +72,12 @@ function App() {
   } else if (exameAberto) {
     pagina = exameAberto.nome;
     contexto = 'chat';
+    trilha = [
+      raiz,
+      // Chat aberto a partir de "Todas as explicações": dá para voltar a ela.
+      ...(vendoTodas ? [{ rotulo: 'Todas as explicações', onClick: () => setExameAberto(null) }] : []),
+      { rotulo: exameAberto.nome },
+    ];
     tela = (
       <TelaChat
         // key: trocar de exame recria a tela, com a conversa daquele exame.
@@ -74,6 +93,7 @@ function App() {
   } else if (vendoTodas) {
     pagina = 'Explicações';
     contexto = 'chat';
+    trilha = [raiz, { rotulo: 'Todas as explicações' }];
     tela = (
       <TelaExplicacoes
         resultado={resultado}
@@ -108,7 +128,12 @@ function App() {
   }, [chaveDaTela]);
 
   return (
-    <Layout pagina={pagina} contexto={contexto} totalExames={resultado ? resultado.itens.length : 0}>
+    <Layout
+      trilha={trilha}
+      contexto={contexto}
+      totalExames={resultado ? resultado.itens.length : 0}
+      onMeusExames={irParaMeusExames}
+    >
       <div key={chaveDaTela} className="tela">
         {tela}
       </div>
