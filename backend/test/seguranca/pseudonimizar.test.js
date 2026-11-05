@@ -75,7 +75,18 @@ describe('BWL-07: não regressão (o que a IA precisa continua intacto)', () => 
     assert.deepEqual(Object.keys(entrada.analito).sort(), [
       'alerta_critico', 'classificacao', 'faixa_referencia', 'id_canonico', 'nome_no_laudo', 'unidade', 'valor',
     ]);
-    assert.deepEqual(Object.keys(entrada.ficha).sort(), ['especialidade', 'id_canonico', 'o_que_avalia']);
+    assert.deepEqual(Object.keys(entrada.ficha).sort(), ['especialidade', 'id_canonico', 'o_que_avalia', 'significado_resultado']);
+  });
+  it('significado: só o texto da posição decidida pelo pipeline; dentro da faixa → null; a fonte não vai', () => {
+    const montar = (classificacao) => montarEntradaIa({ analito: { ...GLICOSE, classificacao }, ficha: FICHA_GLICOSE }).entrada.ficha;
+    assert.equal(montar('acima').significado_resultado, FICHA_GLICOSE.significado_fora_da_faixa.acima);
+    assert.equal(montar('abaixo').significado_resultado, FICHA_GLICOSE.significado_fora_da_faixa.abaixo);
+    assert.equal(montar('dentro').significado_resultado, null);
+    assert.ok(!JSON.stringify(montar('acima')).includes('fonte'));
+  });
+  it('ficha sem significado_fora_da_faixa → significado_resultado null', () => {
+    const { significado_fora_da_faixa: _, ...semTexto } = FICHA_GLICOSE;
+    assert.equal(montarEntradaIa({ analito: GLICOSE, ficha: semTexto }).entrada.ficha.significado_resultado, null);
   });
   it('números de exame e faixas não viram marcador', () => {
     const texto = 'Glicose 118 mg/dL (70 a 99), creatinina 0,9 (0,6 a 1,3), colesterol 1.234,5, TSH 4,50 µUI/mL';

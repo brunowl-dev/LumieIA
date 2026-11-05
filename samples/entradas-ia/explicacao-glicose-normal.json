@@ -16,6 +16,7 @@
   "ficha": {
     "id_canonico": "glicose",
     "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Na glicemia de jejum, a coleta é feita depois de 8 a 12 horas sem comer.",
-    "especialidade": "Endocrinologia"
+    "especialidade": "Endocrinologia",
+    "significado_resultado": null
   }
 }

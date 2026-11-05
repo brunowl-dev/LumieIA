@@ -5,7 +5,9 @@
 
 import { readFileSync } from 'node:fs';
 
-export const VERSAO_PROMPT = 'v1';
+// v2 (05/11/2026): o `significado` passa a se basear em `ficha.significado_resultado`
+// (base de conhecimento). Na v1 ele era genérico porque o modelo não tinha esse conteúdo.
+export const VERSAO_PROMPT = 'v2';
 
 // Só estes nomes existem: evita montar um caminho de arquivo com texto arbitrário.
 const NOMES = ['explicacao', 'chat'];

@@ -19,6 +19,8 @@ Arquivo: `exames.json` (nesta pasta). Cada ficha tem:
 | `especialidade` | **Uma** especialidade médica (o sistema confere por código) |
 | `fonte` | Onde você se baseou (Ministério da Saúde, sociedade médica, etc.) |
 | `status` | `"pendente"` enquanto não revisou; mude para `"pronto"` quando terminar e conferir a fonte |
+| `significado_fora_da_faixa` (opcional) | `{ "acima": "...", "abaixo": "..." }`: o que significa estar acima/abaixo da faixa, em 2 a 4 frases, **sem nome de doença nem remédio** (o que o valor quer dizer no corpo e o que pode influenciá-lo). `null` na posição que não se aplica. É a base do "O que isso significa" da explicação |
+| `fonte_significado` (opcional) | De onde veio cada frase de `significado_fora_da_faixa`, com o trecho citado. Não vai ao modelo |
 
 ## O que NÃO escrever
 - Valores de referência (vêm do próprio laudo de cada laboratório).

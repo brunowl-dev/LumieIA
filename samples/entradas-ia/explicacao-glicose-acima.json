@@ -16,6 +16,7 @@
   "ficha": {
     "id_canonico": "glicose",
     "o_que_avalia": "O exame mede a quantidade de açúcar (glicose) no sangue. Na glicemia de jejum, a coleta é feita depois de 8 a 12 horas sem comer.",
-    "especialidade": "Endocrinologia"
+    "especialidade": "Endocrinologia",
+    "significado_resultado": "Glicose acima da faixa quer dizer que havia mais açúcar no sangue do que o esperado para o jejum. A glicemia de jejum pode sofrer interferência de situações passageiras, como uma doença aguda, e um único resultado alterado precisa ser repetido para confirmação. Por isso, o médico avalia esse valor junto com outros exames, como a hemoglobina glicada."
   }
 }

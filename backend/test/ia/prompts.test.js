@@ -16,8 +16,8 @@ const AVISO = 'Esta explicação é informativa e não substitui a avaliação d
 const exemplosDo = (prompt) => prompt.split('\n').filter((linha) => linha.startsWith('{"')).map((linha) => JSON.parse(linha));
 
 describe('prompts (ISA-02)', () => {
-  it('a versão em uso é a v1 e os dois prompts carregam', () => {
-    assert.equal(VERSAO_PROMPT, 'v1');
+  it('a versão em uso é a v2 e os dois prompts carregam', () => {
+    assert.equal(VERSAO_PROMPT, 'v2');
     for (const nome of ['explicacao', 'chat']) assert.ok(carregarPrompt(nome).length > 200, nome);
   });
 
@@ -44,11 +44,17 @@ describe('prompts (ISA-02)', () => {
     assert.deepEqual([...posicoes].sort((a, b) => a - b), posicoes);
   });
 
-  it('o exemplo da explicação passa na segurança', () => {
-    const entrada = ler('entradas-ia/explicacao-glicose-normal.json');
+  it('os exemplos da explicação passam na segurança (dentro e acima da faixa)', () => {
+    const entradas = [ler('entradas-ia/explicacao-glicose-normal.json'), ler('entradas-ia/explicacao-glicose-acima.json')];
     const exemplos = exemplosDo(carregarPrompt('explicacao'));
-    assert.equal(exemplos.length, 1);
-    assert.deepEqual(verificarExplicacao(exemplos[0], entrada.analito, entrada.ficha), { aprovada: true, motivos: [] });
+    assert.equal(exemplos.length, 2);
+    exemplos.forEach((exemplo, i) => {
+      assert.deepEqual(verificarExplicacao(exemplo, entradas[i].analito, entradas[i].ficha), { aprovada: true, motivos: [] });
+    });
+  });
+
+  it('v2: o prompt usa ficha.significado_resultado no significado', () => {
+    for (const nome of ['explicacao', 'chat']) assert.ok(carregarPrompt(nome).includes('significado_resultado'), nome);
   });
 
   it('os exemplos do chat passam na segurança', () => {
