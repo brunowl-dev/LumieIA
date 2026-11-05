@@ -95,6 +95,26 @@
       "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata nutrientes e alimentação (escolha do Claude, a confirmar pelo grupo).",
       "status": "pronto",
       "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+    },
+    {
+      "id_canonico": "ph_urinario",
+      "material": "urina",
+      "nomes_alternativos": ["pH", "pH urinário", "pH da urina"],
+      "o_que_avalia": "O exame mede o quanto a urina está ácida ou alcalina (o pH). Esse valor muda ao longo do dia, com a alimentação e com a quantidade de líquido que a pessoa bebe.",
+      "especialidade": "Nefrologia",
+      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata os rins, como na ficha da creatinina.",
+      "status": "pronto",
+      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+    },
+    {
+      "id_canonico": "densidade_urinaria",
+      "material": "urina",
+      "nomes_alternativos": ["Densidade", "Densidade urinária", "Densidade da urina"],
+      "o_que_avalia": "O exame mede o quanto a urina está concentrada. Ele mostra como os rins estão equilibrando a água do corpo e muda bastante com a quantidade de líquido que a pessoa bebeu.",
+      "especialidade": "Nefrologia",
+      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata os rins, como na ficha da creatinina.",
+      "status": "pronto",
+      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
     }
   ]
 }

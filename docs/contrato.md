@@ -147,6 +147,7 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 - `identificadores` (BWL-07, `extrairIdentificadores.js`): `{ paciente, cpf, rg, nascimento, pedido, medico, crm, responsavel_tecnico }`, cada um texto ou `null`, lidos dos rótulos do cabeçalho ("Paciente:", "CPF:", "Solicitante:"...). Ficam **fora** de `laudo`. O orquestrador os guarda só na sessão (somem com `SESSION_TTL_MINUTES`) e os usa só como lista do que a varredura apaga do texto livre. Nunca vão para a IA, o front ou os logs.
 
 ## 3. Base de conhecimento → IA e Segurança
+**Campo opcional `material` (04/11/2026):** ficha com `"material": "urina"` (pH, densidade) só é procurada para exames da SEÇÃO DE URINA do laudo; ficha sem o campo é de sangue e nunca é usada na seção de urina (`criarIndiceDeNomes(base, { material })`). Assim "Glicose" da urina não recebe a explicação da glicose do sangue.
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
 
 Cada ficha: `id_canonico`, `nomes_alternativos` (lista), `o_que_avalia` (texto simples), `especialidade` (UMA), `fonte`, `status` (`"pronto"` ou `"pendente"`).

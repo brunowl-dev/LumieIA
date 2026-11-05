@@ -116,6 +116,13 @@ describe('Layout D: laudo inteiro', () => {
     assert.deepEqual(r.laudo.analitos.map((a) => [a.nome_no_laudo, a.classificacao]), [['Densidade', 'dentro'], ['pH', 'dentro'], ['Leucócitos', 'dentro']]);
     assert.equal(r.laudo.itens_descritivos.length, 9);
   });
+  it('pH e densidade da urina são reconhecidos pelas fichas DE URINA (têm explicação)', () => {
+    assert.deepEqual(r.laudo.analitos.map((a) => a.id_canonico), ['densidade_urinaria', 'ph_urinario', null]);
+  });
+  it('"Densidade" fora da seção de urina não pega a ficha de urina', () => {
+    const fora = processarTextoLaudo(['Exame Resultado Unidade Valores de referência', 'Densidade 1.010 g/mL 1.005 a 1.030'].join('\n'));
+    assert.equal(fora.laudo.analitos[0].id_canonico, null);
+  });
   it('"Glicose" e "Hemoglobina" da URINA não são ligados às fichas de sangue', () => {
     const urina = processarTextoLaudo(TEXTO.replace('Hemoglobina \t: Negativo \tNegativo', 'Hemoglobina \t: 0,5 \tAté 1,0 mg/dL'));
     assert.equal(urina.laudo.analitos.find((a) => a.nome_no_laudo === 'Hemoglobina').id_canonico, null);

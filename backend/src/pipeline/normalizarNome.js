@@ -29,11 +29,15 @@ export function normalizarTexto(texto) {
  * Usa TODAS as fichas, inclusive as "pendente": reconhecer o exame não depende
  * da revisão do texto da explicação (decisão em docs/contrato.md §3). Quem
  * decide se há explicação é o orquestrador, pelo status da ficha.
+ * Um índice por MATERIAL: sem `material`, só as fichas de sangue (sem o campo
+ * "material"); com `material: 'urina'`, só as fichas de urina. Assim "Glicose" da
+ * urina nunca cai na ficha da glicose do sangue.
  * @param {object} base conteúdo de exames.json
+ * @param {{ material?: string|null }} [opcoes]
  * @returns {Map<string, string>}
- * @throws {Error} base malformada ou mesmo nome em duas fichas
+ * @throws {Error} base malformada ou mesmo nome em duas fichas do mesmo material
  */
-export function criarIndiceDeNomes(base) {
+export function criarIndiceDeNomes(base, { material = null } = {}) {
   if (!base || !Array.isArray(base.exames)) {
     throw new Error('Base de conhecimento malformada: falta a lista "exames".');
   }
@@ -46,6 +50,7 @@ export function criarIndiceDeNomes(base) {
     if (!Array.isArray(ficha.nomes_alternativos)) {
       throw new Error(`Base de conhecimento: a ficha "${id}" não tem a lista nomes_alternativos.`);
     }
+    if ((ficha.material ?? null) !== material) return;
     // O próprio id também vale como nome ("colesterol_total" → "colesterol total").
     for (const nome of [id, ...ficha.nomes_alternativos]) {
       const chave = normalizarTexto(nome);
@@ -67,14 +72,14 @@ export function criarIndiceDeNomes(base) {
  * @param {string} caminho
  * @returns {Map<string, string>}
  */
-export function carregarIndiceDeNomes(caminho) {
+export function carregarIndiceDeNomes(caminho, opcoes) {
   let base;
   try {
     base = JSON.parse(readFileSync(caminho, 'utf8'));
   } catch (erro) {
     throw new Error(`Não foi possível ler a base de conhecimento em "${caminho}": ${erro.message}`, { cause: erro });
   }
-  return criarIndiceDeNomes(base);
+  return criarIndiceDeNomes(base, opcoes);
 }
 
 /**

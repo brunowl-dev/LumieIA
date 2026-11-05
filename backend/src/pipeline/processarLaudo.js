@@ -30,6 +30,7 @@ let dadosCarregados = null;
 export function carregarDadosDoPipeline() {
   dadosCarregados ??= {
     indiceNomes: carregarIndiceDeNomes(CAMINHO_BASE_CONHECIMENTO),
+    indiceNomesUrina: carregarIndiceDeNomes(CAMINHO_BASE_CONHECIMENTO, { material: 'urina' }),
     limites: carregarLimitesCriticos(CAMINHO_LIMITES_CRITICOS),
   };
   return dadosCarregados;
@@ -52,16 +53,17 @@ export function processarTextoLaudo(texto, opcoes = {}) {
     limiarOcr = CONFIANCA_MINIMA_OCR,
     idLaudo = randomUUID(),
   } = opcoes;
-  const { indiceNomes, limites } = opcoes.indiceNomes && opcoes.limites
+  const { indiceNomes, limites, indiceNomesUrina = new Map() } = opcoes.indiceNomes && opcoes.limites
     ? opcoes
     : carregarDadosDoPipeline();
 
   // 1) Estruturação e 2) nome canônico.
   const estruturado = estruturarAnalitos(texto);
   const analitos = estruturado.analitos.map((analito) => {
-    // Exame da seção de urina não é ligado à ficha de sangue de mesmo nome
-    // ("Glicose", "Hemoglobina" na urina): sai sem id_canonico, sem explicação.
-    const id = analito.material === 'urina' ? null : normalizarNomeExame(analito.nome_no_laudo, indiceNomes).id_canonico;
+    // Exame da seção de urina só é procurado nas fichas DE URINA (pH, densidade):
+    // "Glicose", "Hemoglobina" na urina nunca caem na ficha do sangue.
+    const indice = analito.material === 'urina' ? indiceNomesUrina : indiceNomes;
+    const id = normalizarNomeExame(analito.nome_no_laudo, indice).id_canonico;
     const comId = { ...analito, id_canonico: id };
     // 3) Confiança de cada item.
     return { ...comId, avaliacao: avaliarConfiancaAnalito(comId, { origem, limiar, confiancaOcrLaudo: confiancaOcr }) };
