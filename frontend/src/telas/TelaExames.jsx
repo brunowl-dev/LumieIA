@@ -4,8 +4,9 @@ import AvisoMedico from '../components/AvisoMedico.jsx';
 import CartaoExame from '../components/CartaoExame.jsx';
 import Icone from '../components/Icone.jsx';
 
-export default function TelaExames({ resultado, onExplicar, onNovoEnvio }) {
+export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onNovoEnvio }) {
   const { itens } = resultado;
+  const comExplicacao = itens.filter((item) => item.explicacao_disponivel).length;
   const examesEmAlerta = itens.filter((item) => item.alerta_prioritario);
   // Contagem para os quadros de resumo: só conta o que o back já classificou.
   const dentro = itens.filter((item) => item.classificacao === 'dentro').length;
@@ -72,6 +73,12 @@ export default function TelaExames({ resultado, onExplicar, onNovoEnvio }) {
           <p className="eyebrow">LAUDO ENVIADO</p>
           <h2>Resultados identificados</h2>
         </div>
+        {/* Com 2 ou mais exames explicáveis: todas as explicações numa tela só. */}
+        {comExplicacao > 1 && (
+          <button type="button" className="primary" onClick={onExplicarTodos}>
+            <Icone nome="faisca" /> Explicar todos com IA
+          </button>
+        )}
       </div>
 
       <div className="exam-list">

@@ -7,7 +7,8 @@ React. O fluxo das telas:
 1. **Envio do laudo** (PDF/foto) → `POST /api/laudos`.
 2. **Tela de exames:** um cartão por exame com nome, valor, faixa de referência, status com cor e alerta de atendimento prioritário (quando houver). Cada exame com `explicacao_disponivel: true` tem um botão **"Explicar com IA"**; os demais mostram "ainda não temos explicação para este exame".
 3. **Chat do exame** (abre ao clicar no botão): mostra "carregando" enquanto chama `POST /api/explicacoes`; a 1ª mensagem é a explicação nas 5 partes (na ordem), com a especialidade e o aviso. Depois o paciente digita dúvidas → `POST /api/chat`. Cada chat é de um exame só.
-- Estados de erro (um por código do contrato) em cada uma das três telas.
+4. **Todas as explicações** (botão "Explicar todos com IA", com 2 ou mais exames explicáveis): a explicação de cada exame, uma embaixo da outra, pedida exame por exame em `POST /api/explicacoes` (sem rota nova). As conversas ficam no `App` (`main.jsx`): o chat aberto depois retoma a mesma explicação, sem pedir outra ao modelo.
+- Estados de erro (um por código do contrato) em cada uma das telas.
 
 ## Regras
 - Consumir SOMENTE o formato do contrato. Enquanto o back não existir, trabalhe com os JSONs de `../samples/respostas-api/`.
