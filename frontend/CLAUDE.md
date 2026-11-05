@@ -11,6 +11,7 @@ React. O fluxo das telas:
 3. **Chat do exame** (abre ao clicar no botão): mostra "carregando" enquanto chama `POST /api/explicacoes`; a 1ª mensagem é a explicação nas 5 partes (na ordem), com a especialidade e o aviso. Depois o paciente digita dúvidas → `POST /api/chat`. Cada chat é de um exame só.
 4. **Todas as explicações** (botão "Explicar todos com IA", com 2 ou mais exames explicáveis): a explicação de cada exame, uma embaixo da outra, pedida exame por exame em `POST /api/explicacoes` (sem rota nova). As conversas ficam no `App` (`main.jsx`): o chat aberto depois retoma a mesma explicação, sem pedir outra ao modelo.
 - Estados de erro (um por código do contrato) em cada uma das telas.
+- **Mascote (a gotinha, `public/mascote.png`):** banner "Dica da Lumie" (`PainelDicas.jsx`, textos em `src/dicas.js` por tela; coluna à direita em tela larga, no fim da página em tela estreita), pop-up de boas-vindas no catálogo (`BoasVindas.jsx`, uma vez por sessão) e avatar nos balões do chat. As dicas seguem as regras da base: só repetem o que o sistema já faz, sem diagnóstico, remédio ou veredito.
 
 ## Regras
 - Consumir SOMENTE o formato do contrato. Enquanto o back não existir, trabalhe com os JSONs de `../samples/respostas-api/`.
