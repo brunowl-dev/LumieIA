@@ -110,7 +110,7 @@ describe('cliente da IA: chat (ISA-05)', () => {
 });
 
 describe('cliente da IA: nova tentativa (ISA-06)', () => {
-  it('com motivosReprovacao, o prompt ganha uma instrução por motivo', { todo: 'ISA-06' }, async () => {
+  it('com motivosReprovacao, o prompt ganha uma instrução por motivo', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
     const cliente = criarClienteIa({ ...OPCOES, fetch: f.fetch });
     await cliente.gerarExplicacao(ENTRADA_EXPLICACAO);
@@ -121,7 +121,7 @@ describe('cliente da IA: nova tentativa (ISA-06)', () => {
     assert.ok(um.includes('88') && um.includes('70') && um.includes('99'), 'a instrução de valor_divergente cita valor, mínimo e máximo');
   });
 
-  it('a entrada enviada não muda entre tentativas', { todo: 'ISA-06' }, async () => {
+  it('a entrada enviada não muda entre tentativas', async () => {
     const f = fetchFalso({ conteudo: JSON.stringify(EXPLICACAO_BOA) });
     const cliente = criarClienteIa({ ...OPCOES, fetch: f.fetch });
     await cliente.gerarExplicacao(ENTRADA_EXPLICACAO);
