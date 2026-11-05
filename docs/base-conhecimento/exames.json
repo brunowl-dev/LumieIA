@@ -47,74 +47,74 @@
       "nomes_alternativos": ["Hemácias", "Hemacias", "Eritrócitos", "Contagem de hemácias", "Glóbulos vermelhos", "RBC"],
       "o_que_avalia": "O exame conta as hemácias, os glóbulos vermelhos do sangue. São elas que levam o oxigênio dos pulmões para todo o corpo.",
       "especialidade": "Hematologia",
-      "fonte": "Texto: Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (a conferir). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
+      "fonte": "Texto: Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (acesso em 04/11/2026) (as hemácias 'são responsáveis por transportar o oxigênio dos pulmões para as células de todo o organismo'). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "hematocrito",
       "nomes_alternativos": ["Hematócrito", "Hematocrito", "Ht", "Hct"],
       "o_que_avalia": "O exame mostra quanto do volume do sangue é ocupado pelas hemácias (glóbulos vermelhos). É dado em porcentagem.",
       "especialidade": "Hematologia",
-      "fonte": "Texto: Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (a conferir). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Hematócrito: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/hematocrito (acesso em 04/11/2026) (o exame 'mede a proporção ou porcentagem de hemácias (glóbulos vermelhos) no volume total do sangue'). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "plaquetas",
       "nomes_alternativos": ["Plaquetas", "Contagem de plaquetas", "PLT"],
       "o_que_avalia": "O exame conta as plaquetas, pequenas partes do sangue que ajudam a formar o coágulo e a parar sangramentos.",
       "especialidade": "Hematologia",
-      "fonte": "Texto: Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (a conferir). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
+      "fonte": "Texto: Hemoes (Governo do Espírito Santo), 'Sobre o sangue', https://hemoes.es.gov.br/sobre-o-sangue (acesso em 04/11/2026) (a função principal das plaquetas 'é auxiliar na interrupção do sangramento'). Especialidade: área que trata o sangue, como na ficha da hemoglobina.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "vitamina_d",
       "nomes_alternativos": ["Vitamina D", "Vitamina D - 25 Hidroxi", "Vitamina D 25 hidroxi", "25-hidroxivitamina D", "25(OH)D", "25 OH vitamina D"],
       "o_que_avalia": "O exame mede a 25-hidroxivitamina D, a forma da vitamina D que circula no sangue. A vitamina D participa da absorção do cálcio e da saúde dos ossos.",
       "especialidade": "Endocrinologia",
-      "fonte": "Texto: Posicionamento Oficial da Sociedade Brasileira de Patologia Clínica/Medicina Laboratorial (SBPC/ML) e da Sociedade Brasileira de Endocrinologia e Metabologia (SBEM), 'Intervalos de Referência da Vitamina D - 25(OH)D', 2017 (a conferir). Especialidade: SBEM, coautora do posicionamento.",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Vitamina D, 25-hidroxi: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/vitamina-d-25-hidroxi (acesso em 04/11/2026) (mede 'principalmente na forma de 25-hidroxivitamina D'; vitamina necessária 'para absorver o cálcio, que é essencial para manter os ossos saudáveis'). Categorias do laudo (deficiência, normal, população de risco): SBPC/ML e SBEM, 'Modelo de laudo laboratorial para a 25-hidroxivitamina D', Jornal Brasileiro de Patologia e Medicina Laboratorial, v. 56, 2020, DOI 10.5935/1676-2444.20200052. Especialidade: SBEM, coautora da recomendação.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "vitamina_c",
       "nomes_alternativos": ["Vitamina C", "Ácido ascórbico", "Acido ascorbico"],
-      "o_que_avalia": "O exame mede a vitamina C (ácido ascórbico) no sangue. A vitamina C vem da alimentação e participa da defesa do organismo e da cicatrização.",
+      "o_que_avalia": "O exame mede a vitamina C (ácido ascórbico) no sangue. A vitamina C participa da defesa do organismo e da reparação dos tecidos.",
       "especialidade": "Nutrologia",
-      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata nutrientes e alimentação (escolha do Claude, a confirmar pelo grupo).",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Vitamina C: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/vitamina-c (acesso em 04/11/2026) (mede 'os níveis de ácido ascórbico (vitamina C) no sangue'; atua na 'reparação de tecidos' e é 'fundamental para o bom funcionamento do sistema imunológico'). Especialidade: área que trata nutrientes e alimentação (escolha do Claude, a confirmar pelo grupo).",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "zinco",
       "nomes_alternativos": ["Zinco", "Zinco sérico", "Zinco serico"],
-      "o_que_avalia": "O exame mede o zinco no sangue. O zinco é um mineral que vem da alimentação e participa da defesa do organismo e da cicatrização.",
+      "o_que_avalia": "O exame mede o zinco no sangue. O zinco é um mineral que participa da defesa do organismo, da cicatrização e do crescimento das células.",
       "especialidade": "Nutrologia",
-      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata nutrientes e alimentação (escolha do Claude, a confirmar pelo grupo).",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Zinco: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/zinco (acesso em 04/11/2026) ('essencial para diversas funções do organismo, incluindo o sistema imunológico, a cicatrização, o metabolismo e o crescimento celular'). Especialidade: área que trata nutrientes e alimentação (escolha do Claude, a confirmar pelo grupo).",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "ph_urinario",
       "material": "urina",
       "nomes_alternativos": ["pH", "pH urinário", "pH da urina"],
-      "o_que_avalia": "O exame mede o quanto a urina está ácida ou alcalina (o pH). Esse valor muda ao longo do dia, com a alimentação e com a quantidade de líquido que a pessoa bebe.",
+      "o_que_avalia": "O exame mede o quanto a urina está ácida ou alcalina (o pH). Esse valor muda, por exemplo, com a alimentação.",
       "especialidade": "Nefrologia",
-      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata os rins, como na ficha da creatinina.",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Ph - Urina Amostra Isolada: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/ph-urina-amostra-isolada (acesso em 04/11/2026) (mede se a urina está mais ácida ou mais alcalina; dietas ricas em carne ou em vegetais influenciam o pH). Especialidade: área que trata os rins, como na ficha da creatinina.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     },
     {
       "id_canonico": "densidade_urinaria",
       "material": "urina",
       "nomes_alternativos": ["Densidade", "Densidade urinária", "Densidade da urina"],
-      "o_que_avalia": "O exame mede o quanto a urina está concentrada. Ele mostra como os rins estão equilibrando a água do corpo e muda bastante com a quantidade de líquido que a pessoa bebeu.",
+      "o_que_avalia": "O exame mede o quanto a urina está concentrada. Ele ajuda a avaliar a hidratação do corpo e a capacidade dos rins de concentrar ou diluir a urina.",
       "especialidade": "Nefrologia",
-      "fonte": "Texto: FONTE A DEFINIR (escrito pelo Claude a partir de conhecimento geral; precisa de fonte citável antes de ser considerado revisado). Especialidade: área que trata os rins, como na ficha da creatinina.",
+      "fonte": "Texto: Rede D'Or São Luiz, 'Densidade - Urina Amostra Isolada: o que é, como é feito e qual o preparo', https://www.rededorsaoluiz.com.br/exames-e-procedimentos/analises-clinicas/densidade-urina-amostra-isolada (acesso em 04/11/2026) (o exame 'avalia a capacidade dos rins de concentrar ou diluir a urina' e serve para 'avaliar o estado de hidratação do organismo'). Especialidade: área que trata os rins, como na ficha da creatinina.",
       "status": "pronto",
-      "revisao": "Gerada pelo Claude em 04/11/2026 e marcada 'pronto' para a demo, a pedido do Bruno. Texto e fonte AINDA NÃO revisados por pessoa do grupo (MAG-08)."
+      "revisao": "Texto escrito pelo Claude em 04/11/2026; fonte aberta e trecho conferido pelo Claude na mesma data. Marcada 'pronto' para a demo, a pedido do Bruno. Falta a revisão do texto por pessoa do grupo (MAG-08) e a confirmação da especialidade."
     }
   ]
 }
