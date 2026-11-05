@@ -17,6 +17,10 @@ RUN npm ci
 # Copia o restante do código do front (index.html, src/, vite.config.js...).
 COPY . .
 
+# No Docker o back sempre existe: usa o back real, não os mocks (ver src/api.js).
+# O Vite grava o valor no JS durante o build, por isso precisa estar ANTES dele.
+ENV VITE_USAR_MOCK=false
+
 # Compila o React: gera HTML, CSS e JS otimizados em /app/dist.
 RUN npm run build
 
