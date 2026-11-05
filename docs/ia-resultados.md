@@ -8,7 +8,7 @@ Entradas usadas: `samples/entradas-ia/` (sintéticas). `MAX_REGENERACOES=2`, ou 
 |---|---|
 | Modelo (`OLLAMA_MODEL`) | **`beam`** desde 03/11/2026 (também no `.env.example` desde 04/11). Motivo: dos 25 modelos listados em `GET /api/tags`, só o `beam` respondeu na conta gratuita; os outros 23 deram HTTP 402 e o `clef:27b` deu HTTP 400 (não aceita `/api/chat`). Teste rápido do `beam`: JSON Schema respeitado, 8 de 8 respostas às entradas de `samples/entradas-ia/` aprovadas pela segurança, 3 a 7 s cada, com prompt provisório (não o v1). Fabricante e licença do `beam` não informados |
 | Chamada funcionou? (data) | **Sim**, com `beam`, em 03/11/2026: `format` (JSON Schema) respeitado e cerca de 2 s por resposta. Antes, também em 03/11, os modelos `gpt-oss` tinham dado **HTTP 402** ("Add usage credits or subscribe"): a chave chegava ao servidor (não deu 401), mas a conta gratuita não tem acesso a eles |
-| Limites do plano gratuito encontrados | A conta usada não consegue gerar nenhuma resposta (402). Limites exatos do plano não verificados |
+| Limites do plano gratuito encontrados | Na conta gratuita, os `gpt-oss` dão 402; o `beam` responde (20 chamadas seguidas em 05/11/2026, sem erro). Limites exatos de cota do plano não verificados |
 | Ajustes no formato da chamada em relação ao contrato §4.1 | Nenhum até agora (o pedido foi aceito até a etapa de cobrança) |
 
 ## Medições
@@ -18,9 +18,10 @@ Uma linha por medição (por versão de prompt).
 |---|---|---|---|---|---|---|---|---|
 | 03/11/2026 | v1 | 3 (só explicação; chat ainda não implementado, ISA-05) | 3 | 0 | 0 | 0 | 2,2 | 2,7 |
 | 03/11/2026 | v1 | 4 (3 explicações + 1 chat, depois da ISA-05) | 4 | 0 | 0 | 0 | 3,2 | 4,5 |
+| 05/11/2026 | v2 | 20 (5 rodadas × 4 entradas de `samples/entradas-ia/`, depois da ISA-06) | 20 | 0 | 0 | 0 | 8,0 | 14,0 |
 
 ## Motivos de reprovação mais frequentes
-[PREENCHER: os códigos que mais apareceram nas linhas "REPROVADA" e o que foi mudado no prompt por causa deles.]
+Nenhuma reprovação nas medições até 05/11/2026 (27 chamadas no total, v1 e v2). Por isso a correção da ISA-06 (uma instrução por código em `backend/src/ia/mensagens.js`) foi exercitada só nos testes automáticos com fetch falso, ainda não com o modelo real. O v2 ficou mais lento que o v1 (média 8,0 s contra 3,2 s); a causa não foi medida isoladamente.
 
 ## Falsos positivos da camada de segurança
-[PREENCHER: respostas do modelo que estavam corretas mas foram reprovadas. Copiar o texto e o motivo; o Bruno ajusta `termosProibidos.json`.]
+Nenhum observado até 05/11/2026 (nenhuma resposta foi reprovada).

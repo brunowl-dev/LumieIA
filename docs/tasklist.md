@@ -14,7 +14,7 @@
 - [x] **GRP-03 (P1)** Manter `docs/artigo-vs-prototipo.md` atualizado. O artigo já foi enviado: se o protótipo divergir, precisamos saber explicar.
 - [ ] **GRP-04 (P1)** Roteiro da apresentação e plano B em vídeo gravado (a demo depende de internet por causa do modelo na nuvem).
 - [x] **GRP-05 (P0)** Criar `Dockerfile` do front, do back e o `docker-compose.yml`, seguindo `docs/docker.md`. Responsável: [DEFINIR — quem tiver mais familiaridade com Docker]. Só dá para fechar quando cada serviço tiver o seu `package.json`.
-- [ ] **GRP-06 (P0)** Isadora e Aguiar: preencher o "Modo de trabalho" no `CLAUDE.md` da sua pasta.
+- [ ] **GRP-06 (P0)** Isadora (feito em `backend/src/ia/CLAUDE.md`) e Aguiar: preencher o "Modo de trabalho" no `CLAUDE.md` da sua pasta.
 
 ---
 
@@ -72,7 +72,7 @@
 - [x] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.
 - [x] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
 - [x] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
-- [ ] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.
+- [x] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.
 - ~~**ISA-07 (P2)** Redação do tom do lembrete (horários e doses nunca vêm do modelo).~~ **Cortada em 04/11/2026** por prazo.
 
 ---
