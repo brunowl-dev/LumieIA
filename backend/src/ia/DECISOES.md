@@ -20,3 +20,9 @@ Decisões que nem o contrato §4 nem o `CLAUDE.md` desta pasta resolviam. Format
 
 ## Pendente fora da pasta
 - **Conta do Ollama Cloud sem créditos (HTTP 402) em 03/11/2026.** O `beam` contorna por enquanto, com limite gratuito desconhecido. Para o grupo: atualizar `.env.example` e registrar em `docs/artigo-vs-prototipo.md` que o modelo não é da família GPT. Detalhes em `docs/ia-resultados.md`.
+
+## 05/11/2026 — prompt v2: significado a partir da base (feito pela Aguiar, combinado com o grupo)
+- **Problema:** na v1, o `significado` saía genérico ("é avaliado junto com outras informações..."). O prompt mandava usar só a entrada, e a entrada não tinha nada sobre o que um valor acima/abaixo quer dizer; o modelo copiava o exemplo.
+- **Mudança:** a base ganhou `significado_fora_da_faixa` (contrato §3), e a entrada da IA recebe `ficha.significado_resultado` (só o texto da posição decidida pelo pipeline). O prompt v2 manda explicar esse texto sem acrescentar causas nem doenças; dentro da faixa, diz que o valor está na faixa de referência, sem veredito.
+- **Versão:** v2 em pasta nova; a v1 continua intacta. Voltar = `VERSAO_PROMPT = 'v1'` em `prompts.js`.
+- **Medido (05/11, `beam`, Docker):** 7 explicações (glicose, TSH e creatinina acima; hemoglobina e TSH abaixo; hemoglobina e colesterol dentro), 7 aprovadas de 1ª, 0 regenerações, 4 a 13 s.

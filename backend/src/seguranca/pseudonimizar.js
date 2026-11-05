@@ -215,6 +215,9 @@ export function montarEntradaIa(
       id_canonico: ficha.id_canonico,
       o_que_avalia: ficha.o_que_avalia,
       especialidade: ficha.especialidade,
+      // Só o texto da posição que o PIPELINE decidiu (acima ou abaixo): o modelo
+      // não escolhe qual usar. Dentro da faixa, ou ficha sem o texto → null.
+      significado_resultado: ficha.significado_fora_da_faixa?.[analito.classificacao] ?? null,
     },
   };
   if (historico !== undefined) {
