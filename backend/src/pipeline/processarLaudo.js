@@ -59,16 +59,24 @@ export function processarTextoLaudo(texto, opcoes = {}) {
   // 1) Estruturação e 2) nome canônico.
   const estruturado = estruturarAnalitos(texto);
   const analitos = estruturado.analitos.map((analito) => {
-    const comId = { ...analito, id_canonico: normalizarNomeExame(analito.nome_no_laudo, indiceNomes).id_canonico };
+    // Exame da seção de urina não é ligado à ficha de sangue de mesmo nome
+    // ("Glicose", "Hemoglobina" na urina): sai sem id_canonico, sem explicação.
+    const id = analito.material === 'urina' ? null : normalizarNomeExame(analito.nome_no_laudo, indiceNomes).id_canonico;
+    const comId = { ...analito, id_canonico: id };
     // 3) Confiança de cada item.
     return { ...comId, avaliacao: avaliarConfiancaAnalito(comId, { origem, limiar, confiancaOcrLaudo: confiancaOcr }) };
   });
 
   // 3) Confiança do laudo: segue ou pede novo envio.
-  const decisao = avaliarConfiancaLaudo(
-    { analitos, nao_interpretadas: estruturado.nao_interpretadas },
-    { origem, limiar, limiarOcr, confiancaOcrLaudo: confiancaOcr },
-  );
+  // PDF digital só com resultados descritivos (ex.: urocultura): não há número
+  // para medir confiança, e o texto do PDF é exato; segue.
+  const soDescritivos = origem === ORIGENS.PDF_DIGITAL && analitos.length === 0 && estruturado.descritivos.length > 0;
+  const decisao = soDescritivos
+    ? { segue: true, confianca_extracao: 1 }
+    : avaliarConfiancaLaudo(
+      { analitos, nao_interpretadas: estruturado.nao_interpretadas },
+      { origem, limiar, limiarOcr, confiancaOcrLaudo: confiancaOcr },
+    );
   if (!decisao.segue) return decisao.erro;
 
   const { confiaveis, naoLidos } = separarRepetidos(analitos);
@@ -110,6 +118,9 @@ export function processarTextoLaudo(texto, opcoes = {}) {
       analitos: saida,
       // Caso misto: o que ficou de fora vai sinalizado, SEM valor.
       itens_nao_lidos: naoLidos,
+      // Resultados descritivos ("Negativo" × "Negativo"): conforme ou diferente da
+      // referência, por comparação de texto (resultadosDescritivos.js). Sem IA.
+      itens_descritivos: estruturado.descritivos,
       linhas_nao_interpretadas: linhasNaoInterpretadas,
       aviso_usuario: temItemDeFora ? AVISO_ITENS_NAO_LIDOS : null,
     },

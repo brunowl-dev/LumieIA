@@ -12,8 +12,9 @@ const SINAIS = [
     ok: (a) => typeof a.nome_no_laudo === 'string' && a.nome_no_laudo.trim() !== '' },
   { nome: 'valor_numerico', motivo: 'valor_invalido', aplica: () => true,
     ok: (a) => typeof a.valor === 'number' && Number.isFinite(a.valor) },
+  // pH e densidade não têm unidade (adimensional, marcado na BWL-03).
   { nome: 'unidade_presente', motivo: 'unidade_ausente', aplica: () => true,
-    ok: (a) => typeof a.unidade === 'string' && a.unidade.trim() !== '' },
+    ok: (a) => a.adimensional === true || (typeof a.unidade === 'string' && a.unidade.trim() !== '') },
   { nome: 'faixa_interpretada', motivo: 'faixa_nao_interpretada', aplica: () => true,
     ok: (a) => a.faixa_referencia?.interpretada === true },
   { nome: 'nome_reconhecido', motivo: 'nome_nao_reconhecido', aplica: (origem) => origem === 'ocr',
@@ -21,6 +22,10 @@ const SINAIS = [
 ];
 
 export const ORIGENS = Object.freeze({ PDF_DIGITAL: 'pdf_digital', OCR: 'ocr' });
+
+// Motivos de linha não interpretada que, no PDF digital, não são leitura duvidosa
+// (ver avaliarConfiancaLaudo).
+const MOTIVOS_FORA_DA_MEDIA_NO_PDF = new Set(['formato_nao_reconhecido', 'resultado_descritivo_com_faixa_numerica']);
 
 // Duas casas: o número exibido é o mesmo que foi comparado com o limiar.
 const arredondar = (x) => Math.round(x * 100) / 100;
@@ -114,7 +119,9 @@ export function avaliarConfiancaLaudo({ analitos, nao_interpretadas: naoInterpre
   // que o parser não cobre, e um novo envio daria o mesmo resultado. Ela continua
   // contada em linhas_nao_interpretadas e o paciente é avisado (AVISO_ITENS_NAO_LIDOS).
   // Na foto, entra com 0: ali uma linha não reconhecida pode ser erro do OCR.
-  const contaNaMedia = (linha) => origem === ORIGENS.OCR || linha.motivo !== 'formato_nao_reconhecido';
+  // O mesmo vale para resultado descritivo diante de faixa numérica ("Traços" × "< 1 mg/dL"):
+  // lido sem erro, só não é decidido.
+  const contaNaMedia = (linha) => origem === ORIGENS.OCR || !MOTIVOS_FORA_DA_MEDIA_NO_PDF.has(linha.motivo);
   const totalLinhas = analitos.length + naoInterpretadas.filter(contaNaMedia).length;
   if (totalLinhas === 0) return falha('nenhum_resultado_encontrado');
 

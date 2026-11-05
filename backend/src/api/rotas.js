@@ -191,6 +191,10 @@ export function criarApp({
       })),
       // Caso misto (§2.4): o que não foi lido aparece só pelo nome, sem valor.
       itens_nao_lidos: laudo.itens_nao_lidos.map((i) => ({ nome: i.nome_no_laudo })),
+      // Resultados descritivos (§5.1): sem cor nem explicação, só a comparação com a referência.
+      itens_descritivos: laudo.itens_descritivos.map((d) => ({
+        nome: d.nome_no_laudo, resultado: d.resultado, referencia: d.referencia, situacao: d.situacao,
+      })),
       aviso_usuario: laudo.aviso_usuario,
     }];
   }

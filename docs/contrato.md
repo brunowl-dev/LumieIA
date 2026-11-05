@@ -47,6 +47,7 @@ Front ──(id_laudo, id_canonico, mensagem)──> POST /api/chat ──> IA �
 | `confianca_extracao` | número 0–1 | Confiança geral da extração (média das linhas de resultado, §2.4) |
 | `analitos` | lista | Um item por exame lido com confiança (abaixo) |
 | `itens_nao_lidos` | lista | Caso misto (§2.4): `{ id_canonico, nome_no_laudo, motivos }` dos itens que NÃO foram lidos com confiança. **Sem valor.** `[]` se não houver |
+| `itens_descritivos` | lista | (04/11/2026) Resultados qualitativos: `{ nome_no_laudo, resultado, referencia, situacao }`, com `situacao` = `"conforme_referencia"` ou `"diferente_da_referencia"`, por comparação de TEXTO com a referência do laudo (`resultadosDescritivos.js`). Sem cor de faixa, sem alerta, **nunca vão para a IA**. `[]` se não houver |
 | `linhas_nao_interpretadas` | número | Quantas linhas pareciam resultado mas não viraram analito (só a contagem; o texto da linha não sai) |
 | `aviso_usuario` | texto \| null | Mensagem fixa para o paciente quando há itens de fora; `null` se não houver |
 
@@ -131,7 +132,7 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 `backend/src/pipeline/confianca.js`. Detalhes e motivo dos números em `docs/confianca-extracao.md`.
 - Por analito: sinais ok ÷ sinais aplicáveis (nome, valor numérico, unidade, faixa interpretada; na foto também nome reconhecido), × confiança do OCR ÷ 100 na foto.
 - Limiar `CONFIANCA_MINIMA_EXTRACAO` (padrão 0,80) para item e laudo; `CONFIANCA_MINIMA_OCR` (padrão 70) para a média da foto. Ambos lidos só em `backend/src/pipeline/config.js`.
-- `confianca_extracao` = média das linhas de resultado (linhas não interpretadas valem 0). Abaixo do limiar → erro `BAIXA_CONFIANCA` (§7). Acima → segue com os itens confiáveis; os outros vão para `itens_nao_lidos`, sem valor.
+- `confianca_extracao` = média das linhas de resultado (linhas não interpretadas valem 0; no PDF digital, as de motivo `formato_nao_reconhecido` e `resultado_descritivo_com_faixa_numerica` não entram, ver `docs/confianca-extracao.md`). Na seção de urina, os analitos saem com `id_canonico: null` (não são ligados às fichas de sangue de mesmo nome). Abaixo do limiar → erro `BAIXA_CONFIANCA` (§7). Acima → segue com os itens confiáveis; os outros vão para `itens_nao_lidos`, sem valor.
 
 ### 2.5 Etapa interna: classificação e limite crítico (BWL-05)
 `backend/src/pipeline/classificar.js` (funções puras) + `backend/src/pipeline/limitesCriticos.json` (números e fontes). Detalhes em `docs/limites-criticos.md`.
@@ -291,6 +292,7 @@ A ISA não guarda estado entre tentativas e não decide quantas são.
 Cada item: `id_canonico` (texto ou null), `nome`, `valor`, `unidade`, `faixa_referencia`, `classificacao`, `cor`, `alerta_prioritario`, `explicacao_disponivel` (verdadeiro/falso).
 
 Também no resultado (BWL-09, caso misto da §2.4): `itens_nao_lidos` (lista de `{ nome }`, **sem valor**; `[]` se não houver) e `aviso_usuario` (texto fixo ou `null`), para o front avisar que parte do laudo não foi lida.
+Desde 04/11/2026: `itens_descritivos` (lista de `{ nome, resultado, referencia, situacao }`; `[]` se não houver). O front mostra "Conforme a referência" ou "DIFERENTE DA REFERÊNCIA", sem botão de explicação.
 - `explicacao_disponivel: false` quando o exame não tem ficha na base ou a ficha ainda está `pendente`: o front mostra o valor e a classificação, sem o botão, com o texto "ainda não temos explicação para este exame".
 
 **Cores:** `verde` = `dentro`; `amarelo` = `acima` ou `abaixo` sem alerta crítico; `vermelho` = `alerta_critico` verdadeiro (alerta de atendimento prioritário).

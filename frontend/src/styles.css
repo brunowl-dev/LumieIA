@@ -459,6 +459,8 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 .explicacao-exame { display: grid; gap: 10px; }
 .explicacao-exame .balao { max-width: 100%; }
 .sem-explicacao-lista { margin-top: 16px; color: var(--texto-suave); font-size: 13px; }
+.aviso-nao-lidos { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; border: 1px solid #f3dfa8; border-radius: 11px; background: var(--amarelo-fundo); color: var(--amarelo-texto); font-size: 13px; line-height: 1.45; }
+.aviso-nao-lidos .ui-icon { width: 16px; height: 16px; margin-top: 1px; }
 
 .visualmente-oculto {
   position: absolute;

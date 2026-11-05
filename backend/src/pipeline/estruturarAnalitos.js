@@ -2,6 +2,10 @@
 // em dados por analito: nome, valor, unidade e faixa de referência do laudo.
 // Só parsing determinístico: não classifica (BWL-05), não normaliza o nome
 // (BWL-04), não usa o modelo. Não grava log: o texto é dado de saúde.
+import {
+  SITUACOES, eAusencia, itemDescritivo, lerLinhaEmColunas, separarMetadesIguais,
+} from './resultadosDescritivos.js';
+import { normalizarTexto } from './normalizarNome.js';
 
 // Números como impressos em laudo brasileiro: vírgula é decimal, ponto é milhar.
 // Cada regex é testada no texto INTEIRO (^ ... $), então "13,8 mg" não casa.
@@ -44,6 +48,13 @@ export function converterNumeroBR(texto) {
     return Number(limpo);
   }
   return null;
+}
+
+// Densidade da urina é impressa "1.010": o ponto ali é DECIMAL (1,010), nunca
+// "mil e dez". Só para os exames de PONTO_DECIMAL; o resto segue o padrão brasileiro.
+function converterNumero(texto, pontoDecimal) {
+  if (pontoDecimal && /^\d+[.,]\d+$/.test(texto.trim())) return Number(texto.trim().replace(',', '.'));
+  return converterNumeroBR(texto);
 }
 
 // --- Faixa de referência ---------------------------------------------------
@@ -114,7 +125,7 @@ const FORMATOS_FAIXA = [
  *   minimo_inclusivo: boolean|null, maximo_inclusivo: boolean|null,
  *   interpretada: boolean, texto_original: string }}
  */
-export function interpretarFaixa(texto, { unidade } = {}) {
+export function interpretarFaixa(texto, { unidade, pontoDecimal = false } = {}) {
   // Guardamos o texto como veio, só juntando espaços repetidos.
   const textoOriginal = typeof texto === 'string' ? texto.replace(/\s+/g, ' ').trim() : '';
   let nucleo = textoOriginal.replace(ROTULO_INICIAL, '');
@@ -132,7 +143,7 @@ export function interpretarFaixa(texto, { unidade } = {}) {
     if (!encontrado) continue;
 
     // encontrado[0] é o texto todo; [1], [2]... são os grupos capturados (NUM).
-    const numeros = encontrado.slice(1).map(converterNumeroBR);
+    const numeros = encontrado.slice(1).map((n) => converterNumero(n, pontoDecimal));
     if (numeros.includes(null)) break; // casou o formato, mas o número é inválido
 
     const faixa = formato.montar(numeros);
@@ -200,6 +211,21 @@ const REGISTRO_PROFISSIONAL = /^(?:crbm|crm|crf|crbio|coren)(?:[-\s/][a-z]{2})?\
 // Marcador de página ("Pág. 1 de 10"): tem dígito e letras, mas não é nome de exame.
 const MARCADOR_DE_PAGINA = /\bp[áa]g(?:ina)?\.?\s*\d/i;
 
+// Seção de URINA: a partir do título ("URINA I", "UROCULTURA - CULTURA DE URINA",
+// "EAS") até o fim da página. Ali "Glicose", "Hemoglobina", "Leucócitos" são da
+// urina, não do sangue: o analito sai com material "urina" e NÃO é ligado às
+// fichas de sangue (processarLaudo.js). Título = sem ":" e sem dígito.
+const TITULO_URINA = /^(?:[^:\d]*\burina\b[^:\d]*|eas|sum[áa]rio\s+de\s+urina)$/i;
+const FIM_DE_PAGINA = /^(?:folha|p[áa]g(?:ina)?)\.?\s*:?\s*\d+\s+de\s+\d+/i;
+
+// Exames sem unidade (adimensionais): a unidade ausente não reduz a confiança.
+const ADIMENSIONAIS = new Set(['ph', 'densidade', 'densidade urinaria']);
+// Exames cujo número usa ponto DECIMAL ("1.010"): ver converterNumero.
+const PONTO_DECIMAL = new Set(['densidade', 'densidade urinaria']);
+
+// Referência na linha seguinte ao "Resultado :" descritivo: "V.R. : Não houve crescimento".
+const LINHA_VR = /^v\.?\s*r\.?\s*:\s*(.+)$/i;
+
 // Quantas linhas acima do resultado procurar o nome (Layout B: nome, Material, Resultado).
 const LINHAS_ACIMA_PARA_O_NOME = 3;
 
@@ -235,38 +261,52 @@ const CAMPOS_DO_ANALITO = 4;
 export function estruturarAnalitos(texto) {
   // Tabs e espaços repetidos viram um espaço. Linhas vazias ficam no array
   // (como "") para os índices continuarem batendo com o texto.
-  const linhas = (typeof texto === 'string' ? texto : '')
-    .split('\n')
-    .map((linha) => linha.replace(/\s+/g, ' ').trim());
+  // As linhas BRUTAS (com TAB) ficam guardadas para o laudo em colunas.
+  const brutas = (typeof texto === 'string' ? texto : '').split('\n');
+  const linhas = brutas.map((linha) => linha.replace(/\s+/g, ' ').trim());
 
   const analitos = [];
   const naoInterpretadas = [];
+  const descritivos = [];
   // Índices das linhas já usadas por um analito (nome ou faixa do Layout B),
   // para não serem lidas de novo.
   const usadas = new Set();
+  let material = null; // 'urina' dentro da seção de urina
 
   for (let i = 0; i < linhas.length; i++) {
+    if (TITULO_URINA.test(linhas[i])) material = 'urina';
+    else if (FIM_DE_PAGINA.test(linhas[i])) material = null;
     if (linhas[i] === '' || usadas.has(i)) continue;
-    const lida = lerLinha(linhas, i, usadas);
+    const lida = lerLinha(linhas, i, usadas, brutas[i]);
     if (lida.analito) {
-      analitos.push(lida.analito);
+      analitos.push(material ? { ...lida.analito, material } : lida.analito);
+    } else if (lida.descritivo) {
+      descritivos.push(lida.descritivo);
     } else if (lida.motivo) {
       naoInterpretadas.push({ linha: linhas[i], motivo: lida.motivo });
     }
     // sem analito e sem motivo: cabeçalho/rodapé, ignorado.
   }
 
-  return { analitos, nao_interpretadas: naoInterpretadas };
+  return { analitos, nao_interpretadas: naoInterpretadas, descritivos };
 }
 
-// Devolve { analito }, { motivo } (vai para nao_interpretadas) ou {} (ignorada).
-function lerLinha(linhas, i, usadas) {
+// Devolve { analito }, { descritivo }, { motivo } (vai para nao_interpretadas)
+// ou {} (ignorada).
+function lerLinha(linhas, i, usadas, bruta) {
   const linha = linhas[i];
+
+  // 0) Laudo em colunas: "Proteínas : Negativo <TAB> Negativo", "pH : 5,0 <TAB> 5,0 a 8,0".
+  const colunas = lerLinhaEmColunas(bruta);
+  if (colunas) {
+    const lida = lerEmColunas(colunas);
+    if (lida) return lida;
+  }
 
   // 1) Layout B: "Resultado: 118 mg/dL".
   if (ROTULO_RESULTADO.test(linha)) {
     const encontrado = LINHA_RESULTADO.exec(linha);
-    if (!encontrado) return { motivo: 'valor_ausente' };
+    if (!encontrado) return lerResultadoDescritivo(linhas, i, usadas);
     const [, sinal, numero, resto] = encontrado;
     const { unidade, textoFaixa } = separarUnidadeEFaixa(resto);
     const faixa = textoFaixa
@@ -286,8 +326,10 @@ function lerLinha(linhas, i, usadas) {
   if (tabela) {
     const [, nome, sinal, numero, resto] = tabela;
     // "Glicose em jejum 88": nome e valor, nada depois. Não dá para confiar,
-    // mas também não pode sumir em silêncio.
-    if (!resto) return { motivo: 'unidade_e_faixa_ausentes' };
+    // mas também não pode sumir em silêncio. Exceção: com 5 ou mais palavras antes
+    // do número é uma FRASE do laudo ("Nossos antibiogramas seguem as normas BrCast
+    // 2025."), não um exame: ignorada.
+    if (!resto) return nome.trim().split(/\s+/).length >= 5 ? {} : { motivo: 'unidade_e_faixa_ausentes' };
     const { unidade, textoFaixa } = separarUnidadeEFaixa(resto);
     if (temFormaDeResultado(unidade, textoFaixa)) {
       return montarAnalito({ nome, sinal, numero, unidade, textoFaixa });
@@ -312,6 +354,67 @@ function lerLinha(linhas, i, usadas) {
     return { motivo: 'formato_nao_reconhecido' };
   }
   return {};
+}
+
+// Laudo em colunas (nome : resultado <TAB> referência). Devolve null se não for
+// um caso que sabemos ler; a linha segue para as outras regras.
+function lerEmColunas({ nome, resultado, referencia }) {
+  const temDigito = (t) => /\d/.test(t);
+  // a) Descritivo × descritiva: "Negativo" × "Negativo".
+  if (!temDigito(resultado) && !temDigito(referencia)) {
+    return { descritivo: itemDescritivo(nome, resultado, referencia) };
+  }
+  const chave = normalizarTexto(nome);
+  const opcoesNumero = { pontoDecimal: PONTO_DECIMAL.has(chave) };
+  const ultimoToken = referencia.split(' ').at(-1);
+  const unidade = pareceUnidade(ultimoToken) ? ultimoToken : null;
+  const faixa = interpretarFaixa(referencia, { unidade, ...opcoesNumero });
+
+  // b) Descritivo × faixa numérica: "Ausentes" × "Até 200 /mL". Só a ausência
+  //    cabe com certeza num LIMITE SUPERIOR; qualquer outra palavra não é decidida.
+  if (!temDigito(resultado)) {
+    if (faixa.interpretada && faixa.minimo === null && eAusencia(resultado)) {
+      return { descritivo: itemDescritivo(nome, resultado, referencia, SITUACOES.CONFORME) };
+    }
+    return { motivo: 'resultado_descritivo_com_faixa_numerica' };
+  }
+
+  // c) Número × faixa: "pH : 5,0 <TAB> 5,0 a 8,0". Com sinal ("<1.000" × "Até 3.000"),
+  //    só decide quando TODO valor abaixo do impresso cabe na faixa.
+  const valor = /^([<>≤≥]=?\s*)?(\d[\d.,]*)$/.exec(resultado);
+  if (!valor || !faixa.interpretada) return null;
+  const [, sinal, numero] = valor;
+  if (sinal) {
+    const limite = converterNumero(numero, opcoesNumero.pontoDecimal);
+    const cabe = /^[<≤]/.test(sinal) && faixa.minimo === null && limite !== null && limite <= faixa.maximo;
+    return cabe ? { descritivo: itemDescritivo(nome, resultado, referencia, SITUACOES.CONFORME) } : { motivo: 'valor_com_sinal' };
+  }
+  return montarAnalito({ nome, numero, unidade, textoFaixa: referencia, adimensional: ADIMENSIONAIS.has(chave), ...opcoesNumero });
+}
+
+// "Resultado :" sem número: resultado descritivo. A referência vem na linha
+// "V.R. :" logo abaixo (urocultura) ou na mesma linha, repetida ("Não Reagente
+// Não reagente", VDRL). O nome está acima, como no Layout B.
+function lerResultadoDescritivo(linhas, i, usadas) {
+  const resultado = linhas[i].replace(ROTULO_RESULTADO, '').trim();
+  if (!resultado) return { motivo: 'valor_ausente' };
+  let par = null;
+  let indiceVr = null;
+  for (let j = i + 1; j < Math.min(linhas.length, i + 5); j++) {
+    const vr = LINHA_VR.exec(linhas[j]);
+    if (vr) {
+      par = { resultado, referencia: vr[1].trim() };
+      indiceVr = j;
+      break;
+    }
+  }
+  par ??= separarMetadesIguais(resultado);
+  const indiceNome = acharNomeAcima(linhas, i, usadas);
+  if (!par || indiceNome === null) return { motivo: 'valor_ausente' };
+  usadas.add(indiceNome);
+  if (indiceVr !== null) usadas.add(indiceVr);
+  const nome = linhas[indiceNome].replace(SUFIXO_CABECALHO_REFERENCIA, '');
+  return { descritivo: itemDescritivo(nome, par.resultado, par.referencia) };
 }
 
 // O primeiro token depois do valor é a unidade se parecer unidade; o resto é a
@@ -430,6 +533,20 @@ function escolherCategoria(categorias) {
 // resultado, marcador de página ou depois de LINHAS_ACIMA_PARA_O_NOME.
 // O nome pode ter dígito ("VITAMINA B12", "T4 - TIROXINA").
 function montarComNomeAcima(linhas, i, usadas, campos, indicesDaFaixa) {
+  const indiceNome = acharNomeAcima(linhas, i, usadas);
+  if (indiceNome === null) return { motivo: 'nome_nao_encontrado' };
+
+  const nome = linhas[indiceNome].replace(SUFIXO_CABECALHO_REFERENCIA, '');
+  const lido = montarAnalito({ nome, ...campos });
+  if (lido.analito) {
+    usadas.add(indiceNome);
+    for (const indice of indicesDaFaixa) usadas.add(indice);
+  }
+  return lido;
+}
+
+// Índice da linha do nome acima de i, ou null.
+function acharNomeAcima(linhas, i, usadas) {
   let indiceNome = null;
   let olhadas = 0;
   for (let j = i - 1; j >= 0 && olhadas < LINHAS_ACIMA_PARA_O_NOME; j--) {
@@ -442,36 +559,30 @@ function montarComNomeAcima(linhas, i, usadas, campos, indicesDaFaixa) {
     if (/\p{L}/u.test(acima)) indiceNome = j;
     break;
   }
-  if (indiceNome === null) return { motivo: 'nome_nao_encontrado' };
-
-  const nome = linhas[indiceNome].replace(SUFIXO_CABECALHO_REFERENCIA, '');
-  const lido = montarAnalito({ nome, ...campos });
-  if (lido.analito) {
-    usadas.add(indiceNome);
-    for (const indice of indicesDaFaixa) usadas.add(indice);
-  }
-  return lido;
+  return indiceNome;
 }
 
-function montarAnalito({ nome, sinal, numero, unidade, textoFaixa, outrasFaixas = [], faixaNaoEscolhida = false }) {
+function montarAnalito({
+  nome, sinal, numero, unidade, textoFaixa, outrasFaixas = [], faixaNaoEscolhida = false, adimensional = false, pontoDecimal = false,
+}) {
   // "< 0,5" (abaixo do limite de detecção) não é o mesmo que o valor 0,5:
   // não inventamos um número; a linha fica registrada para a decisão de confiança.
   if (sinal) return { motivo: 'valor_com_sinal' };
-  const valor = converterNumeroBR(numero);
+  const valor = converterNumero(numero, pontoDecimal);
   if (valor === null) return { motivo: 'valor_invalido' };
 
   // Várias categorias e nenhuma "normal": a faixa fica sem limites, mesmo que o
   // texto de uma delas seja interpretável (escolherCategoria).
   const faixa = faixaNaoEscolhida
     ? { ...interpretarFaixa(''), texto_original: textoFaixa }
-    : interpretarFaixa(textoFaixa, { unidade });
+    : interpretarFaixa(textoFaixa, { unidade, pontoDecimal });
   const pendencias = [];
-  if (!unidade) pendencias.push('unidade_ausente');
+  if (!unidade && !adimensional) pendencias.push('unidade_ausente');
   if (!faixa.texto_original) pendencias.push('faixa_ausente');
   else if (!faixa.interpretada) pendencias.push('faixa_nao_interpretada');
 
   // Nome e valor sempre existem aqui; unidade e faixa podem faltar.
-  const camposEncontrados = 2 + (unidade ? 1 : 0) + (faixa.interpretada ? 1 : 0);
+  const camposEncontrados = 2 + (unidade || adimensional ? 1 : 0) + (faixa.interpretada ? 1 : 0);
   return {
     analito: {
       nome_no_laudo: nome.trim(),
@@ -484,6 +595,8 @@ function montarAnalito({ nome, sinal, numero, unidade, textoFaixa, outrasFaixas 
       outras_faixas: outrasFaixas,
       confianca: camposEncontrados / CAMPOS_DO_ANALITO,
       pendencias,
+      // pH, densidade: não têm unidade, e isso não é falha de leitura (confianca.js).
+      ...(adimensional ? { adimensional: true } : {}),
     },
   };
 }

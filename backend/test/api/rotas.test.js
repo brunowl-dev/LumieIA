@@ -112,7 +112,7 @@ describe('fluxo completo com IA falsa', () => {
   it('momento 1: PDF → tela de exames (§5.1), sem chamar a IA', async () => {
     const { http, corpo } = await enviar(s.url, lerLaudo('glicose_critico_baixo.pdf'));
     assert.equal(http, 200);
-    assert.deepEqual(Object.keys(corpo).sort(), ['aviso_usuario', 'id_laudo', 'itens', 'itens_nao_lidos', 'status']);
+    assert.deepEqual(Object.keys(corpo).sort(), ['aviso_usuario', 'id_laudo', 'itens', 'itens_descritivos', 'itens_nao_lidos', 'status']);
     const [item] = corpo.itens;
     assert.deepEqual(
       [item.id_canonico, item.classificacao, item.cor, item.alerta_prioritario, item.explicacao_disponivel],

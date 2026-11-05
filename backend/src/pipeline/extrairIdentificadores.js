@@ -61,7 +61,9 @@ const CAMPOS_DE_PESSOA = new Set(['paciente', 'medico', 'responsavel_tecnico']);
  */
 export function extrairIdentificadores(texto) {
   const identificadores = Object.fromEntries(CAMPOS.map((campo) => [campo, null]));
-  for (const linha of String(texto ?? '').split('\n')) {
+  const linhas = String(texto ?? '').split('\n');
+  lerRotulosSozinhos(linhas, identificadores);
+  for (const linha of linhas) {
     // 1) Acha todos os rótulos da linha, com a posição de cada um.
     const rotulos = [...linha.matchAll(REGEX_ROTULO)].map((m) => ({
       campo: m[2] ? 'crm' : campoDoRotulo(m[1]),
@@ -90,6 +92,34 @@ export function extrairIdentificadores(texto) {
 
 // Data impressa: "14/03/1992", "3/14/1992".
 const DATA = /\d{1,2}\/\d{1,2}\/\d{2,4}/;
+
+// Cabeçalho em que o rótulo fica SOZINHO numa linha e o valor vem na de baixo
+// ("CPF" / "000.000.000-00", "Médico" / "NOME Local Coleta"). Só estes rótulos,
+// sem dois-pontos ou com, e a linha seguinte não vazia.
+const ROTULOS_SOZINHOS = [
+  [/^(?:nome|paciente)$/i, 'paciente'],
+  [/^cpf$/i, 'cpf'],
+  [/^rg$/i, 'rg'],
+  [/^(?:data\s+de\s+)?nascimento$|^data\s+nasc\.?$/i, 'nascimento'],
+  [/^m[ée]dico(?:\s+solicitante)?$|^solicitante$/i, 'medico'],
+  [/^(?:pedido|protocolo|prontu[áa]rio)$/i, 'pedido'],
+];
+// Outra coluna do cabeçalho que vem na mesma linha do valor: "NOME Local Coleta".
+const COLUNA_VIZINHA = /\s+local\s+(?:de\s+)?coleta\b.*$/i;
+
+function lerRotulosSozinhos(linhas, identificadores) {
+  for (let i = 0; i + 1 < linhas.length; i++) {
+    const rotulo = linhas[i].trim().replace(/\s*:$/, '');
+    const achado = ROTULOS_SOZINHOS.find(([regex]) => regex.test(rotulo));
+    if (!achado) continue;
+    const [, campo] = achado;
+    const proxima = linhas[i + 1].replace(COLUNA_VIZINHA, '');
+    let valor = limparValor(proxima, CAMPOS_DE_PESSOA.has(campo));
+    if (campo === 'nascimento') valor = DATA.exec(valor ?? '')?.[0] ?? null;
+    // Valor que é outro rótulo ("Nome Social:" logo abaixo) não conta.
+    if (valor && identificadores[campo] === null && !valor.includes(':')) identificadores[campo] = valor;
+  }
+}
 
 function campoDoRotulo(rotuloLido) {
   const minusculo = rotuloLido.toLowerCase();

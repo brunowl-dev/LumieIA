@@ -53,6 +53,7 @@ Limites (o parser NÃO cobre):
 - Faixa em categorias (uma por linha): usa a de rótulo normal/desejável/ótimo/adequado/**Adultos**/"Valores normais" se houver EXATAMENTE uma; senão não interpretada, mesmo com uma categoria só ("Recém-nascido: 100 - 250" não é a do paciente). Por sexo nunca escolhe.
 - Layout C (`test/pipeline/layoutC.test.js`, formato de um laudo real, dados fictícios): valor antes do nome no hemograma ("14.2 HEMOGLOBINA g/dL (13,5 a 17,5)"), faixa entre parênteses, unidade colada ("450.000/mm3"), "Entre X e Y", cabeçalho "Valor de Referência" acima do resultado, nome "SIGLA - NOME" (reconhecido pelas partes em normalizarNome.js), registro "CRBM 00000" ignorado.
 - Leucograma com % e valor absoluto na mesma linha ("1 BASÓFILOS 63 (0 a 105) (0 a 1)"): ambíguo, não interpretado.
+- Layout D (`test/pipeline/layoutD.test.js`, urina, formato de um laudo real, dados fictícios): colunas "Rótulo : resultado <TAB> referência" lidas na linha BRUTA (o TAB separa resultado e referência); seção de urina (do título até o fim da página) → `material: 'urina'` e `id_canonico: null`; densidade com ponto decimal ("1.010" = 1,010); pH e densidade adimensionais; descritivos em `resultadosDescritivos.js`; frase com 5+ palavras antes de um número é ignorada.
 - Outros layouts não foram testados: cada laboratório novo pode precisar de regra nova.
 
 ## BWL-04 a BWL-06: onde está cada coisa

@@ -115,9 +115,17 @@ describe('Layout C: laudo inteiro (PDF digital)', () => {
     assert.ok(r.laudo.linhas_nao_interpretadas > 0);
     assert.ok(r.laudo.aviso_usuario);
   });
-  it('hemoglobina e TSH reconhecidos pela base ("TSH - HORMÔNIO..." pelas partes) e classificados', () => {
+  it('reconhecidos pela base ("TSH - HORMÔNIO..." e "VITAMINA D - 25 HIDROXI" pelas partes) e classificados', () => {
     const resumo = r.laudo.analitos.filter((a) => a.id_canonico).map((a) => [a.id_canonico, a.classificacao]);
-    assert.deepEqual(resumo, [['hemoglobina', 'dentro'], ['tsh', 'acima']]);
+    assert.deepEqual(resumo, [
+      ['hemacias', 'dentro'], ['hemoglobina', 'dentro'], ['plaquetas', 'dentro'],
+      ['tsh', 'acima'], ['vitamina_d', 'dentro'], ['vitamina_c', 'abaixo'],
+    ]);
+  });
+  it('VDRL "Não Reagente Não reagente" → descritivo conforme a referência', () => {
+    assert.deepEqual(r.laudo.itens_descritivos, [
+      { nome_no_laudo: 'VDRL', resultado: 'Não Reagente', referencia: 'Não reagente', situacao: 'conforme_referencia' },
+    ]);
   });
   it('B12 e ferro aparecem como não lidos (sem valor), não com uma faixa errada', () => {
     const naoLidos = r.laudo.itens_nao_lidos.map((i) => i.nome_no_laudo);

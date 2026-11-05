@@ -188,7 +188,7 @@ describe('ponta a ponta: regras do laudo estruturado', () => {
   });
   it('só os campos do contrato saem em cada analito (nada de valor_impresso, pendencias, linhas do laudo)', async () => {
     const { laudo } = await processarLaudoPdf(lerLaudo('glicose_acima.pdf'));
-    assert.deepEqual(Object.keys(laudo).sort(), ['analitos', 'aviso_usuario', 'confianca_extracao', 'id_laudo', 'itens_nao_lidos', 'linhas_nao_interpretadas', 'origem']);
+    assert.deepEqual(Object.keys(laudo).sort(), ['analitos', 'aviso_usuario', 'confianca_extracao', 'id_laudo', 'itens_descritivos', 'itens_nao_lidos', 'linhas_nao_interpretadas', 'origem']);
     assert.deepEqual(Object.keys(laudo.analitos[0]).sort(), [
       'alerta_critico', 'avisos', 'classificacao', 'confianca', 'faixa_referencia', 'id_canonico', 'limite_critico', 'nome_no_laudo', 'unidade', 'valor',
     ]);
