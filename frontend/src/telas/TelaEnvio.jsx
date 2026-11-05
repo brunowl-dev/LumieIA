@@ -10,7 +10,7 @@ import MensagemErro from '../components/MensagemErro.jsx';
 const TIPOS_ACEITOS = ['application/pdf', 'image/jpeg', 'image/png'];
 const TAMANHO_MAXIMO_MB = 10; // igual a UPLOAD_MAX_MB do .env.example
 
-export default function TelaEnvio({ onResultado }) {
+export default function TelaEnvio({ onResultado, onVoltar }) {
   const [arquivo, setArquivo] = useState(null);
   // O artigo exige consentimento específico para tratar o exame: sem ele, não envia.
   const [consentimento, setConsentimento] = useState(false);
@@ -57,6 +57,9 @@ export default function TelaEnvio({ onResultado }) {
           <h1>Entenda seu exame</h1>
           <span>Organize, acompanhe e entenda seus resultados em um só lugar.</span>
         </div>
+        <button type="button" className="secondary" onClick={onVoltar} disabled={enviando}>
+          ← Laudos de demonstração
+        </button>
       </div>
 
       <form className="painel-envio" onSubmit={enviar}>

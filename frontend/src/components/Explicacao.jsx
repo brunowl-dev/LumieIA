@@ -10,20 +10,24 @@ const PARTES = [
   ['especialidade', 'Especialidade indicada'],
 ];
 
-// Parte vazia (null) não aparece.
+// Parte vazia (null) não aparece. As partes entram uma depois da outra, na ordem
+// do artigo (--ordem → atraso da animação em .parte no styles.css). É só efeito
+// visual: o texto inteiro já chegou do back e já passou pela segurança.
 export function Explicacao({ explicacao }) {
   return (
     <>
       {PARTES.map(
-        ([campo, titulo]) =>
+        ([campo, titulo], indice) =>
           explicacao[campo] && (
-            <div key={campo} className="parte">
+            <div key={campo} className="parte" style={{ '--ordem': indice }}>
               <strong>{titulo}</strong>
               <p>{explicacao[campo]}</p>
             </div>
           ),
       )}
-      <p className="parte-aviso">{explicacao.aviso}</p>
+      <p className="parte-aviso" style={{ '--ordem': PARTES.length }}>
+        {explicacao.aviso}
+      </p>
     </>
   );
 }

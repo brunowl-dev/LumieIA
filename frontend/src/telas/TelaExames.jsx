@@ -24,7 +24,7 @@ export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onN
           <span>Cada valor aparece com a faixa de referência do seu laudo.</span>
         </div>
         <button type="button" className="upload" onClick={onNovoEnvio}>
-          Enviar outro
+          Escolher outro
           <br />
           exame →
         </button>
@@ -85,9 +85,10 @@ export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onN
       </div>
 
       <div className="exam-list">
-        {itens.map((item) => (
+        {itens.map((item, indice) => (
           // Exame sem ficha na base tem id_canonico null; o nome serve de chave.
-          <CartaoExame key={item.id_canonico ?? item.nome} item={item} onExplicar={onExplicar} />
+          // `ordem`: os cartões entram um depois do outro (ver .exam-list no styles.css).
+          <CartaoExame key={item.id_canonico ?? item.nome} item={item} ordem={indice} onExplicar={onExplicar} />
         ))}
       </div>
 
