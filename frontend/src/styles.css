@@ -52,13 +52,15 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   flex-direction: column;
   height: 100vh;
   padding: 28px 14px;
+  /* Com o menu completo, telas baixas (notebook) podem não caber: rola. */
+  overflow-y: auto;
   border-right: 1px solid #ececf4;
   background: #fff;
 }
-.brand { display: flex; align-items: center; gap: 9px; margin: 0 7px 40px; color: var(--marca); }
-.brand-mark { color: #13bfd4; font-size: 28px; }
-.brand strong { display: block; font-size: 22px; line-height: 1; }
-.brand small { display: block; margin-top: 4px; color: #14576b; font-size: 7px; letter-spacing: 1.4px; }
+.brand { display: flex; align-items: center; gap: 12px; margin: 0 7px 34px; color: var(--marca); }
+.brand-mark { color: #13bfd4; font-size: 42px; line-height: 1; }
+.brand strong { display: block; font-size: 32px; line-height: 1; letter-spacing: -0.5px; }
+.brand small { display: block; margin-top: 6px; color: #14576b; font-size: 8.5px; letter-spacing: 1.4px; }
 .menu-label { margin: 0 11px 12px; color: #839bb3; font-size: 9px; font-weight: 800; letter-spacing: 1.6px; }
 .sidebar nav { display: grid; gap: 6px; }
 .nav-item {
@@ -72,6 +74,21 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   font-size: 14px;
 }
 .nav-item.selected { background: #e3f8fa; color: #04769f; font-weight: 800; }
+/* Itens ilustrativos da plataforma completa: visíveis, mas claramente indisponíveis. */
+.nav-item.inativo { color: #8aa3b9; cursor: default; transition: background-color 0.15s ease; }
+.nav-item.inativo:hover { background: #f6f8fc; }
+.sidebar nav + .menu-label { margin-top: 22px; }
+.em-breve {
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: #f0f4fc;
+  color: #8aa3b9;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
 .nav-item em {
   margin-left: auto;
   padding: 2px 7px;
@@ -104,6 +121,27 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 }
 .topbar p span { margin: 0 12px; color: #bbc7d6; }
 .topbar p b { color: #225573; }
+.topbar { justify-content: space-between; gap: 12px; }
+
+/* Usuário FICTÍCIO da demonstração (não há login). */
+.usuario-demo { display: flex; align-items: center; gap: 12px; }
+.sino-demo { position: relative; display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #fff; color: #49708e; box-shadow: 0 3px 10px #9aaec233; }
+.sino-demo i { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; border: 2px solid #fff; border-radius: 50%; background: #e0675e; }
+.avatar-usuario {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #27b7d1, #0789d0);
+  color: #fff;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+}
+.usuario-texto { display: grid; line-height: 1.2; }
+.usuario-texto strong { color: var(--texto); font-size: 13px; }
+.usuario-texto small { color: var(--texto-suave); font-size: 11px; }
 
 /* ---------- Cabeçalho das telas ---------- */
 .exams-heading {
@@ -596,16 +634,40 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 @media (min-width: 1280px) {
   .content { max-width: 1420px; }
   .conteudo-com-dicas { grid-template-columns: minmax(0, 1fr) 260px; gap: 32px; align-items: start; }
+  /* A coluna inteira (dicas + banner) acompanha a rolagem. */
+  .coluna-lateral { position: sticky; top: 24px; margin-top: 27px; }
   .painel-dicas {
-    position: sticky;
-    top: 24px;
     grid-template-columns: 1fr;
     grid-template-areas: 'mascote' 'eyebrow' 'texto' 'controles';
     justify-items: start;
-    margin-top: 27px;
   }
   .mascote-dicas { justify-self: center; width: 150px; margin-bottom: 6px; }
 }
+
+/* Coluna lateral: banner de dicas + banner de lembretes, um embaixo do outro. */
+.coluna-lateral { display: grid; gap: 14px; align-content: start; max-width: 560px; }
+.banner-lembretes {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(150deg, #08738a 0%, #27b7d1 100%);
+  color: #fff;
+  box-shadow: 0 14px 30px #14afca33;
+  animation: subir 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) 0.45s both;
+}
+.banner-lembretes strong { font-size: 15px; line-height: 1.3; }
+.banner-lembretes p { color: #e3f8fa; font-size: 12px; line-height: 1.5; }
+.banner-icone {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 11px;
+  background: #ffffff2e;
+}
+.banner-lembretes .em-breve { background: #ffffff2e; color: #fff; }
 
 /* Pop-up de boas-vindas: entra pelo canto de baixo. */
 .boas-vindas {
@@ -786,6 +848,7 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   .data-error { align-items: flex-start; flex-direction: column; }
   .balao { max-width: 92%; }
   .previa-quadro { height: 340px; }
+  .usuario-texto { display: none; }
   .painel-dicas { grid-template-columns: 72px minmax(0, 1fr); padding: 14px; }
   .mascote-dicas { width: 72px; }
   .boas-vindas { right: 16px; bottom: 16px; }

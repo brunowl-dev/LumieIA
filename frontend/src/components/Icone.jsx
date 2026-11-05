@@ -34,6 +34,45 @@ const DESENHOS = {
       <circle cx="12" cy="13" r="3.5" />
     </>
   ),
+  // Ícones do menu lateral (itens ilustrativos da plataforma completa).
+  inicio: <path d="M4 11 12 4l8 7M6 9.5V20h12V9.5M10 20v-5h4v5" />,
+  calendario: (
+    <>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M8 3v4M16 3v4M4 10h16M8 14h3" />
+    </>
+  ),
+  pilula: (
+    <>
+      <rect x="3.5" y="8.5" width="17" height="7" rx="3.5" transform="rotate(-45 12 12)" />
+      <path d="m9.5 9.5 5 5" />
+    </>
+  ),
+  sino: <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16ZM10 20a2 2 0 0 0 4 0" />,
+  medico: (
+    <>
+      <path d="M6 4v5a4 4 0 0 0 8 0V4M6 4H5M14 4h1M10 13v2a4 4 0 0 0 8 0v-2" />
+      <circle cx="18" cy="11" r="2" />
+    </>
+  ),
+  historico: (
+    <>
+      <path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5M4 4v4.5h4.5" />
+      <path d="M12 8v4l3 2" />
+    </>
+  ),
+  perfil: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </>
+  ),
+  engrenagem: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" />
+    </>
+  ),
   faisca: <path d="M12 3c.6 4.5 2.5 6.4 7 7-4.5.6-6.4 2.5-7 7-.6-4.5-2.5-6.4-7-7 4.5-.6 6.4-2.5 7-7Z" />,
 };
 
