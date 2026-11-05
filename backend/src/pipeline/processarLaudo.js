@@ -1,5 +1,5 @@
 // Pipeline completo do momento 1 (envio do laudo, sem IA):
-// texto → analitos (BWL-03) → id_canonico (BWL-04) → confiança (BWL-06)
+// texto (PDF digital, ou OCR da foto/PDF digitalizado, BWL-10) → analitos (BWL-03) → id_canonico (BWL-04) → confiança (BWL-06)
 // → classificação e alerta crítico (BWL-05) → laudo estruturado (contrato §2).
 // O laudo é montado campo a campo (lista do que ENTRA): nada do texto bruto,
 // nem nao_interpretadas, nem dados do paciente.
@@ -9,7 +9,9 @@
 import { randomUUID } from 'node:crypto';
 import { estruturarAnalitos } from './estruturarAnalitos.js';
 import { extrairIdentificadores } from './extrairIdentificadores.js';
-import { extrairTextoPdf } from './extrairTextoPdf.js';
+import { extrairTextoPdf, renderizarPaginasPdf } from './extrairTextoPdf.js';
+import { extrairTextoImagem, juntarPaginasOcr } from './extrairTextoImagem.js';
+import { corrigirTextoOcr } from './corrigirTextoOcr.js';
 import { carregarIndiceDeNomes, normalizarNomeExame } from './normalizarNome.js';
 import { carregarLimitesCriticos, classificarAnalito, normalizarUnidade, unidadeCompativel } from './classificar.js';
 import {
@@ -28,6 +30,7 @@ let dadosCarregados = null;
 export function carregarDadosDoPipeline() {
   dadosCarregados ??= {
     indiceNomes: carregarIndiceDeNomes(CAMINHO_BASE_CONHECIMENTO),
+    indiceNomesUrina: carregarIndiceDeNomes(CAMINHO_BASE_CONHECIMENTO, { material: 'urina' }),
     limites: carregarLimitesCriticos(CAMINHO_LIMITES_CRITICOS),
   };
   return dadosCarregados;
@@ -50,23 +53,32 @@ export function processarTextoLaudo(texto, opcoes = {}) {
     limiarOcr = CONFIANCA_MINIMA_OCR,
     idLaudo = randomUUID(),
   } = opcoes;
-  const { indiceNomes, limites } = opcoes.indiceNomes && opcoes.limites
+  const { indiceNomes, limites, indiceNomesUrina = new Map() } = opcoes.indiceNomes && opcoes.limites
     ? opcoes
     : carregarDadosDoPipeline();
 
   // 1) Estruturação e 2) nome canônico.
   const estruturado = estruturarAnalitos(texto);
   const analitos = estruturado.analitos.map((analito) => {
-    const comId = { ...analito, id_canonico: normalizarNomeExame(analito.nome_no_laudo, indiceNomes).id_canonico };
+    // Exame da seção de urina só é procurado nas fichas DE URINA (pH, densidade):
+    // "Glicose", "Hemoglobina" na urina nunca caem na ficha do sangue.
+    const indice = analito.material === 'urina' ? indiceNomesUrina : indiceNomes;
+    const id = normalizarNomeExame(analito.nome_no_laudo, indice).id_canonico;
+    const comId = { ...analito, id_canonico: id };
     // 3) Confiança de cada item.
     return { ...comId, avaliacao: avaliarConfiancaAnalito(comId, { origem, limiar, confiancaOcrLaudo: confiancaOcr }) };
   });
 
   // 3) Confiança do laudo: segue ou pede novo envio.
-  const decisao = avaliarConfiancaLaudo(
-    { analitos, nao_interpretadas: estruturado.nao_interpretadas },
-    { origem, limiar, limiarOcr, confiancaOcrLaudo: confiancaOcr },
-  );
+  // PDF digital só com resultados descritivos (ex.: urocultura): não há número
+  // para medir confiança, e o texto do PDF é exato; segue.
+  const soDescritivos = origem === ORIGENS.PDF_DIGITAL && analitos.length === 0 && estruturado.descritivos.length > 0;
+  const decisao = soDescritivos
+    ? { segue: true, confianca_extracao: 1 }
+    : avaliarConfiancaLaudo(
+      { analitos, nao_interpretadas: estruturado.nao_interpretadas },
+      { origem, limiar, limiarOcr, confiancaOcrLaudo: confiancaOcr },
+    );
   if (!decisao.segue) return decisao.erro;
 
   const { confiaveis, naoLidos } = separarRepetidos(analitos);
@@ -108,6 +120,9 @@ export function processarTextoLaudo(texto, opcoes = {}) {
       analitos: saida,
       // Caso misto: o que ficou de fora vai sinalizado, SEM valor.
       itens_nao_lidos: naoLidos,
+      // Resultados descritivos ("Negativo" × "Negativo"): conforme ou diferente da
+      // referência, por comparação de texto (resultadosDescritivos.js). Sem IA.
+      itens_descritivos: estruturado.descritivos,
       linhas_nao_interpretadas: linhasNaoInterpretadas,
       aviso_usuario: temItemDeFora ? AVISO_ITENS_NAO_LIDOS : null,
     },
@@ -155,20 +170,44 @@ const itemNaoLido = (analito, motivos) => ({
 export const MENSAGEM_ARQUIVO_ILEGIVEL = 'Não conseguimos ler o seu exame. Tente enviar de novo, com uma foto mais nítida ou o PDF original do laboratório.';
 
 /**
- * PDF digital de ponta a ponta: extração (BWL-02) + processarTextoLaudo.
- * PDF sem camada de texto (só imagem) iria para o OCR (BWL-10, ainda não
- * feito): por enquanto devolve ARQUIVO_ILEGIVEL. Os ErroExtracaoPdf (vazio,
- * corrompido, protegido) sobem para o orquestrador traduzir (contrato §2.1).
- * @param {Buffer} buffer
- * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { senha }
+ * Resultado do OCR → texto corrigido (só confusões de letra, nunca dígito) →
+ * processarTextoLaudo com origem "ocr" e a confiança MÉDIA DA PÁGINA do Tesseract.
+ * Não usamos a confiança por linha: medida nas fotos de samples/, ela recusa
+ * linhas lidas sem erro (motivo em docs/confianca-extracao.md).
  */
-export async function processarLaudoPdf(buffer, { senha, ...opcoes } = {}) {
+function processarLeituraOcr({ texto, confianca }, opcoes) {
+  return processarTextoLaudo(corrigirTextoOcr(texto), { ...opcoes, origem: ORIGENS.OCR, confiancaOcr: confianca });
+}
+
+/**
+ * PDF de ponta a ponta: extração (BWL-02) + processarTextoLaudo.
+ * PDF sem camada de texto (digitalizado, só imagem): as páginas são desenhadas
+ * e vão para o OCR (BWL-10). Os ErroExtracaoPdf (vazio, corrompido, protegido)
+ * e o ErroOcr sobem para o orquestrador traduzir (contrato §2.1).
+ * @param {Buffer} buffer
+ * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { senha } e,
+ *   para os testes, { ocr, renderizar } (padrão: Tesseract e pdf.js de verdade)
+ */
+export async function processarLaudoPdf(buffer, {
+  senha, ocr = extrairTextoImagem, renderizar = renderizarPaginasPdf, ...opcoes
+} = {}) {
   const extraido = await extrairTextoPdf(buffer, { senha });
-  if (!extraido.temCamadaDeTexto) {
-    return {
-      status: 'erro',
-      erro: { codigo: 'ARQUIVO_ILEGIVEL', motivo: 'sem_camada_de_texto', mensagem_usuario: MENSAGEM_ARQUIVO_ILEGIVEL },
-    };
+  if (extraido.temCamadaDeTexto) {
+    return processarTextoLaudo(extraido.texto, { ...opcoes, origem: ORIGENS.PDF_DIGITAL });
   }
-  return processarTextoLaudo(extraido.texto, { ...opcoes, origem: ORIGENS.PDF_DIGITAL });
+  // Uma página por vez: o OCR já usa a CPU toda e assim a memória não dobra.
+  const paginas = [];
+  for (const imagem of await renderizar(buffer, { senha })) paginas.push(await ocr(imagem));
+  return processarLeituraOcr(juntarPaginasOcr(paginas), opcoes);
+}
+
+/**
+ * Foto do laudo (JPG ou PNG) de ponta a ponta: OCR (BWL-10) + processarTextoLaudo.
+ * Foto borrada → BAIXA_CONFIANCA (motivo ocr_baixa_confianca), pela regra da BWL-06.
+ * @param {Buffer} buffer
+ * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { ocr } para os testes
+ * @throws {import('./extrairTextoImagem.js').ErroOcr} imagem que o Tesseract não abre
+ */
+export async function processarLaudoImagem(buffer, { ocr = extrairTextoImagem, ...opcoes } = {}) {
+  return processarLeituraOcr(await ocr(buffer), opcoes);
 }

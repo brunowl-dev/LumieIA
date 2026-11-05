@@ -83,6 +83,28 @@ describe('verificações 6 e 7 (valor e posição)', () => {
   it('duas posições reprovam (ambíguo)', () => {
     assert.deepEqual(com('Seu resultado foi 118 mg/dL, acima da faixa, mas abaixo de muitos casos.'), ['classificacao_contradita']);
   });
+  it('dígito da UNIDADE não é número do resultado ("milh/mm3", "/mm3"): hemácias e plaquetas passam', () => {
+    // Visto com um laudo real em 04/11/2026: o "3" de "mm3" reprovava o modelo e a mensagem padrão.
+    const hemacias = { valor: 5.8, unidade: 'milh/mm3', classificacao: 'acima', faixa_referencia: { minimo: 4.3, maximo: 5.7 } };
+    const plaquetas = { valor: 329000, unidade: '/mm3', classificacao: 'dentro', faixa_referencia: { minimo: 150000, maximo: 450000 } };
+    for (const [analito, id] of [[hemacias, 'hemacias'], [plaquetas, 'plaquetas']]) {
+      assert.deepEqual(verificarExplicacao(montarExplicacaoPadrao(analito, ficha(id)), analito, ficha(id)).motivos, [], id);
+    }
+    const textoDoModelo = 'Seu resultado foi 329.000 /mm3. A faixa do seu laudo é de 150.000 a 450.000 /mm3, então está dentro da faixa.';
+    assert.deepEqual(verificarExplicacao({ ...montarExplicacaoPadrao(plaquetas, ficha('plaquetas')), valor_e_posicao: textoDoModelo }, plaquetas, ficha('plaquetas')).motivos, []);
+  });
+  it('número solto inventado continua reprovando, mesmo com unidade que tem dígito', () => {
+    const plaquetas = { valor: 329000, unidade: '/mm3', classificacao: 'dentro', faixa_referencia: { minimo: 150000, maximo: 450000 } };
+    const texto = 'Seu resultado foi 329.000 /mm3, uns 3 por cento a mais que o comum, então está dentro da faixa de 150.000 a 450.000.';
+    assert.deepEqual(verificarExplicacao({ ...montarExplicacaoPadrao(plaquetas, ficha('plaquetas')), valor_e_posicao: texto }, plaquetas, ficha('plaquetas')).motivos, ['valor_divergente']);
+  });
+  it('densidade da urina copiada do laudo com ponto ("1.010", "1.005 a 1.030") confere', () => {
+    const densidade = { valor: 1.01, unidade: null, classificacao: 'dentro', faixa_referencia: { minimo: 1.005, maximo: 1.03 } };
+    const base = montarExplicacaoPadrao(densidade, ficha('densidade_urinaria'));
+    const com = (texto) => verificarExplicacao({ ...base, valor_e_posicao: texto }, densidade, ficha('densidade_urinaria')).motivos;
+    assert.deepEqual(com('Seu resultado foi 1.010. A faixa do seu laudo é de 1.005 a 1.030, então está dentro da faixa.'), []);
+    assert.deepEqual(com('Seu resultado foi 1.010, perto de 1.020, então está dentro da faixa de 1.005 a 1.030.'), ['valor_divergente']);
+  });
   it('vírgula decimal: 0,9 = 0.9', () => {
     const creatinina = { valor: 0.9, unidade: 'mg/dL', classificacao: 'dentro', faixa_referencia: { minimo: 0.6, maximo: 1.3 } };
     const r = verificarExplicacao(montarExplicacaoPadrao(creatinina, ficha('creatinina')), creatinina, ficha('creatinina'));

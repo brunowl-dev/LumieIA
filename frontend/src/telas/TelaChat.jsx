@@ -2,25 +2,24 @@
 // Ao abrir, pede a explicação (POST /api/explicacoes): ela é a 1ª mensagem do chat,
 // nas 5 partes e na ordem do artigo. Depois o paciente digita dúvidas (POST /api/chat).
 // Tudo que aparece aqui já passou pela camada de segurança no back.
+//
+// Se o exame já tem conversa (`conversaInicial`, guardada no App: veio da tela
+// "Todas as explicações" ou de uma visita anterior a este chat), ela é retomada
+// e a explicação NÃO é pedida de novo: o texto na tela continua igual ao que o
+// back guardou no histórico do chat.
 import { useEffect, useRef, useState } from 'react';
 import { enviarDuvida, pedirExplicacao } from '../api.js';
 import AvisoMedico from '../components/AvisoMedico.jsx';
+import { Explicacao, NotaMensagemPadrao } from '../components/Explicacao.jsx';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 import SeloStatus, { formatarNumero } from '../components/SeloStatus.jsx';
 
-// Títulos das partes 1 a 4; a parte 5 (aviso) fecha a mensagem sem título.
-const PARTES = [
-  ['o_que_avalia', 'O que o exame avalia'],
-  ['valor_e_posicao', 'Seu resultado'],
-  ['significado', 'O que isso significa'],
-  ['especialidade', 'Especialidade indicada'],
-];
-
-export default function TelaChat({ idLaudo, exame, onVoltar, onNovoEnvio }) {
+export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, onVoltar, onNovoEnvio }) {
+  const jaTemConversa = Boolean(conversaInicial?.length);
   // Cada mensagem: { autor: 'lumie' | 'paciente', texto?, explicacao?, origem? }
-  const [mensagens, setMensagens] = useState([]);
-  const [carregandoExplicacao, setCarregandoExplicacao] = useState(true);
+  const [mensagens, setMensagens] = useState(() => conversaInicial ?? []);
+  const [carregandoExplicacao, setCarregandoExplicacao] = useState(!jaTemConversa);
   const [erroExplicacao, setErroExplicacao] = useState(null);
   const [tentativa, setTentativa] = useState(0); // muda → pede a explicação de novo
   const [duvida, setDuvida] = useState('');
@@ -30,6 +29,8 @@ export default function TelaChat({ idLaudo, exame, onVoltar, onNovoEnvio }) {
 
   // Momento 2: pede a explicação ao abrir a tela (e de novo em "Tentar de novo").
   useEffect(() => {
+    // Conversa retomada: a explicação já está na tela (só a 1ª abertura pula).
+    if (jaTemConversa && tentativa === 0) return undefined;
     // "ignorar" evita usar uma resposta antiga se o paciente sair da tela antes
     // de ela chegar (e a chamada dupla do StrictMode no modo de desenvolvimento).
     let ignorar = false;
@@ -48,6 +49,11 @@ export default function TelaChat({ idLaudo, exame, onVoltar, onNovoEnvio }) {
       ignorar = true;
     };
   }, [idLaudo, exame.id_canonico, tentativa]);
+
+  // Guarda a conversa no App, para ela continuar se o paciente sair e voltar.
+  useEffect(() => {
+    if (mensagens.length > 0) onConversa(mensagens);
+  }, [mensagens]);
 
   // Rola até a última mensagem sempre que a conversa cresce.
   useEffect(() => {
@@ -133,14 +139,7 @@ export default function TelaChat({ idLaudo, exame, onVoltar, onNovoEnvio }) {
                   <Icone nome="faisca" /> Lumie
                 </span>
                 {mensagem.explicacao ? <Explicacao explicacao={mensagem.explicacao} /> : <p>{mensagem.texto}</p>}
-                {/* Transparência: a segurança reprovou as respostas do modelo e o back
-                    montou um texto padrão, sem IA (contrato §8). */}
-                {mensagem.origem === 'mensagem_padrao' && (
-                  <p className="origem-padrao">
-                    Esta é uma resposta padrão: a explicação gerada pela IA não passou na nossa verificação de
-                    segurança.
-                  </p>
-                )}
+                <NotaMensagemPadrao origem={mensagem.origem} />
               </div>
             ),
           )}
@@ -175,24 +174,6 @@ export default function TelaChat({ idLaudo, exame, onVoltar, onNovoEnvio }) {
       </section>
 
       <AvisoMedico />
-    </>
-  );
-}
-
-// A explicação em 5 partes, sempre na ordem do artigo. Parte vazia (null) não aparece.
-function Explicacao({ explicacao }) {
-  return (
-    <>
-      {PARTES.map(
-        ([campo, titulo]) =>
-          explicacao[campo] && (
-            <div key={campo} className="parte">
-              <strong>{titulo}</strong>
-              <p>{explicacao[campo]}</p>
-            </div>
-          ),
-      )}
-      <p className="parte-aviso">{explicacao.aviso}</p>
     </>
   );
 }

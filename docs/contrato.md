@@ -47,6 +47,7 @@ Front ──(id_laudo, id_canonico, mensagem)──> POST /api/chat ──> IA �
 | `confianca_extracao` | número 0–1 | Confiança geral da extração (média das linhas de resultado, §2.4) |
 | `analitos` | lista | Um item por exame lido com confiança (abaixo) |
 | `itens_nao_lidos` | lista | Caso misto (§2.4): `{ id_canonico, nome_no_laudo, motivos }` dos itens que NÃO foram lidos com confiança. **Sem valor.** `[]` se não houver |
+| `itens_descritivos` | lista | (04/11/2026) Resultados qualitativos: `{ nome_no_laudo, resultado, referencia, situacao }`, com `situacao` = `"conforme_referencia"` ou `"diferente_da_referencia"`, por comparação de TEXTO com a referência do laudo (`resultadosDescritivos.js`). Sem cor de faixa, sem alerta, **nunca vão para a IA**. `[]` se não houver |
 | `linhas_nao_interpretadas` | número | Quantas linhas pareciam resultado mas não viraram analito (só a contagem; o texto da linha não sai) |
 | `aviso_usuario` | texto \| null | Mensagem fixa para o paciente quando há itens de fora; `null` se não houver |
 
@@ -131,7 +132,7 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 `backend/src/pipeline/confianca.js`. Detalhes e motivo dos números em `docs/confianca-extracao.md`.
 - Por analito: sinais ok ÷ sinais aplicáveis (nome, valor numérico, unidade, faixa interpretada; na foto também nome reconhecido), × confiança do OCR ÷ 100 na foto.
 - Limiar `CONFIANCA_MINIMA_EXTRACAO` (padrão 0,80) para item e laudo; `CONFIANCA_MINIMA_OCR` (padrão 70) para a média da foto. Ambos lidos só em `backend/src/pipeline/config.js`.
-- `confianca_extracao` = média das linhas de resultado (linhas não interpretadas valem 0). Abaixo do limiar → erro `BAIXA_CONFIANCA` (§7). Acima → segue com os itens confiáveis; os outros vão para `itens_nao_lidos`, sem valor.
+- `confianca_extracao` = média das linhas de resultado (linhas não interpretadas valem 0; no PDF digital, as de motivo `formato_nao_reconhecido` e `resultado_descritivo_com_faixa_numerica` não entram, ver `docs/confianca-extracao.md`). Na seção de urina, os analitos saem com `id_canonico: null` (não são ligados às fichas de sangue de mesmo nome). Abaixo do limiar → erro `BAIXA_CONFIANCA` (§7). Acima → segue com os itens confiáveis; os outros vão para `itens_nao_lidos`, sem valor.
 
 ### 2.5 Etapa interna: classificação e limite crítico (BWL-05)
 `backend/src/pipeline/classificar.js` (funções puras) + `backend/src/pipeline/limitesCriticos.json` (números e fontes). Detalhes em `docs/limites-criticos.md`.
@@ -140,11 +141,13 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 
 ### 2.6 Função do pipeline usada pelo orquestrador
 `backend/src/pipeline/processarLaudo.js`:
-- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo, identificadores }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto → `ARQUIVO_ILEGIVEL` enquanto o OCR (BWL-10) não existir.
-- `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto (é por aqui que o OCR vai entrar).
+- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo, identificadores }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto (digitalizado) → as páginas (até 5) são desenhadas como imagem e vão para o OCR (BWL-10), com `origem: "ocr"`.
+- `processarLaudoImagem(buffer)` (BWL-10) → idem, para foto JPG/PNG: OCR com Tesseract.js no servidor (`extrairTextoImagem.js`) → correções de letra (`corrigirTextoOcr.js`, nunca de dígito) → `processarTextoLaudo` com a confiança média da página. Imagem que o Tesseract não abre → `ErroOcr` com código `IMAGEM_INVALIDA`.
+- `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto.
 - `identificadores` (BWL-07, `extrairIdentificadores.js`): `{ paciente, cpf, rg, nascimento, pedido, medico, crm, responsavel_tecnico }`, cada um texto ou `null`, lidos dos rótulos do cabeçalho ("Paciente:", "CPF:", "Solicitante:"...). Ficam **fora** de `laudo`. O orquestrador os guarda só na sessão (somem com `SESSION_TTL_MINUTES`) e os usa só como lista do que a varredura apaga do texto livre. Nunca vão para a IA, o front ou os logs.
 
 ## 3. Base de conhecimento → IA e Segurança
+**Campo opcional `material` (04/11/2026):** ficha com `"material": "urina"` (pH, densidade) só é procurada para exames da SEÇÃO DE URINA do laudo; ficha sem o campo é de sangue e nunca é usada na seção de urina (`criarIndiceDeNomes(base, { material })`). Assim "Glicose" da urina não recebe a explicação da glicose do sangue.
 - **Produz:** Aguiar (MAG), em `docs/base-conhecimento/exames.json`. **Consome:** IA (para o prompt) e Segurança (para conferir a especialidade) e Pipeline (para reconhecer o nome do exame).
 
 Cada ficha: `id_canonico`, `nomes_alternativos` (lista), `o_que_avalia` (texto simples), `especialidade` (UMA), `fonte`, `status` (`"pronto"` ou `"pendente"`).
@@ -290,6 +293,7 @@ A ISA não guarda estado entre tentativas e não decide quantas são.
 Cada item: `id_canonico` (texto ou null), `nome`, `valor`, `unidade`, `faixa_referencia`, `classificacao`, `cor`, `alerta_prioritario`, `explicacao_disponivel` (verdadeiro/falso).
 
 Também no resultado (BWL-09, caso misto da §2.4): `itens_nao_lidos` (lista de `{ nome }`, **sem valor**; `[]` se não houver) e `aviso_usuario` (texto fixo ou `null`), para o front avisar que parte do laudo não foi lida.
+Desde 04/11/2026: `itens_descritivos` (lista de `{ nome, resultado, referencia, situacao }`; `[]` se não houver). O front mostra "Conforme a referência" ou "DIFERENTE DA REFERÊNCIA", sem botão de explicação.
 - `explicacao_disponivel: false` quando o exame não tem ficha na base ou a ficha ainda está `pendente`: o front mostra o valor e a classificação, sem o botão, com o texto "ainda não temos explicação para este exame".
 
 **Cores:** `verde` = `dentro`; `amarelo` = `acima` ou `abaixo` sem alerta crítico; `vermelho` = `alerta_critico` verdadeiro (alerta de atendimento prioritário).
@@ -323,12 +327,12 @@ O front nunca decide status: a cor e o alerta chegam prontos.
 | Técnica | `GET /api/saude` | — | `{"status":"ok"}` (healthcheck do Docker) |
 
 **Chat:** responde só sobre aquele exame (analito da sessão + ficha da base). O histórico da conversa de cada exame fica na sessão em memória e some junto com ela (`SESSION_TTL_MINUTES`); não há memória entre sessões. Pergunta fora do exame → a resposta recusa com educação e indica a especialidade da base. Passa pela segurança (seção 8). A explicação em 5 partes está no artigo; as perguntas livres no chat são extensão do protótipo (ver `artigo-vs-prototipo.md`).
-**Lembretes:** horários e doses vêm sempre dos dados cadastrados; o modelo só redige o tom.
+**Lembretes:** cortados do protótipo em 04/11/2026 (não há rota). Regra para trabalho futuro: horários e doses vêm sempre dos dados cadastrados; o modelo só redige o tom.
 
 ## 7. Erros
 Formato: `{"status":"erro","erro":{"codigo":"...","motivo":"...","mensagem_usuario":"..."}}`. `mensagem_usuario` é em linguagem simples, pronta para exibir. `motivo` é opcional: código interno estável, para teste e depuração (nunca contém dado do paciente); o front decide só pelo `codigo`.
 
-`BAIXA_CONFIANCA` (BWL-06), motivos: `ocr_baixa_confianca`, `nenhum_resultado_encontrado`, `confianca_abaixo_do_minimo`, `nenhum_resultado_confiavel`. Mensagens fixas em `backend/src/pipeline/confianca.js`: uma para foto (pede foto nítida, com luz, sem sombra, laudo inteiro), uma para PDF e uma para "nenhum resultado encontrado". `ARQUIVO_ILEGIVEL` com motivo `sem_camada_de_texto`: PDF só de imagem, enquanto não houver OCR.
+`BAIXA_CONFIANCA` (BWL-06), motivos: `ocr_baixa_confianca`, `nenhum_resultado_encontrado`, `confianca_abaixo_do_minimo`, `nenhum_resultado_confiavel`. Mensagens fixas em `backend/src/pipeline/confianca.js`: uma para foto (pede foto nítida, com luz, sem sombra, laudo inteiro), uma para PDF e uma para "nenhum resultado encontrado". Desde a BWL-10, PDF só de imagem vai para o OCR (o motivo `sem_camada_de_texto` não é mais devolvido pela rota).
 
 | Código | Porta | Quando | O que o front faz |
 |---|---|---|---|
@@ -346,7 +350,7 @@ Implementação (BWL-09, `backend/src/api/rotas.js`):
 - **Status HTTP:** 413 `ARQUIVO_MUITO_GRANDE`, 415 `FORMATO_NAO_SUPORTADO`, 422 `ARQUIVO_ILEGIVEL`/`BAIXA_CONFIANCA`, 404 `EXAME_NAO_ENCONTRADO`, 410 `SESSAO_EXPIRADA`, 503 `MODELO_INDISPONIVEL`. O front decide pelo `codigo`, não pelo status.
 - **`ARQUIVO_ILEGIVEL`, motivos novos:**
   - `pdf_protegido`: enquanto o grupo não decide a tela de senha, pede um PDF sem senha;
-  - `ocr_indisponivel`: foto enviada antes de a BWL-10 existir;
+  - `imagem_invalida`: imagem corrompida, que o OCR não abre (BWL-10; substitui o antigo `ocr_indisponivel`);
   - `arquivo_vazio` e `pdf_corrompido`.
 - **`MODELO_INDISPONIVEL`, motivos:** `erro_do_cliente` e `tempo_esgotado` (`OLLAMA_TIMEOUT_MS`).
 - **Códigos técnicos** (não deveriam aparecer se o front estiver certo):

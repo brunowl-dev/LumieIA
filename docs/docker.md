@@ -49,4 +49,4 @@ O log de inicialização do backend mostra `OCR por: encontrado` / `OCR eng: enc
 ## Pontos de atenção
 - **Internet na apresentação:** o modelo é na nuvem, então a demo precisa de rede. Plano B: vídeo gravado (GRP-04).
 - **Limites do plano gratuito do Ollama Cloud:** não foram verificados. Teste a taxa de uso antes de ensaiar a demo (ISA-01).
-- Modelos: `gpt-oss:120b` (padrão do `.env.example`) ou `gpt-oss:20b` (mais leve).
+- Modelo: `beam` (padrão do `.env.example`). Os `gpt-oss` dão HTTP 402 na conta gratuita (`docs/ia-resultados.md`).

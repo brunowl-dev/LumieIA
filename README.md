@@ -1,6 +1,6 @@
 # Lumie — módulo de IA
 
-Módulo de IA do Lumie (hub de saúde digital): interpreta exames laboratoriais em linguagem simples, indica a especialidade médica associada e (se sobrar tempo) gera lembretes de medicação, **sem diagnosticar**. Protótipo do artigo apresentado no COBRIC (Santos), 05/11/2026.
+Módulo de IA do Lumie (hub de saúde digital): interpreta exames laboratoriais em linguagem simples, indica a especialidade médica associada **sem diagnosticar**. Os lembretes de medicação descritos no artigo ficaram como trabalho futuro. Protótipo do artigo apresentado no COBRIC (Santos), 05/11/2026.
 
 Autores: Bruno Antonio Wai Lu, Isadora Oliveira da Silva e Maria Eduarda Aguiar Duarte — Fatec Rubens Lara (ADS).
 

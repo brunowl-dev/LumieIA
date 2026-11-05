@@ -1,11 +1,15 @@
 // Tela 2 — resultado do laudo (contrato §5.1). Tudo aqui vem do pipeline, sem IA:
 // o alerta prioritário aparece já nesta tela e não espera o paciente abrir o chat.
 import AvisoMedico from '../components/AvisoMedico.jsx';
+import CartaoDescritivo from '../components/CartaoDescritivo.jsx';
 import CartaoExame from '../components/CartaoExame.jsx';
 import Icone from '../components/Icone.jsx';
 
-export default function TelaExames({ resultado, onExplicar, onNovoEnvio }) {
+export default function TelaExames({ resultado, onExplicar, onExplicarTodos, onNovoEnvio }) {
   const { itens } = resultado;
+  // Resultados descritivos ("Negativo"): vêm à parte, sem cor de faixa (contrato §5.1).
+  const descritivos = resultado.itens_descritivos ?? [];
+  const comExplicacao = itens.filter((item) => item.explicacao_disponivel).length;
   const examesEmAlerta = itens.filter((item) => item.alerta_prioritario);
   // Contagem para os quadros de resumo: só conta o que o back já classificou.
   const dentro = itens.filter((item) => item.classificacao === 'dentro').length;
@@ -72,6 +76,12 @@ export default function TelaExames({ resultado, onExplicar, onNovoEnvio }) {
           <p className="eyebrow">LAUDO ENVIADO</p>
           <h2>Resultados identificados</h2>
         </div>
+        {/* Com 2 ou mais exames explicáveis: todas as explicações numa tela só. */}
+        {comExplicacao > 1 && (
+          <button type="button" className="primary" onClick={onExplicarTodos}>
+            <Icone nome="faisca" /> Explicar todos com IA
+          </button>
+        )}
       </div>
 
       <div className="exam-list">
@@ -80,6 +90,33 @@ export default function TelaExames({ resultado, onExplicar, onNovoEnvio }) {
           <CartaoExame key={item.id_canonico ?? item.nome} item={item} onExplicar={onExplicar} />
         ))}
       </div>
+
+      {/* Caso misto (contrato §2.4): o que não foi lido com segurança aparece só pelo nome, sem valor. */}
+      {resultado.aviso_usuario && (
+        <p className="aviso-nao-lidos" role="note">
+          <Icone nome="alerta" /> {resultado.aviso_usuario}
+          {resultado.itens_nao_lidos?.length > 0 && (
+            <> Não lidos: {resultado.itens_nao_lidos.map((item) => item.nome).join(', ')}.</>
+          )}
+        </p>
+      )}
+
+      {descritivos.length > 0 && (
+        <>
+          <div className="result-title">
+            <div>
+              <p className="eyebrow">RESULTADOS DESCRITIVOS</p>
+              <h2>Comparados com a referência do laudo</h2>
+            </div>
+          </div>
+          <div className="exam-list">
+            {descritivos.map((item, indice) => (
+              // O mesmo nome pode aparecer em seções diferentes do laudo: o índice entra na chave.
+              <CartaoDescritivo key={`${item.nome}-${indice}`} item={item} />
+            ))}
+          </div>
+        </>
+      )}
 
       <AvisoMedico />
     </>

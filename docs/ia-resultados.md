@@ -6,7 +6,7 @@ Entradas usadas: `samples/entradas-ia/` (sintéticas). `MAX_REGENERACOES=2`, ou 
 ## Acesso ao modelo (ISA-01)
 | Item | Valor |
 |---|---|
-| Modelo (`OLLAMA_MODEL`) | **`beam`** desde 03/11/2026 (o `.env.example` ainda diz `gpt-oss:120b`). Motivo: dos 25 modelos listados em `GET /api/tags`, só o `beam` respondeu na conta gratuita; os outros 23 deram HTTP 402 e o `clef:27b` deu HTTP 400 (não aceita `/api/chat`). Teste rápido do `beam`: JSON Schema respeitado, 8 de 8 respostas às entradas de `samples/entradas-ia/` aprovadas pela segurança, 3 a 7 s cada, com prompt provisório (não o v1). Fabricante e licença do `beam` não informados |
+| Modelo (`OLLAMA_MODEL`) | **`beam`** desde 03/11/2026 (também no `.env.example` desde 04/11). Motivo: dos 25 modelos listados em `GET /api/tags`, só o `beam` respondeu na conta gratuita; os outros 23 deram HTTP 402 e o `clef:27b` deu HTTP 400 (não aceita `/api/chat`). Teste rápido do `beam`: JSON Schema respeitado, 8 de 8 respostas às entradas de `samples/entradas-ia/` aprovadas pela segurança, 3 a 7 s cada, com prompt provisório (não o v1). Fabricante e licença do `beam` não informados |
 | Chamada funcionou? (data) | **Sim**, com `beam`, em 03/11/2026: `format` (JSON Schema) respeitado e cerca de 2 s por resposta. Antes, também em 03/11, os modelos `gpt-oss` tinham dado **HTTP 402** ("Add usage credits or subscribe"): a chave chegava ao servidor (não deu 401), mas a conta gratuita não tem acesso a eles |
 | Limites do plano gratuito encontrados | A conta usada não consegue gerar nenhuma resposta (402). Limites exatos do plano não verificados |
 | Ajustes no formato da chamada em relação ao contrato §4.1 | Nenhum até agora (o pedido foi aceito até a etapa de cobrança) |

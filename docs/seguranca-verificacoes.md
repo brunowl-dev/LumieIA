@@ -39,4 +39,4 @@ Um mesmo texto pode ter vários motivos, devolvidos sempre na ordem da tabela. A
 - **Custo:** cada falso positivo gasta uma regeneração (mais uma chamada ao modelo). Se todas falharem, o paciente recebe a mensagem padrão, que é correta mas mais pobre. É o lado seguro do erro: a camada prefere reprovar uma resposta boa a deixar passar uma ruim.
 
 ## Limite principal
-A camada **só foi testada com respostas escritas por nós**. A taxa real de falsos positivos e negativos com o gpt-oss é desconhecida até a IA da Isadora existir. Quando existir: rodar respostas reais do modelo pela camada, anotar os erros e ajustar `termosProibidos.json`.
+A camada **só foi testada com respostas escritas por nós**. Com o modelo real (`beam`), só 7 respostas passaram pela camada até 04/11 (todas aprovadas): pouco para medir a taxa de falsos positivos e negativos. Próximo passo: rodar respostas reais do modelo pela camada, anotar os erros e ajustar `termosProibidos.json`.

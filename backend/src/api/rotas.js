@@ -6,8 +6,9 @@
 // e mensagem padrão da segurança, texto da IA. Aqui só se ligam as peças,
 // decide-se a cor (§5.1) e traduzem-se os erros (§7).
 import { readFileSync } from 'node:fs';
-import { processarLaudoPdf, MENSAGEM_ARQUIVO_ILEGIVEL } from '../pipeline/processarLaudo.js';
+import { processarLaudoImagem, processarLaudoPdf, MENSAGEM_ARQUIVO_ILEGIVEL } from '../pipeline/processarLaudo.js';
 import { CODIGOS_ERRO } from '../pipeline/extrairTextoPdf.js';
+import { CODIGOS_ERRO_OCR } from '../pipeline/extrairTextoImagem.js';
 import { gerarComSeguranca } from './gerarComSeguranca.js';
 import { verificarChat, verificarExplicacao, PARTES_EXPLICACAO } from '../seguranca/verificarResposta.js';
 import { montarChatPadrao, montarExplicacaoPadrao } from '../seguranca/mensagemPadrao.js';
@@ -17,7 +18,7 @@ import { registrarEvento as registrarPadrao } from '../seguranca/registrarEvento
 // --- Erros (contrato §7) ---------------------------------------------------------
 
 const ERROS = {
-  FORMATO_NAO_SUPORTADO: [415, 'Formato de arquivo não suportado. Envie o laudo em PDF.'],
+  FORMATO_NAO_SUPORTADO: [415, 'Formato de arquivo não suportado. Envie o laudo em PDF ou uma foto (JPG ou PNG).'],
   ARQUIVO_MUITO_GRANDE: [413, null], // mensagem com o limite, montada na hora
   ARQUIVO_ILEGIVEL: [422, MENSAGEM_ARQUIVO_ILEGIVEL],
   BAIXA_CONFIANCA: [422, null], // mensagem vem do pipeline (confianca.js)
@@ -39,14 +40,15 @@ class ErroHttp extends Error {
   }
 }
 
-// Erros internos da extração do PDF (§2.1) → erros do contrato.
-const TRADUCAO_PDF = {
+// Erros internos da extração do PDF (§2.1) e do OCR → erros do contrato.
+const TRADUCAO_EXTRACAO = {
   [CODIGOS_ERRO.ARQUIVO_VAZIO]: ['ARQUIVO_ILEGIVEL', 'arquivo_vazio'],
   [CODIGOS_ERRO.PDF_CORROMPIDO]: ['ARQUIVO_ILEGIVEL', 'pdf_corrompido'],
   [CODIGOS_ERRO.ARQUIVO_NAO_E_PDF]: ['FORMATO_NAO_SUPORTADO', 'arquivo_nao_e_pdf'],
   // [A CONFIRMAR no grupo] pedir a senha; por enquanto pede um PDF sem senha.
   [CODIGOS_ERRO.PDF_PROTEGIDO]: ['ARQUIVO_ILEGIVEL', 'pdf_protegido', 'Este PDF está protegido por senha. Envie uma versão sem senha.'],
   [CODIGOS_ERRO.SENHA_INCORRETA]: ['ARQUIVO_ILEGIVEL', 'pdf_protegido', 'Este PDF está protegido por senha. Envie uma versão sem senha.'],
+  [CODIGOS_ERRO_OCR.IMAGEM_INVALIDA]: ['ARQUIVO_ILEGIVEL', 'imagem_invalida'],
 };
 
 // --- Base de conhecimento ----------------------------------------------------------
@@ -127,11 +129,12 @@ function tipoDoArquivo(bytes) {
  * @param {number} d.maxRegeneracoes
  * @param {number} d.uploadMaxMb
  * @param {Function} [d.processarPdf]
+ * @param {Function} [d.processarImagem]
  * @param {Function} [d.registrar]
  */
 export function criarApp({
   sessoes, adaptador, fichas, maxRegeneracoes, uploadMaxMb,
-  processarPdf = processarLaudoPdf, registrar = registrarPadrao,
+  processarPdf = processarLaudoPdf, processarImagem = processarLaudoImagem, registrar = registrarPadrao,
 }) {
   // --- Porta 1: enviar laudo (momento 1, SEM IA) ---
   async function enviarLaudo(req) {
@@ -153,17 +156,14 @@ export function criarApp({
     const bytes = Buffer.from(await arquivo.arrayBuffer());
 
     const tipo = tipoDoArquivo(bytes);
-    if (tipo === 'imagem') {
-      // OCR (BWL-10) ainda não existe.
-      throw new ErroHttp('ARQUIVO_ILEGIVEL', 'ocr_indisponivel', 'Ainda não conseguimos ler fotos neste protótipo. Envie o PDF original do laboratório.');
-    }
-    if (tipo !== 'pdf') throw new ErroHttp(bytes.length === 0 ? 'ARQUIVO_ILEGIVEL' : 'FORMATO_NAO_SUPORTADO', bytes.length === 0 ? 'arquivo_vazio' : 'formato_desconhecido');
+    if (tipo === 'outro') throw new ErroHttp(bytes.length === 0 ? 'ARQUIVO_ILEGIVEL' : 'FORMATO_NAO_SUPORTADO', bytes.length === 0 ? 'arquivo_vazio' : 'formato_desconhecido');
 
+    // Foto → OCR (BWL-10). PDF → texto; se for digitalizado, o pipeline faz OCR das páginas.
     let resultado;
     try {
-      resultado = await processarPdf(bytes);
+      resultado = tipo === 'imagem' ? await processarImagem(bytes) : await processarPdf(bytes);
     } catch (erro) {
-      const traducao = TRADUCAO_PDF[erro.codigo];
+      const traducao = TRADUCAO_EXTRACAO[erro.codigo];
       if (!traducao) throw erro;
       throw new ErroHttp(...traducao);
     }
@@ -191,6 +191,10 @@ export function criarApp({
       })),
       // Caso misto (§2.4): o que não foi lido aparece só pelo nome, sem valor.
       itens_nao_lidos: laudo.itens_nao_lidos.map((i) => ({ nome: i.nome_no_laudo })),
+      // Resultados descritivos (§5.1): sem cor nem explicação, só a comparação com a referência.
+      itens_descritivos: laudo.itens_descritivos.map((d) => ({
+        nome: d.nome_no_laudo, resultado: d.resultado, referencia: d.referencia, situacao: d.situacao,
+      })),
       aviso_usuario: laudo.aviso_usuario,
     }];
   }

@@ -19,6 +19,7 @@
 // "Nascimento"), para a alternância da regex pegar o rótulo inteiro.
 const ROTULOS = [
   ['data de nascimento', 'nascimento'],
+  ['data nasc\\.?', 'nascimento'],
   ['nascimento', 'nascimento'],
   ['m[ée]dico solicitante', 'medico'],
   ['solicitante', 'medico'],
@@ -38,6 +39,10 @@ const ROTULOS = [
   ['coleta', null],
   ['data de libera[çc][ãa]o', null],
   ['libera[çc][ãa]o', null],
+  ['ficha', null],
+  ['cadastro', null],
+  ['emiss[ãa]o', null],
+  ['conv[êe]nio', null],
 ];
 
 // Rótulo = início de palavra + nome do rótulo + ":". O CRM é exceção: aparece
@@ -56,7 +61,9 @@ const CAMPOS_DE_PESSOA = new Set(['paciente', 'medico', 'responsavel_tecnico']);
  */
 export function extrairIdentificadores(texto) {
   const identificadores = Object.fromEntries(CAMPOS.map((campo) => [campo, null]));
-  for (const linha of String(texto ?? '').split('\n')) {
+  const linhas = String(texto ?? '').split('\n');
+  lerRotulosSozinhos(linhas, identificadores);
+  for (const linha of linhas) {
     // 1) Acha todos os rótulos da linha, com a posição de cada um.
     const rotulos = [...linha.matchAll(REGEX_ROTULO)].map((m) => ({
       campo: m[2] ? 'crm' : campoDoRotulo(m[1]),
@@ -67,11 +74,51 @@ export function extrairIdentificadores(texto) {
     rotulos.forEach((rotulo, i) => {
       if (!rotulo.campo || identificadores[rotulo.campo] !== null) return; // fica o 1º (cabeçalho)
       const fim = i + 1 < rotulos.length ? rotulos[i + 1].inicioRotulo : linha.length;
-      const valor = limparValor(linha.slice(rotulo.inicioValor, fim), CAMPOS_DE_PESSOA.has(rotulo.campo));
+      let valor = limparValor(linha.slice(rotulo.inicioValor, fim), CAMPOS_DE_PESSOA.has(rotulo.campo));
+      // "3/14/1992, 34a": só a data (a idade não identifica).
+      if (rotulo.campo === 'nascimento') valor = DATA.exec(valor ?? '')?.[0] ?? valor;
       if (valor) identificadores[rotulo.campo] = valor;
     });
   }
+  // "Solicitante: CRM-SP-123456 NOME DO MÉDICO": o rótulo CRM vem antes do nome, então
+  // o nome caiu no valor do CRM e o solicitante ficou vazio. Separa os dois.
+  const crmComNome = /^([-\s/]*[a-z]{2}[-\s/]*[\d.]+|[\d.]+)\s+(\p{L}.*)$/iu.exec(identificadores.crm ?? '');
+  if (crmComNome) {
+    identificadores.crm = crmComNome[1].replace(/^[-\s/]+/, '');
+    identificadores.medico ??= limparValor(crmComNome[2], true);
+  }
   return identificadores;
+}
+
+// Data impressa: "14/03/1992", "3/14/1992".
+const DATA = /\d{1,2}\/\d{1,2}\/\d{2,4}/;
+
+// Cabeçalho em que o rótulo fica SOZINHO numa linha e o valor vem na de baixo
+// ("CPF" / "000.000.000-00", "Médico" / "NOME Local Coleta"). Só estes rótulos,
+// sem dois-pontos ou com, e a linha seguinte não vazia.
+const ROTULOS_SOZINHOS = [
+  [/^(?:nome|paciente)$/i, 'paciente'],
+  [/^cpf$/i, 'cpf'],
+  [/^rg$/i, 'rg'],
+  [/^(?:data\s+de\s+)?nascimento$|^data\s+nasc\.?$/i, 'nascimento'],
+  [/^m[ée]dico(?:\s+solicitante)?$|^solicitante$/i, 'medico'],
+  [/^(?:pedido|protocolo|prontu[áa]rio)$/i, 'pedido'],
+];
+// Outra coluna do cabeçalho que vem na mesma linha do valor: "NOME Local Coleta".
+const COLUNA_VIZINHA = /\s+local\s+(?:de\s+)?coleta\b.*$/i;
+
+function lerRotulosSozinhos(linhas, identificadores) {
+  for (let i = 0; i + 1 < linhas.length; i++) {
+    const rotulo = linhas[i].trim().replace(/\s*:$/, '');
+    const achado = ROTULOS_SOZINHOS.find(([regex]) => regex.test(rotulo));
+    if (!achado) continue;
+    const [, campo] = achado;
+    const proxima = linhas[i + 1].replace(COLUNA_VIZINHA, '');
+    let valor = limparValor(proxima, CAMPOS_DE_PESSOA.has(campo));
+    if (campo === 'nascimento') valor = DATA.exec(valor ?? '')?.[0] ?? null;
+    // Valor que é outro rótulo ("Nome Social:" logo abaixo) não conta.
+    if (valor && identificadores[campo] === null && !valor.includes(':')) identificadores[campo] = valor;
+  }
 }
 
 function campoDoRotulo(rotuloLido) {
@@ -86,6 +133,7 @@ function limparValor(bruto, ehPessoa) {
   let valor = bruto;
   if (ehPessoa) {
     valor = valor
+      .replace(/^\s*\d[\d./]*\s*[-–]\s*/, '') // código antes do nome: "000123 - NOME" (vem ANTES da regra do " - ")
       .replace(/\([^)]*\)?/g, ' ')            // "(fictícia)", "(CRM ..." sem fechar
       .replace(/\s-\s.*$/, ' ')               // " - registro FICTÍCIO"
       .replace(/^\s*dr[a]?\.?\s+/i, '');      // "Dr. " / "Dra. "

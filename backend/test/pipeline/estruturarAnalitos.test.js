@@ -327,12 +327,12 @@ describe('estruturarAnalitos: linhas que parecem resultado → nao_interpretadas
 
 describe('estruturarAnalitos: cabeçalho, rodapé e layout', () => {
   it('cabeçalho e rodapé sem resultado não viram analito nem nao_interpretadas', () => {
-    assert.deepEqual(estruturarAnalitos(laudoA()), { analitos: [], nao_interpretadas: [] });
+    assert.deepEqual(estruturarAnalitos(laudoA()), { analitos: [], nao_interpretadas: [], descritivos: [] });
   });
 
   it('texto vazio ou que não é string', () => {
-    assert.deepEqual(estruturarAnalitos(''), { analitos: [], nao_interpretadas: [] });
-    assert.deepEqual(estruturarAnalitos(undefined), { analitos: [], nao_interpretadas: [] });
+    assert.deepEqual(estruturarAnalitos(''), { analitos: [], nao_interpretadas: [], descritivos: [] });
+    assert.deepEqual(estruturarAnalitos(undefined), { analitos: [], nao_interpretadas: [], descritivos: [] });
   });
 
   it('tabs e espaços múltiplos entre as colunas', () => {

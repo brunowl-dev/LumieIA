@@ -38,7 +38,8 @@ O pipeline lê o cabeçalho do laudo (`extrairIdentificadores`) e devolve os ide
 - Endereço sem CEP ("moro na rua tal, 123").
 - Identificação indireta por contexto ("sou a única professora da escola X").
 - Se o cabeçalho não for lido (layout desconhecido, OCR ruim), o dicionário fica vazio e sobram só os padrões.
-- Falso positivo: parte do nome que também é palavra comum (ex.: sobrenome "Rosa") pode trocar a palavra comum por marcador. Preposições do nome ("da", "de", "dos") não entram no dicionário.
+- Falso positivo: parte do nome que também é palavra comum (ex.: sobrenome "Rosa") pode trocar a palavra comum por marcador. Preposições do nome ("da", "de", "dos") e palavras curtas comuns ("no", "em", "ou"...) não entram no dicionário. Partes de 2 letras ENTRAM desde 04/11/2026: sobrenomes como "Lu", "Li" identificam a pessoa e antes passavam.
+- **Corrigido em 04/11/2026, com um laudo real (fora do repositório):** o cabeçalho "Paciente: 000123 - NOME" guardava só o código, e "Sou o [primeiro nome]" chegava à IA com o nome. Também não liam "Data Nasc.:" nem o médico em "Solicitante: CRM-SP-000000 NOME". Os três formatos estão em `backend/test/pipeline/layoutC.test.js` (dados fictícios). Lição: cada laboratório novo pode ter um cabeçalho que o extrator não conhece, e aí sobram só os padrões genéricos.
 - O teste prova o que **entra** na IA (a saída de `montarEntradaIa`), não o pacote final enviado ao Ollama. Se o código da IA acrescentar dados ao prompt, este teste não vê (registrado em `artigo-vs-prototipo.md`).
 
 ## Onde está no código e como é testado

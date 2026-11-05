@@ -46,9 +46,9 @@
 - [x] **BWL-06 (P0)** Confiança da extração e erro "envie novamente". → `docs/confianca-extracao.md`.
 - [x] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai. → `docs/pseudonimizacao.md` (prova sobre a ENTRADA da IA; o pacote final ao Ollama depende da ISA).
 - [x] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos. → `docs/seguranca-verificacoes.md` (testada só com respostas escritas pelo grupo).
-- [x] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração. → com **IA falsa**; trocar o cliente em `backend/src/server.js` quando a ISA entregar.
-- [ ] **BWL-10 (P1)** OCR com Tesseract.js. Se apertar, é o primeiro corte — mas o artigo descreve OCR, então avise o grupo cedo.
-- [ ] **BWL-11 (P2)** Lembrete de medicação.
+- [x] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração. → ligado ao modelo real (`beam`) com `IA_FALSA=false` desde 04/11 (a IA falsa continua para testes).
+- [x] **BWL-10 (P1)** OCR com Tesseract.js. → foto JPG/PNG e PDF digitalizado; confiança média da página; correções de letra (nunca dígito). Medido e decidido em `docs/confianca-extracao.md`.
+- ~~**BWL-11 (P2)** Lembrete de medicação.~~ **Cortada em 04/11/2026** por prazo (registrado em `artigo-vs-prototipo.md`).
 
 ---
 
@@ -67,13 +67,13 @@
 - RNF-I4: resposta em tempo aceitável para a demo.
 
 **Tarefas** — roteiro passo a passo, arquivos e critérios de pronto em `backend/src/ia/CLAUDE.md`; interface no contrato §4; testes de aceitação em `backend/test/ia/clienteIa.test.js` (tirar o `todo` de cada um); medições em `docs/ia-resultados.md`.
-- [ ] **ISA-01 (P0)** Acesso ao modelo (Ollama Cloud, `gpt-oss`) com uma chamada simples isolada. Verificar se o modelo está disponível na conta e quais são os limites do plano gratuito.
-- [ ] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
-- [ ] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.
-- [ ] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
-- [ ] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
+- [x] **ISA-01 (P0)** Acesso ao modelo (Ollama Cloud; `gpt-oss` deu 402, usa-se `beam`) com uma chamada simples isolada. Verificar se o modelo está disponível na conta e quais são os limites do plano gratuito.
+- [x] **ISA-02 (P0)** Prompt de instruções com as 5 partes e as proibições (`ia/prompts/v1`).
+- [x] **ISA-03 (P0)** Busca na base por `id_canonico` e montagem do prompt. → a busca já é feita pelo orquestrador: a ficha chega pronta na entrada (contrato §4.0 e §4.2); fica para a ISA a montagem do prompt.
+- [x] **ISA-04 (P0)** Função "analito estruturado → 5 partes", testada com os JSONs de `samples/`.
+- [x] **ISA-05 (P1)** Respostas às dúvidas digitadas no chat do exame (analito + ficha + histórico).
 - [ ] **ISA-06 (P1)** Usar o motivo da reprovação da segurança para corrigir a nova tentativa.
-- [ ] **ISA-07 (P2)** Redação do tom do lembrete (horários e doses nunca vêm do modelo).
+- ~~**ISA-07 (P2)** Redação do tom do lembrete (horários e doses nunca vêm do modelo).~~ **Cortada em 04/11/2026** por prazo.
 
 ---
 

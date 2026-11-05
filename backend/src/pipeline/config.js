@@ -38,6 +38,14 @@ export const CONFIANCA_MINIMA_OCR = lerNumero(
   'CONFIANCA_MINIMA_OCR', PADRAO_CONFIANCA_MINIMA_OCR, 0, 100,
 );
 
+// OCR (BWL-10). Idiomas no formato do Tesseract: português + inglês (siglas como TSH).
+export const OCR_IDIOMAS = process.env.OCR_LANG?.trim() || 'por+eng';
+
+// Pasta com os arquivos de idioma (<idioma>.traineddata.gz). No Docker eles já
+// vêm na imagem (TESSDATA_PATH, ver backend/Dockerfile), então o OCR não usa a
+// rede. Fora do Docker fica null: o Tesseract.js baixa uma vez e guarda em cache.
+export const CAMINHO_TESSDATA = process.env.TESSDATA_PATH?.trim() || null;
+
 // Base de conhecimento (conteúdo da Aguiar). No Docker é montada em
 // /app/knowledge (KNOWLEDGE_BASE_PATH); fora dele, usa o arquivo do repositório.
 export const CAMINHO_BASE_CONHECIMENTO = process.env.KNOWLEDGE_BASE_PATH

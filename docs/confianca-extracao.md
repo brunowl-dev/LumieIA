@@ -38,6 +38,7 @@ Nesta ordem:
 1. Foto com confiança média do OCR < `CONFIANCA_MINIMA_OCR` → erro `BAIXA_CONFIANCA` (motivo `ocr_baixa_confianca`).
 2. Nenhuma linha com cara de resultado → erro (`nenhum_resultado_encontrado`).
 3. `confianca_extracao` = **média** da confiança de todas as linhas de resultado. As linhas que parecem resultado mas nem viraram analito (`nao_interpretadas` da BWL-03, ex.: "< 0,01") entram com **0**. Abaixo do limiar → erro (`confianca_abaixo_do_minimo`).
+   **Exceção (04/11/2026), só no PDF digital:** linha com motivo `formato_nao_reconhecido` não entra na média. O texto do PDF é exato: essa linha não é leitura duvidosa, é um layout que o parser não cobre, e um novo envio daria o mesmo resultado. Ela continua em `linhas_nao_interpretadas` e o paciente vê o aviso de itens não lidos. Na foto, continua entrando com 0 (pode ser erro do OCR). Motivo: um laudo real de 10 páginas, com muitos exames fora do protótipo, tinha média 0,34 e era recusado inteiro, mesmo com a hemoglobina e o TSH lidos sem erro; com a exceção, 0,86. `painel_maioria_ilegivel.pdf` continua recusado (os motivos dele são outros).
 4. Nenhum analito confiável → erro (`nenhum_resultado_confiavel`). Rede de segurança: com o mesmo limiar nos dois níveis, a regra 3 já pega.
 5. Senão, o laudo **segue**.
 
@@ -69,6 +70,19 @@ Contrato §7. Mensagens fixas (sem o modelo), em `confianca.js`:
   "mensagem_usuario": "Não conseguimos ler bem a foto do seu exame. Tente de novo com uma foto nítida, com boa luz, sem sombras e com o laudo inteiro aparecendo, ou envie o PDF original do laboratório." } }
 ```
 
-## Limitação atual
+## OCR real (BWL-10, 04/11/2026)
 
-O OCR (BWL-10) ainda não existe. O caminho da foto está implementado e testado com a confiança do Tesseract **simulada** (testes em `backend/test/pipeline/processarLaudo.test.js`). `foto_borrada.jpg` ainda não passa pelo pipeline: hoje uma imagem para na BWL-02 (`ARQUIVO_NAO_E_PDF`).
+A foto passa pelo Tesseract.js de verdade (`backend/src/pipeline/extrairTextoImagem.js`; testes em `backend/test/pipeline/ocr.test.js`). Medido nas imagens sintéticas:
+
+| Arquivo | Confiança da página | Resultado |
+|---|---|---|
+| `foto_glicose_acima.jpg` | 91 | segue; glicose 118 acima (= gabarito) |
+| `foto_painel_misto.jpg` | 87 | segue; os 4 exames = gabarito |
+| `digitalizado_sem_texto.pdf` | 86 | segue; glicose 118 acima |
+| `foto_borrada.jpg` | 0 | `BAIXA_CONFIANCA` (`ocr_baixa_confianca`) |
+
+**Decisão: usa-se a confiança MÉDIA DA PÁGINA, não a de cada linha.** O `confianca.js` aceita confiança por linha (`confianca_ocr`), mas, medida, ela não serve como sinal: em `foto_glicose_acima.jpg` a linha "Glicose em jejum 118 mg/dL 70 a 99" foi lida **sem nenhum erro** e recebeu 75 (abaixo de 80), porque o Tesseract deu 26 às palavras curtas "a" e "99" da faixa. O valor do resultado (118) recebeu 96. Usar a linha recusaria uma foto boa. O que protege cada item continua sendo os sinais estruturais (nome reconhecido na base, unidade, faixa interpretada).
+
+**Correções antes de estruturar** (`corrigirTextoOcr.js`): só confusões de letra vistas nessas imagens: `µ` lido como H/p/u (`HUI/mL` → `µUI/mL`), `g` lido como a/q (`ma/dL` → `mg/dL`) e faixa sem espaço (`12,0a 16,0`). **Nunca dígito:** um número lido errado não se adivinha.
+
+**Limite para a banca:** só 3 imagens sintéticas legíveis e 1 borrada foram medidas. Uma foto real, de outro laboratório, com outra fonte e outra luz, pode ter dígito lido errado com confiança alta da página; o sistema não detecta isso. Por isso a mensagem pede o PDF original quando possível.

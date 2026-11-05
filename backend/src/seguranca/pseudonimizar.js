@@ -34,8 +34,13 @@ function regexDoTermo(termo) {
 // --- Dicionário: o que veio do cabeçalho do laudo ----------------------------
 
 // Preposições do nome não são identificador ("da", "de"...): trocar "de" em todo
-// o texto destruiria a frase. Partes com menos de 3 letras também ficam de fora.
-const PARTICULAS = new Set(['da', 'de', 'do', 'das', 'dos', 'e', 'di', 'du', 'del', 'van', 'von']);
+// o texto destruiria a frase. Partes de 2 letras ENTRAM (sobrenomes como "Lu",
+// "Li", "Ng" identificam a pessoa), menos as palavras curtas comuns da lista.
+// Uma letra só fica de fora.
+const PARTICULAS = new Set([
+  'da', 'de', 'do', 'das', 'dos', 'e', 'di', 'du', 'del', 'van', 'von',
+  'no', 'na', 'em', 'um', 'ou', 'se', 'eu', 'me', 'te', 'ao', 'os', 'as', 'ja', 'la', 'so', 'ha', 'mu',
+]);
 const CATEGORIA_DO_CAMPO = {
   paciente: 'PACIENTE', medico: 'PROFISSIONAL', responsavel_tecnico: 'PROFISSIONAL',
   cpf: 'CPF', rg: 'RG', nascimento: 'DATA', pedido: 'PEDIDO', crm: 'CRM',
@@ -50,7 +55,7 @@ function termosDoDicionario(identificadores = {}) {
     if (CAMPOS_DE_PESSOA.has(campo)) {
       termos.push({ categoria, termo: valor }); // nome completo
       for (const parte of valor.split(/\s+/)) {   // e cada parte ("Lúcia", "Andrade")
-        if (parte.length >= 3 && !PARTICULAS.has(semAcento(parte).toLowerCase())) termos.push({ categoria, termo: parte });
+        if (parte.length >= 2 && !PARTICULAS.has(semAcento(parte).toLowerCase())) termos.push({ categoria, termo: parte });
       }
     } else if (/\d/.test(valor)) {
       // Número do cabeçalho do jeito que foi impresso ("TESTE-0001"). Valor sem

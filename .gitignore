@@ -19,3 +19,6 @@ tmp/
 Thumbs.db
 .vscode/
 .idea/
+
+# exames REAIS de pessoas: só para teste local, NUNCA no repositório
+exames-reais/

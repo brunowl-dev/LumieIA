@@ -452,6 +452,16 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
 .chat-campo input:focus { outline: 2px solid #bcecf4; border-color: var(--primaria); }
 .chat-campo .primary { height: 46px; }
 
+/* ---------- Todas as explicações ---------- */
+.result-title .primary { display: inline-flex; align-items: center; gap: 8px; align-self: end; height: 42px; font-size: 13px; }
+.result-title .primary .ui-icon { width: 16px; height: 16px; }
+.explicacoes-lista { display: grid; gap: 22px; }
+.explicacao-exame { display: grid; gap: 10px; }
+.explicacao-exame .balao { max-width: 100%; }
+.sem-explicacao-lista { margin-top: 16px; color: var(--texto-suave); font-size: 13px; }
+.aviso-nao-lidos { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; border: 1px solid #f3dfa8; border-radius: 11px; background: var(--amarelo-fundo); color: var(--amarelo-texto); font-size: 13px; line-height: 1.45; }
+.aviso-nao-lidos .ui-icon { width: 16px; height: 16px; margin-top: 1px; }
+
 .visualmente-oculto {
   position: absolute;
   width: 1px;
@@ -475,4 +485,5 @@ h1, h2, h3, strong { font-family: 'Nunito Sans', sans-serif; }
   .data-error { align-items: flex-start; flex-direction: column; }
   .balao { max-width: 92%; }
   .exams-heading { flex-wrap: wrap; }
+  .result-title { flex-wrap: wrap; gap: 10px; }
 }
