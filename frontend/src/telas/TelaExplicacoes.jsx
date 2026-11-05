@@ -16,6 +16,7 @@ import { BalaoExplicacao } from '../components/Explicacao.jsx';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 import SeloStatus, { formatarNumero } from '../components/SeloStatus.jsx';
+import Voltar from '../components/Voltar.jsx';
 
 export default function TelaExplicacoes({ resultado, conversas, onConversa, onAbrirChat, onVoltar, onNovoEnvio }) {
   const disponiveis = resultado.itens.filter((item) => item.explicacao_disponivel);
@@ -61,15 +62,13 @@ export default function TelaExplicacoes({ resultado, conversas, onConversa, onAb
 
   return (
     <>
+      <Voltar onClick={onVoltar}>Voltar aos resultados</Voltar>
       <div className="exams-heading">
         <div>
           <p className="eyebrow">EXPLICAR COM IA</p>
           <h1>Todas as explicações</h1>
           <span>Uma explicação para cada exame do seu laudo. Para tirar dúvidas, abra o chat do exame.</span>
         </div>
-        <button type="button" className="secondary" onClick={onVoltar}>
-          ← Voltar aos resultados
-        </button>
       </div>
 
       <div className="explicacoes-lista">

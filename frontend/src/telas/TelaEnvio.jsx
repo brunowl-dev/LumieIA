@@ -7,6 +7,7 @@ import { enviarLaudo } from '../api.js';
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 import PreviaArquivo from '../components/PreviaArquivo.jsx';
+import Voltar from '../components/Voltar.jsx';
 
 const TIPOS_ACEITOS = ['application/pdf', 'image/jpeg', 'image/png'];
 const TAMANHO_MAXIMO_MB = 10; // igual a UPLOAD_MAX_MB do .env.example
@@ -67,15 +68,15 @@ export default function TelaEnvio({ onResultado, onVoltar }) {
 
   return (
     <>
+      <Voltar onClick={onVoltar} disabled={enviando}>
+        Voltar aos laudos de demonstração
+      </Voltar>
       <div className="exams-heading">
         <div>
           <p className="eyebrow">SEUS EXAMES, SEMPRE COM VOCÊ</p>
-          <h1>Entenda seu exame</h1>
-          <span>Organize, acompanhe e entenda seus resultados em um só lugar.</span>
+          <h1>Envie o seu laudo</h1>
+          <span>Mostramos cada resultado com a faixa de referência do seu laudo.</span>
         </div>
-        <button type="button" className="secondary" onClick={onVoltar} disabled={enviando}>
-          ← Laudos de demonstração
-        </button>
       </div>
 
       <form className="painel-envio" onSubmit={enviar}>

@@ -1,11 +1,10 @@
-// Moldura do app Lumie: barra lateral à esquerda, barra superior com o caminho
-// ("Sua saúde / Meus exames") e o usuário, e o conteúdo da tela.
+// Moldura do app Lumie: barra lateral à esquerda, cabeçalho colorido com a
+// trilha clicável ("Meus exames / Glicose") e o usuário, e o conteúdo da tela.
 //
 // Este módulo implementa SÓ "Meus exames". Os outros itens do menu, o usuário
 // logado e o banner de lembretes são ILUSTRATIVOS: mostram como seria a
 // plataforma completa, não levam a lugar nenhum e não há login de verdade.
-// Os itens têm a etiqueta "em breve" para ninguém achar que já funcionam
-// (ex.: lembretes estão no artigo, mas não no protótipo).
+// Os itens ilustrativos aparecem mais claros e não respondem ao clique.
 import Icone from './Icone.jsx';
 import PainelDicas from './PainelDicas.jsx';
 
@@ -28,25 +27,51 @@ const MENU_CONTA = [
 // existe nos laudos, não vai ao back e nunca chega à inteligência artificial.
 const USUARIO_DEMO = { nome: 'Ana Lima', iniciais: 'AL' };
 
-function ItemMenu({ item, totalExames }) {
+function ItemMenu({ item, totalExames, onMeusExames }) {
   if (item.ativo) {
+    // Botão de verdade: leva aos resultados (ou ao catálogo, sem laudo).
     return (
-      <span className="nav-item selected" aria-current="page">
+      <button type="button" className="nav-item selected" aria-current="page" onClick={onMeusExames}>
         <Icone nome={item.icone} /> {item.nome}
         {totalExames > 0 && <em>{totalExames}</em>}
-      </span>
+      </button>
     );
   }
-  // aria-disabled: o leitor de tela anuncia que o item não está disponível.
+  // Ilustrativo: não leva a lugar nenhum. aria-disabled faz o leitor de tela
+  // anunciar que não está disponível; o title explica no hover.
   return (
     <span className="nav-item inativo" aria-disabled="true" title="Disponível na plataforma completa">
       <Icone nome={item.icone} /> {item.nome}
-      <small className="em-breve">em breve</small>
     </span>
   );
 }
 
-export default function Layout({ pagina, contexto, totalExames, children }) {
+// Trilha do cabeçalho ("Meus exames / Todas as explicações / Glicose"): cada
+// nível anterior é clicável e volta àquele ponto; o último é a tela atual.
+function Trilha({ itens }) {
+  return (
+    <nav className="trilha" aria-label="Você está em">
+      <ol>
+        {itens.map((item, i) => {
+          const atual = i === itens.length - 1;
+          return (
+            <li key={item.rotulo}>
+              {atual || !item.onClick ? (
+                <span aria-current={atual ? 'page' : undefined}>{item.rotulo}</span>
+              ) : (
+                <button type="button" onClick={item.onClick}>
+                  {item.rotulo}
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+export default function Layout({ trilha, contexto, totalExames, onMeusExames, children }) {
   return (
     <div className="app-layout">
       <aside className="sidebar">
@@ -61,7 +86,7 @@ export default function Layout({ pagina, contexto, totalExames, children }) {
         <p className="menu-label">MENU PRINCIPAL</p>
         <nav aria-label="Menu principal">
           {MENU_PRINCIPAL.map((item) => (
-            <ItemMenu key={item.nome} item={item} totalExames={totalExames} />
+            <ItemMenu key={item.nome} item={item} totalExames={totalExames} onMeusExames={onMeusExames} />
           ))}
         </nav>
 
@@ -82,9 +107,10 @@ export default function Layout({ pagina, contexto, totalExames, children }) {
 
       <section className="content">
         <header className="topbar">
-          <p>
-            Sua saúde <span>/</span> <b>{pagina}</b>
-          </p>
+          <div className="topbar-esquerda">
+            <p className="topbar-saudacao">Olá, {USUARIO_DEMO.nome.split(' ')[0]}</p>
+            <Trilha itens={trilha} />
+          </div>
           <div className="usuario-demo">
             <span className="sino-demo" aria-hidden="true">
               <Icone nome="sino" />

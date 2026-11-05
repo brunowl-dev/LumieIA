@@ -14,6 +14,7 @@ import { AutorLumie, Explicacao, NotaMensagemPadrao } from '../components/Explic
 import Icone from '../components/Icone.jsx';
 import MensagemErro from '../components/MensagemErro.jsx';
 import SeloStatus, { formatarNumero } from '../components/SeloStatus.jsx';
+import Voltar from '../components/Voltar.jsx';
 
 export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, onVoltar, onNovoEnvio }) {
   const jaTemConversa = Boolean(conversaInicial?.length);
@@ -89,15 +90,13 @@ export default function TelaChat({ idLaudo, exame, conversaInicial, onConversa, 
 
   return (
     <>
+      <Voltar onClick={onVoltar}>Voltar aos resultados</Voltar>
       <div className="exams-heading">
         <div>
           <p className="eyebrow">EXPLICAR COM IA</p>
           <h1>{exame.nome}</h1>
           <span>Pergunte o que quiser sobre este exame. Cada conversa é sobre um exame só.</span>
         </div>
-        <button type="button" className="secondary" onClick={onVoltar}>
-          ← Voltar aos resultados
-        </button>
       </div>
 
       {/* Resumo do exame: os mesmos dados da tela de exames, para o paciente não perder o contexto. */}

@@ -82,6 +82,26 @@ export default function TelaCatalogo({ onResultado, onEnviarArquivo }) {
             </button>
           );
         })}
+
+        {/* Envio do próprio laudo: último cartão da grade, em destaque azul, para
+            ficar junto das opções (antes era um link no rodapé, fácil de perder). */}
+        <button
+          type="button"
+          className="laudo-card laudo-card-envio"
+          style={{ '--ordem': LAUDOS_DEMO.length }}
+          disabled={lendo}
+          onClick={onEnviarArquivo}
+        >
+          <i className="laudo-icone">
+            <Icone nome="documento" />
+          </i>
+          <span className="laudo-texto">
+            <strong>Enviar meu laudo</strong>
+            <small>PDF, JPG ou PNG, até 10 MB</small>
+          </span>
+          <span className="laudo-caso">Tem o arquivo do laboratório? Envie e veja a pré-visualização antes da leitura.</span>
+          <span className="laudo-formato">Escolher arquivo →</span>
+        </button>
       </div>
 
       {escolhido && (
@@ -131,12 +151,6 @@ export default function TelaCatalogo({ onResultado, onEnviarArquivo }) {
         </section>
       )}
 
-      <p className="link-envio">
-        Tem outro laudo?{' '}
-        <button type="button" onClick={onEnviarArquivo} disabled={lendo}>
-          Enviar um arquivo
-        </button>
-      </p>
     </>
   );
 }
