@@ -5,6 +5,7 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import BoasVindas from './components/BoasVindas.jsx';
+import ChatFlutuante from './components/ChatFlutuante.jsx';
 import Layout from './components/Layout.jsx';
 import TelaCatalogo from './telas/TelaCatalogo.jsx';
 import TelaChat from './telas/TelaChat.jsx';
@@ -37,6 +38,12 @@ function App() {
     setVendoTodas(false);
     setConversas({});
     setEnviandoArquivo(false);
+  }
+
+  // "Ver na tela de exames" no chat flutuante: o laudo lido lá passa a ser o da página.
+  function verResultadoDoChat(resultadoDoChat) {
+    novoEnvio();
+    setResultado(resultadoDoChat);
   }
 
   let pagina;
@@ -107,6 +114,8 @@ function App() {
       </div>
       {/* Só no catálogo: é a primeira coisa que o paciente vê. */}
       {!resultado && <BoasVindas />}
+      {/* Fora da .tela: a animação de entrada usa transform, que quebraria o position: fixed. */}
+      <ChatFlutuante onVerResultado={verResultadoDoChat} />
     </Layout>
   );
 }
