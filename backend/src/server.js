@@ -5,8 +5,6 @@
 // IA: IA_FALSA=true (padrão) usa a IA falsa (src/api/iaFalsa.js); IA_FALSA=false
 // usa o modelo real (src/ia/index.js). Só o `cliente` muda; o adaptador é o mesmo.
 import { createServer } from 'node:http';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import {
   CAMINHO_BASE_CONHECIMENTO, IA_FALSA, MAX_REGENERACOES, OLLAMA_TIMEOUT_MS, PORTA, SESSION_TTL_MINUTES, UPLOAD_MAX_MB,
 } from './api/config.js';
@@ -16,6 +14,7 @@ import { criarAdaptadorIa } from './api/adaptadorIa.js';
 import { criarIaFalsa } from './api/iaFalsa.js';
 import { criarClienteIa } from './ia/index.js';
 import { carregarDadosDoPipeline } from './pipeline/processarLaudo.js';
+import { aquecerOcr } from './pipeline/extrairTextoImagem.js';
 import { registrarEvento } from './seguranca/registrarEvento.js';
 
 // 0.0.0.0 = aceitar conexões de fora do container (localhost só aceitaria de dentro)
@@ -39,12 +38,11 @@ createServer(app).listen(PORTA, HOST, () => {
   const ia = IA_FALSA ? 'IA FALSA: o modelo não está ligado (IA_FALSA=false liga)' : 'IA real: Ollama Cloud';
   console.log(`Lumie backend ouvindo em http://${HOST}:${PORTA} (${ia})`);
 
-  // Confere se os dados de idioma do OCR vieram dentro da imagem (ver Dockerfile).
-  const tessdata = process.env.TESSDATA_PATH;
-  if (tessdata) {
-    for (const idioma of ['por', 'eng']) {
-      const arquivo = join(tessdata, `${idioma}.traineddata.gz`);
-      console.log(`OCR ${idioma}: ${existsSync(arquivo) ? 'encontrado' : 'AUSENTE'} (${arquivo})`);
-    }
-  }
+  // OCR (BWL-10): cria o worker já na subida, para a 1ª foto não esperar e para
+  // um arquivo de idioma ausente aparecer aqui, e não no meio da demo. Se falhar,
+  // o servidor continua (PDF digital funciona); a próxima foto tenta de novo.
+  aquecerOcr().then(
+    () => console.log('OCR pronto'),
+    (erro) => console.error(`OCR indisponível: ${erro.message}`),
+  );
 });

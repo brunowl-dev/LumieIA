@@ -69,6 +69,19 @@ Contrato §7. Mensagens fixas (sem o modelo), em `confianca.js`:
   "mensagem_usuario": "Não conseguimos ler bem a foto do seu exame. Tente de novo com uma foto nítida, com boa luz, sem sombras e com o laudo inteiro aparecendo, ou envie o PDF original do laboratório." } }
 ```
 
-## Limitação atual
+## OCR real (BWL-10, 04/11/2026)
 
-O OCR (BWL-10) ainda não existe. O caminho da foto está implementado e testado com a confiança do Tesseract **simulada** (testes em `backend/test/pipeline/processarLaudo.test.js`). `foto_borrada.jpg` ainda não passa pelo pipeline: hoje uma imagem para na BWL-02 (`ARQUIVO_NAO_E_PDF`).
+A foto passa pelo Tesseract.js de verdade (`backend/src/pipeline/extrairTextoImagem.js`; testes em `backend/test/pipeline/ocr.test.js`). Medido nas imagens sintéticas:
+
+| Arquivo | Confiança da página | Resultado |
+|---|---|---|
+| `foto_glicose_acima.jpg` | 91 | segue; glicose 118 acima (= gabarito) |
+| `foto_painel_misto.jpg` | 87 | segue; os 4 exames = gabarito |
+| `digitalizado_sem_texto.pdf` | 86 | segue; glicose 118 acima |
+| `foto_borrada.jpg` | 0 | `BAIXA_CONFIANCA` (`ocr_baixa_confianca`) |
+
+**Decisão: usa-se a confiança MÉDIA DA PÁGINA, não a de cada linha.** O `confianca.js` aceita confiança por linha (`confianca_ocr`), mas, medida, ela não serve como sinal: em `foto_glicose_acima.jpg` a linha "Glicose em jejum 118 mg/dL 70 a 99" foi lida **sem nenhum erro** e recebeu 75 (abaixo de 80), porque o Tesseract deu 26 às palavras curtas "a" e "99" da faixa. O valor do resultado (118) recebeu 96. Usar a linha recusaria uma foto boa. O que protege cada item continua sendo os sinais estruturais (nome reconhecido na base, unidade, faixa interpretada).
+
+**Correções antes de estruturar** (`corrigirTextoOcr.js`): só confusões de letra vistas nessas imagens: `µ` lido como H/p/u (`HUI/mL` → `µUI/mL`), `g` lido como a/q (`ma/dL` → `mg/dL`) e faixa sem espaço (`12,0a 16,0`). **Nunca dígito:** um número lido errado não se adivinha.
+
+**Limite para a banca:** só 3 imagens sintéticas legíveis e 1 borrada foram medidas. Uma foto real, de outro laboratório, com outra fonte e outra luz, pode ter dígito lido errado com confiança alta da página; o sistema não detecta isso. Por isso a mensagem pede o PDF original quando possível.

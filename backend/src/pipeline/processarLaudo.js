@@ -1,5 +1,5 @@
 // Pipeline completo do momento 1 (envio do laudo, sem IA):
-// texto → analitos (BWL-03) → id_canonico (BWL-04) → confiança (BWL-06)
+// texto (PDF digital, ou OCR da foto/PDF digitalizado, BWL-10) → analitos (BWL-03) → id_canonico (BWL-04) → confiança (BWL-06)
 // → classificação e alerta crítico (BWL-05) → laudo estruturado (contrato §2).
 // O laudo é montado campo a campo (lista do que ENTRA): nada do texto bruto,
 // nem nao_interpretadas, nem dados do paciente.
@@ -9,7 +9,9 @@
 import { randomUUID } from 'node:crypto';
 import { estruturarAnalitos } from './estruturarAnalitos.js';
 import { extrairIdentificadores } from './extrairIdentificadores.js';
-import { extrairTextoPdf } from './extrairTextoPdf.js';
+import { extrairTextoPdf, renderizarPaginasPdf } from './extrairTextoPdf.js';
+import { extrairTextoImagem, juntarPaginasOcr } from './extrairTextoImagem.js';
+import { corrigirTextoOcr } from './corrigirTextoOcr.js';
 import { carregarIndiceDeNomes, normalizarNomeExame } from './normalizarNome.js';
 import { carregarLimitesCriticos, classificarAnalito, normalizarUnidade, unidadeCompativel } from './classificar.js';
 import {
@@ -155,20 +157,44 @@ const itemNaoLido = (analito, motivos) => ({
 export const MENSAGEM_ARQUIVO_ILEGIVEL = 'Não conseguimos ler o seu exame. Tente enviar de novo, com uma foto mais nítida ou o PDF original do laboratório.';
 
 /**
- * PDF digital de ponta a ponta: extração (BWL-02) + processarTextoLaudo.
- * PDF sem camada de texto (só imagem) iria para o OCR (BWL-10, ainda não
- * feito): por enquanto devolve ARQUIVO_ILEGIVEL. Os ErroExtracaoPdf (vazio,
- * corrompido, protegido) sobem para o orquestrador traduzir (contrato §2.1).
- * @param {Buffer} buffer
- * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { senha }
+ * Resultado do OCR → texto corrigido (só confusões de letra, nunca dígito) →
+ * processarTextoLaudo com origem "ocr" e a confiança MÉDIA DA PÁGINA do Tesseract.
+ * Não usamos a confiança por linha: medida nas fotos de samples/, ela recusa
+ * linhas lidas sem erro (motivo em docs/confianca-extracao.md).
  */
-export async function processarLaudoPdf(buffer, { senha, ...opcoes } = {}) {
+function processarLeituraOcr({ texto, confianca }, opcoes) {
+  return processarTextoLaudo(corrigirTextoOcr(texto), { ...opcoes, origem: ORIGENS.OCR, confiancaOcr: confianca });
+}
+
+/**
+ * PDF de ponta a ponta: extração (BWL-02) + processarTextoLaudo.
+ * PDF sem camada de texto (digitalizado, só imagem): as páginas são desenhadas
+ * e vão para o OCR (BWL-10). Os ErroExtracaoPdf (vazio, corrompido, protegido)
+ * e o ErroOcr sobem para o orquestrador traduzir (contrato §2.1).
+ * @param {Buffer} buffer
+ * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { senha } e,
+ *   para os testes, { ocr, renderizar } (padrão: Tesseract e pdf.js de verdade)
+ */
+export async function processarLaudoPdf(buffer, {
+  senha, ocr = extrairTextoImagem, renderizar = renderizarPaginasPdf, ...opcoes
+} = {}) {
   const extraido = await extrairTextoPdf(buffer, { senha });
-  if (!extraido.temCamadaDeTexto) {
-    return {
-      status: 'erro',
-      erro: { codigo: 'ARQUIVO_ILEGIVEL', motivo: 'sem_camada_de_texto', mensagem_usuario: MENSAGEM_ARQUIVO_ILEGIVEL },
-    };
+  if (extraido.temCamadaDeTexto) {
+    return processarTextoLaudo(extraido.texto, { ...opcoes, origem: ORIGENS.PDF_DIGITAL });
   }
-  return processarTextoLaudo(extraido.texto, { ...opcoes, origem: ORIGENS.PDF_DIGITAL });
+  // Uma página por vez: o OCR já usa a CPU toda e assim a memória não dobra.
+  const paginas = [];
+  for (const imagem of await renderizar(buffer, { senha })) paginas.push(await ocr(imagem));
+  return processarLeituraOcr(juntarPaginasOcr(paginas), opcoes);
+}
+
+/**
+ * Foto do laudo (JPG ou PNG) de ponta a ponta: OCR (BWL-10) + processarTextoLaudo.
+ * Foto borrada → BAIXA_CONFIANCA (motivo ocr_baixa_confianca), pela regra da BWL-06.
+ * @param {Buffer} buffer
+ * @param {object} [opcoes] as mesmas de processarTextoLaudo, mais { ocr } para os testes
+ * @throws {import('./extrairTextoImagem.js').ErroOcr} imagem que o Tesseract não abre
+ */
+export async function processarLaudoImagem(buffer, { ocr = extrairTextoImagem, ...opcoes } = {}) {
+  return processarLeituraOcr(await ocr(buffer), opcoes);
 }

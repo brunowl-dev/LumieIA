@@ -140,8 +140,9 @@ A decisão "baixa confiança → pedir novo envio" (seção 7, `BAIXA_CONFIANCA`
 
 ### 2.6 Função do pipeline usada pelo orquestrador
 `backend/src/pipeline/processarLaudo.js`:
-- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo, identificadores }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto → `ARQUIVO_ILEGIVEL` enquanto o OCR (BWL-10) não existir.
-- `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto (é por aqui que o OCR vai entrar).
+- `processarLaudoPdf(buffer, { senha? })` → `{ status: "ok", laudo, identificadores }` (§2) ou `{ status: "erro", erro }` (§7). Os `ErroExtracaoPdf` da §2.1 são lançados para o orquestrador traduzir. PDF sem camada de texto (digitalizado) → as páginas (até 5) são desenhadas como imagem e vão para o OCR (BWL-10), com `origem: "ocr"`.
+- `processarLaudoImagem(buffer)` (BWL-10) → idem, para foto JPG/PNG: OCR com Tesseract.js no servidor (`extrairTextoImagem.js`) → correções de letra (`corrigirTextoOcr.js`, nunca de dígito) → `processarTextoLaudo` com a confiança média da página. Imagem que o Tesseract não abre → `ErroOcr` com código `IMAGEM_INVALIDA`.
+- `processarTextoLaudo(texto, { origem, confiancaOcr })` → idem, a partir do texto.
 - `identificadores` (BWL-07, `extrairIdentificadores.js`): `{ paciente, cpf, rg, nascimento, pedido, medico, crm, responsavel_tecnico }`, cada um texto ou `null`, lidos dos rótulos do cabeçalho ("Paciente:", "CPF:", "Solicitante:"...). Ficam **fora** de `laudo`. O orquestrador os guarda só na sessão (somem com `SESSION_TTL_MINUTES`) e os usa só como lista do que a varredura apaga do texto livre. Nunca vão para a IA, o front ou os logs.
 
 ## 3. Base de conhecimento → IA e Segurança
@@ -328,7 +329,7 @@ O front nunca decide status: a cor e o alerta chegam prontos.
 ## 7. Erros
 Formato: `{"status":"erro","erro":{"codigo":"...","motivo":"...","mensagem_usuario":"..."}}`. `mensagem_usuario` é em linguagem simples, pronta para exibir. `motivo` é opcional: código interno estável, para teste e depuração (nunca contém dado do paciente); o front decide só pelo `codigo`.
 
-`BAIXA_CONFIANCA` (BWL-06), motivos: `ocr_baixa_confianca`, `nenhum_resultado_encontrado`, `confianca_abaixo_do_minimo`, `nenhum_resultado_confiavel`. Mensagens fixas em `backend/src/pipeline/confianca.js`: uma para foto (pede foto nítida, com luz, sem sombra, laudo inteiro), uma para PDF e uma para "nenhum resultado encontrado". `ARQUIVO_ILEGIVEL` com motivo `sem_camada_de_texto`: PDF só de imagem, enquanto não houver OCR.
+`BAIXA_CONFIANCA` (BWL-06), motivos: `ocr_baixa_confianca`, `nenhum_resultado_encontrado`, `confianca_abaixo_do_minimo`, `nenhum_resultado_confiavel`. Mensagens fixas em `backend/src/pipeline/confianca.js`: uma para foto (pede foto nítida, com luz, sem sombra, laudo inteiro), uma para PDF e uma para "nenhum resultado encontrado". Desde a BWL-10, PDF só de imagem vai para o OCR (o motivo `sem_camada_de_texto` não é mais devolvido pela rota).
 
 | Código | Porta | Quando | O que o front faz |
 |---|---|---|---|
@@ -346,7 +347,7 @@ Implementação (BWL-09, `backend/src/api/rotas.js`):
 - **Status HTTP:** 413 `ARQUIVO_MUITO_GRANDE`, 415 `FORMATO_NAO_SUPORTADO`, 422 `ARQUIVO_ILEGIVEL`/`BAIXA_CONFIANCA`, 404 `EXAME_NAO_ENCONTRADO`, 410 `SESSAO_EXPIRADA`, 503 `MODELO_INDISPONIVEL`. O front decide pelo `codigo`, não pelo status.
 - **`ARQUIVO_ILEGIVEL`, motivos novos:**
   - `pdf_protegido`: enquanto o grupo não decide a tela de senha, pede um PDF sem senha;
-  - `ocr_indisponivel`: foto enviada antes de a BWL-10 existir;
+  - `imagem_invalida`: imagem corrompida, que o OCR não abre (BWL-10; substitui o antigo `ocr_indisponivel`);
   - `arquivo_vazio` e `pdf_corrompido`.
 - **`MODELO_INDISPONIVEL`, motivos:** `erro_do_cliente` e `tempo_esgotado` (`OLLAMA_TIMEOUT_MS`).
 - **Códigos técnicos** (não deveriam aparecer se o front estiver certo):

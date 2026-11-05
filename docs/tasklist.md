@@ -47,7 +47,7 @@
 - [x] **BWL-07 (P0)** Pseudonimização, com teste que prove que nenhum identificador sai. → `docs/pseudonimizacao.md` (prova sobre a ENTRADA da IA; o pacote final ao Ollama depende da ISA).
 - [x] **BWL-08 (P0)** Camada de segurança com as verificações, testada com `samples/respostas-ia/` e casos novos. → `docs/seguranca-verificacoes.md` (testada só com respostas escritas pelo grupo).
 - [x] **BWL-09 (P0)** Orquestrador e rotas do contrato (`/api/laudos`, `/api/explicacoes`, `/api/chat`), sessão em memória (laudo + histórico do chat de cada exame) e laço de regeneração. → ligado ao modelo real (`beam`) com `IA_FALSA=false` desde 04/11 (a IA falsa continua para testes).
-- [ ] **BWL-10 (P1)** OCR com Tesseract.js. Se apertar, é o primeiro corte — mas o artigo descreve OCR, então avise o grupo cedo.
+- [x] **BWL-10 (P1)** OCR com Tesseract.js. → foto JPG/PNG e PDF digitalizado; confiança média da página; correções de letra (nunca dígito). Medido e decidido em `docs/confianca-extracao.md`.
 - ~~**BWL-11 (P2)** Lembrete de medicação.~~ **Cortada em 04/11/2026** por prazo (registrado em `artigo-vs-prototipo.md`).
 
 ---

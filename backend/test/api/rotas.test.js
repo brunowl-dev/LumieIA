@@ -11,6 +11,8 @@ import { criarSessoes } from '../../src/api/sessao.js';
 import { criarAdaptadorIa } from '../../src/api/adaptadorIa.js';
 import { criarIaFalsa } from '../../src/api/iaFalsa.js';
 import { criarRegistrador } from '../../src/seguranca/registrarEvento.js';
+import { processarLaudoImagem, processarLaudoPdf } from '../../src/pipeline/processarLaudo.js';
+import { CODIGOS_ERRO_OCR, ErroOcr } from '../../src/pipeline/extrairTextoImagem.js';
 import { encontrarIdentificadores } from '../seguranca/pacienteSintetico.js';
 
 const RAIZ = join(import.meta.dirname, '..', '..', '..');
@@ -21,6 +23,17 @@ const LER_RESPOSTA_IA = (arquivo) => JSON.parse(readFileSync(join(RAIZ, 'samples
 
 // Identificadores impressos nos PDFs sintéticos (paciente fictício).
 const IDENTIFICADORES_DOS_PDFS = ['Maria Teste da Silva', 'Maria', '000.000.000-00', '14/03/1992', 'João Exemplo', 'Ana Exemplo', 'Carlos Modelo'];
+
+// OCR SIMULADO: aqui se testa a ROTA, não o Tesseract (o real está em
+// test/pipeline/ocr.test.js). Foto borrada → confiança 0; poucos bytes → imagem
+// corrompida; qualquer outra imagem → o texto do laudo de glicose acima, COM o
+// cabeçalho do paciente fictício (para provar que ele não chega à IA).
+const TEXTO_GLICOSE_ACIMA = readFileSync(join(LAUDOS, 'texto_extraido', 'glicose_acima.txt'), 'utf8');
+async function ocrFalso(imagem) {
+  if (imagem.equals(lerLaudo('foto_borrada.jpg'))) return { texto: '', confianca: 0 };
+  if (imagem.length < 1000) throw new ErroOcr(CODIGOS_ERRO_OCR.IMAGEM_INVALIDA, 'imagem corrompida (simulada)');
+  return { texto: TEXTO_GLICOSE_ACIMA, confianca: 90 };
+}
 
 // Cliente de IA que CAPTURA tudo que recebe e delega para a IA falsa (ou para um roteiro).
 function clienteQueCaptura({ explicacoes, chats, atrasoMs = 0, falhar = false } = {}) {
@@ -56,6 +69,8 @@ async function subir(opcoesCliente, { timeoutMs = 2000, ttlMs = 60_000 } = {}) {
     fichas: FICHAS,
     maxRegeneracoes: 2,
     uploadMaxMb: 1,
+    processarPdf: (bytes) => processarLaudoPdf(bytes, { ocr: ocrFalso }),
+    processarImagem: (bytes) => processarLaudoImagem(bytes, { ocr: ocrFalso }),
     registrar: criarRegistrador({ escrever: (l) => logs.push(l) }),
   });
   const servidor = createServer(app);
@@ -138,6 +153,21 @@ describe('fluxo completo com IA falsa', () => {
     assert.deepEqual(encontrarIdentificadores(JSON.stringify(historico), IDENTIFICADORES_DOS_PDFS), []);
   });
 
+  it('foto (OCR): tela de exames e explicação; a IA nunca recebe o nome nem o CPF lidos da foto', async () => {
+    const antes = s.cliente.recebidas.length;
+    const { http, corpo: tela } = await enviar(s.url, lerLaudo('foto_glicose_acima.jpg'), 'foto.jpg');
+    assert.equal(http, 200);
+    assert.deepEqual(tela.itens.map((i) => [i.id_canonico, i.valor, i.classificacao, i.cor]), [['glicose', 118, 'acima', 'amarelo']]);
+    assert.deepEqual(encontrarIdentificadores(JSON.stringify(tela), IDENTIFICADORES_DOS_PDFS), []);
+    assert.equal(s.sessoes.obter(tela.id_laudo).laudo.origem, 'ocr');
+
+    await postar(s.url, '/api/explicacoes', { id_laudo: tela.id_laudo, id_canonico: 'glicose' });
+    await postar(s.url, '/api/chat', { id_laudo: tela.id_laudo, id_canonico: 'glicose', mensagem: 'Sou a Maria Teste da Silva, isso é grave?' });
+    const novas = s.cliente.recebidas.slice(antes);
+    assert.equal(novas.length, 2);
+    for (const entrada of novas) assert.deepEqual(encontrarIdentificadores(entrada, IDENTIFICADORES_DOS_PDFS), []);
+  });
+
   it('o log só tem códigos e números (nenhum identificador)', () => {
     assert.ok(s.logs.length > 0);
     assert.deepEqual(encontrarIdentificadores(s.logs.join('\n'), IDENTIFICADORES_DOS_PDFS), []);
@@ -177,8 +207,8 @@ describe('erros (contrato §7)', () => {
 
   const casos = [
     ['arquivo que não é PDF nem imagem → FORMATO_NAO_SUPORTADO', () => enviar(s.url, Buffer.from('texto qualquer'), 'a.txt'), 415, 'FORMATO_NAO_SUPORTADO'],
-    ['foto (OCR ainda não existe) → ARQUIVO_ILEGIVEL', () => enviar(s.url, lerLaudo('foto_glicose_acima.jpg'), 'f.jpg'), 422, 'ARQUIVO_ILEGIVEL'],
-    ['PDF só de imagem → ARQUIVO_ILEGIVEL', () => enviar(s.url, lerLaudo('digitalizado_sem_texto.pdf')), 422, 'ARQUIVO_ILEGIVEL'],
+    ['foto borrada → BAIXA_CONFIANCA (ocr_baixa_confianca)', () => enviar(s.url, lerLaudo('foto_borrada.jpg'), 'f.jpg'), 422, 'BAIXA_CONFIANCA'],
+    ['imagem corrompida → ARQUIVO_ILEGIVEL (imagem_invalida)', () => enviar(s.url, Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(100, 7)]), 'f.jpg'), 422, 'ARQUIVO_ILEGIVEL'],
     ['PDF com senha → ARQUIVO_ILEGIVEL (pdf_protegido)', () => enviar(s.url, lerLaudo('laudo_protegido.pdf')), 422, 'ARQUIVO_ILEGIVEL'],
     ['PDF com quase tudo ilegível → BAIXA_CONFIANCA', () => enviar(s.url, lerLaudo('painel_maioria_ilegivel.pdf')), 422, 'BAIXA_CONFIANCA'],
     ['arquivo acima de UPLOAD_MAX_MB → ARQUIVO_MUITO_GRANDE', () => enviar(s.url, Buffer.alloc(1.5 * 1024 * 1024, 0x25)), 413, 'ARQUIVO_MUITO_GRANDE'],

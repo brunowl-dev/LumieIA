@@ -27,7 +27,14 @@ Etapas, nesta ordem, cada uma testável isoladamente:
   - Casos de teste: `samples/laudos/glicose_limite.pdf` (99 → dentro) e `colesterol_total_limite.pdf` (190 → acima).
 - Valores com vírgula decimal (ex.: `1,8`) e unidades variadas são casos reais de laudo: tratar e testar.
 - OCR no Docker: `tesseract.js` baixa o idioma (`por`) na primeira execução. Para não depender de internet na apresentação, deixe o arquivo de idioma disponível localmente (volume ou cópia na imagem).
-- Prioridade: PDF digital (P0). OCR é P1 — se faltar tempo, é o primeiro corte; avise o grupo cedo, porque o artigo descreve OCR.
+- Prioridade: PDF digital (P0). OCR (P1) feito na BWL-10.
+
+## OCR (BWL-10): onde está cada coisa
+- `extrairTextoImagem.js`: UM worker do Tesseract.js, criado na 1ª leitura (ou na subida, `aquecerOcr`) e reaproveitado. Idiomas de `TESSDATA_PATH` (Docker, sem rede) ou baixados uma vez para a pasta temporária (fora do Docker). `errorHandler` obrigatório: sem ele, imagem corrompida derruba o servidor.
+- `corrigirTextoOcr.js`: correções de LETRA medidas nas fotos de `samples/` (µ, g, espaço da faixa). Nunca dígito. Cada correção nova precisa de teste.
+- `extrairTextoPdf.js` → `renderizarPaginasPdf`: PDF sem camada de texto vira PNG (até 5 páginas) para o OCR.
+- `processarLaudo.js` → `processarLaudoImagem` e o ramo "sem camada de texto" de `processarLaudoPdf`. Confiança: média da página (a da linha foi medida e descartada: `docs/confianca-extracao.md`).
+- Testes: `test/pipeline/ocr.test.js` (Tesseract real, lento, ~8 s) e `corrigirTextoOcr.test.js`. Rotas usam OCR simulado.
 
 ## Estruturação (BWL-03): decisões e limites conhecidos
 Formato de saída no contrato §2.2. Testes em `backend/test/pipeline/estruturarAnalitos.test.js` (texto real de `samples/laudos/texto_extraido/` + fixtures em string).

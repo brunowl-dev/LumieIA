@@ -16,6 +16,7 @@
     "node": ">=24"
   },
   "dependencies": {
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^2.4.5",
+    "tesseract.js": "^6.0.1"
   }
 }

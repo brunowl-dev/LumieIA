@@ -1,5 +1,7 @@
 // Etapa 1 do pipeline (BWL-02): ler o texto de um PDF DIGITAL com pdf-parse.
-// Só lê. Não interpreta valores (BWL-03), não faz OCR (BWL-10), não usa o modelo.
+// Só lê. Não interpreta valores (BWL-03) nem usa o modelo. PDF só de imagem: as
+// páginas são desenhadas aqui (renderizarPaginasPdf) e o OCR é feito em
+// extrairTextoImagem.js (BWL-10).
 // Não grava log: o texto é dado de saúde. Quem chama pode registrar no máximo
 // numPaginas, caracteresUteis e o código de erro.
 //
@@ -9,7 +11,7 @@
 import { PDFParse, PasswordException, VerbosityLevel } from 'pdf-parse';
 
 // Abaixo disso o PDF é tratado como "sem camada de texto" (digitalização = só
-// imagem) e, no futuro, vai para o OCR. Os laudos de teste têm ~550 a ~900
+// imagem) e vai para o OCR (BWL-10). Os laudos de teste têm ~550 a ~900
 // caracteres úteis e um PDF só de imagem tem 0. 50 deixa de fora carimbos que
 // alguns scanners escrevem ("Página 1 de 1", nome do aparelho) e fica muito
 // abaixo de qualquer laudo real (só o cabeçalho do laboratório já passa disso).
@@ -91,6 +93,36 @@ export async function extrairTextoPdf(buffer, { senha } = {}) {
     caracteresUteis,
     temCamadaDeTexto: caracteresUteis >= LIMIAR_CARACTERES_UTEIS,
   };
+}
+
+// PDF digitalizado (BWL-10): até quantas páginas vão para o OCR. Cada página leva
+// ~1,5 s; um laudo de exames raramente passa disso.
+export const MAX_PAGINAS_OCR = 5;
+
+// Escala da renderização: 2 = o dobro do tamanho "de tela" do PDF. Menos que isso
+// e as letras pequenas do laudo ficam borradas para o OCR.
+const ESCALA_RENDERIZACAO = 2;
+
+/**
+ * Desenha as páginas de um PDF como imagens PNG, para o OCR ler um PDF que é
+ * só imagem (temCamadaDeTexto: false). Mesmo pdf.js da extração de texto.
+ * @param {Buffer|Uint8Array} buffer
+ * @param {{ senha?: string }} [opcoes]
+ * @returns {Promise<Buffer[]>} uma imagem PNG por página (no máximo MAX_PAGINAS_OCR)
+ * @throws {ErroExtracaoPdf}
+ */
+export async function renderizarPaginasPdf(buffer, { senha } = {}) {
+  const parser = new PDFParse({ data: buffer, password: senha, verbosity: VerbosityLevel.ERRORS });
+  try {
+    const resultado = await parser.getScreenshot({
+      scale: ESCALA_RENDERIZACAO, first: MAX_PAGINAS_OCR, imageBuffer: true, imageDataUrl: false,
+    });
+    return resultado.pages.map((pagina) => Buffer.from(pagina.data));
+  } catch (erro) {
+    throw traduzirErroDoParser(erro);
+  } finally {
+    await parser.destroy();
+  }
 }
 
 function temCabecalhoPdf(buffer) {
